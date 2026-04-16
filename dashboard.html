@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/landing.css" />
+    <link rel="stylesheet" href="/pages/dashboard/dashboard.css" />
+  </head>
+  <body class="dash-body">
+    <nav class="dash-nav">
+      <div class="dash-nav-brand">INVIO</div>
+      <div class="dash-nav-links">
+        <a href="/pages/studio" class="nav-item">
+          <i class="ph ph-paint-brush"></i>
+          <span>Studio</span>
+        </a>
+        <a href="#" class="nav-item active">
+          <i class="ph ph-squares-four"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="dash-nav-bottom">
+        <div class="user-profile">
+          <div class="user-avatar" id="user-avatar">--</div>
+          <div class="user-info">
+            <span class="welcome-text">Welcome,</span>
+            <span class="user-name" id="user-name">Loading...</span>
+          </div>
+        </div>
+        <div class="nav-divider"></div>
+        <a href="/" class="nav-item">
+          <i class="ph ph-sign-out"></i>
+          <span>Exit</span>
+        </a>
+      </div>
+    </nav>
+
+    <main class="dash-main">
+      <header class="dash-header bento-card">
+        <div class="header-content">
+          <div class="status-badge">Live Event</div>
+          <h1 class="event-title">Your Invitation Dashboard</h1>
+          <p class="event-meta">Live analytics and guest insights</p>
+        </div>
+        <div class="header-actions">
+          <button
+            class="dash-btn dash-btn-outline"
+            onclick="window.location.href = '/pages/studio'"
+          >
+            <i class="ph ph-pencil-simple"></i> Edit Design
+          </button>
+          <button
+            class="dash-btn dash-btn-primary"
+            onclick="alert('Link Copied!')"
+          >
+            <i class="ph ph-link"></i> Copy Link
+          </button>
+        </div>
+      </header>
+
+      <div class="bento-grid">
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-envelope-open"></i>
+            <span>Response Rate</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-responses">
+              0<span class="stat-total">/1</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-users"></i>
+            <span>Confirmed Guests</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-headcount">0</div>
+            <div class="stat-subtext">0 Declined • 0 Maybe</div>
+          </div>
+        </div>
+
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-calendar-blank"></i>
+            <span>Time Remaining</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-days">--</div>
+            <div class="stat-subtext">Days until event</div>
+          </div>
+        </div>
+
+        <div class="bento-card preview-card gs-elem">
+          <div class="preview-header">
+            <i class="ph ph-device-mobile"></i>
+            <span>Live Preview</span>
+          </div>
+          <div class="preview-container">
+            <iframe
+              id="preview-frame"
+              src="/templates/wedding/wedding_template_1.html"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+
+        <div class="bento-card insights-card gs-elem">
+          <div class="insights-header">
+            <i class="ph ph-fork-knife"></i>
+            <span>Dietary Requirements</span>
+          </div>
+          <ul class="insights-list" id="dietary-list"></ul>
+        </div>
+
+        <div class="bento-card ledger-card gs-elem">
+          <div class="ledger-header">
+            <div class="ledger-title">
+              <i class="ph ph-address-book"></i>
+              <span>Guest Ledger</span>
+            </div>
+            <div class="ledger-filters">
+              <input
+                type="text"
+                class="dash-input"
+                placeholder="Search guests..."
+                id="guest-search"
+              />
+              <select class="dash-select" id="guest-filter">
+                <option value="all">All Statuses</option>
+                <option value="accepted">Confirmed</option>
+                <option value="declined">Declined</option>
+              </select>
+              <button
+                class="dash-btn dash-btn-outline icon-only"
+                title="Export to CSV"
+              >
+                <i class="ph ph-download-simple"></i>
+              </button>
+            </div>
+          </div>
+          <div class="ledger-table-wrapper">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Guest Name</th>
+                  <th>Status</th>
+                  <th>Dietary/Notes</th>
+                  <th>RSVP Date</th>
+                </tr>
+              </thead>
+              <tbody id="guest-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="/pages/dashboard/dashboard.js"></script>
+  </body>
+</html>

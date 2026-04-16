@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initDashboard() {
   if (!authApi.isAuthenticated()) {
-    window.location.href = "../auth/index.html";
+    window.location.href = "/pages/auth";
     return;
   }
 
@@ -93,7 +93,7 @@ function configureStudioLink(invitation) {
       template: invitation.template_id,
       id: invitation.id,
     }).toString();
-    window.location.href = `../studio/index.html?${query}`;
+    window.location.href = `/pages/studio?${query}`;
   };
 }
 

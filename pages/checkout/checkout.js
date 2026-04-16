@@ -65,7 +65,8 @@ function loadTemplateFromUrl(retryCount = 0) {
       setTimeout(() => loadTemplateFromUrl(retryCount + 1), 200);
       return;
     }
-    document.getElementById("templateName").textContent = "Error Loading Template";
+    document.getElementById("templateName").textContent =
+      "Error Loading Template";
     return;
   }
 
@@ -153,7 +154,7 @@ async function handleSuccess() {
 
   // Redirect to Dashboard
   setTimeout(() => {
-    window.location.href = "../dashboard/index.html";
+    window.location.href = "/dashboard";
   }, 2500);
 }
 
@@ -161,9 +162,10 @@ function setLoading(isLoading) {
   checkoutState.isProcessing = isLoading;
   refs.payBtn.disabled = isLoading;
   refs.payBtn.classList.toggle("processing", isLoading);
-  
+
   if (isLoading) {
-    refs.payBtn.querySelector(".btn-text").textContent = "Processing Payment...";
+    refs.payBtn.querySelector(".btn-text").textContent =
+      "Processing Payment...";
   } else {
     refs.payBtn.querySelector(".btn-text").textContent = "Complete Purchase";
   }
