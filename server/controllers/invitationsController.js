@@ -265,7 +265,7 @@ export const publishInvitation = async (req, res) => {
     );
     res.json({
       ...data,
-      shareUrl: `${frontendBase}/${encodeURIComponent(data.slug)}`,
+      shareUrl: `${frontendBase}/invite?slug=${encodeURIComponent(data.slug)}`,
     });
   } catch (err) {
     console.error("Publish invitation error:", err);

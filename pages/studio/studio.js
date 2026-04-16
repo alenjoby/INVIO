@@ -1039,7 +1039,7 @@ class StudioEditor {
     const name = this.els.invitationName.value || "invitation";
     this.els.publishSlug.value = this.normalizePublicSlug(name);
     if (this.els.slugPrefix) {
-      this.els.slugPrefix.textContent = `${window.location.origin}/`;
+      this.els.slugPrefix.textContent = `${window.location.origin}/invite?slug=`;
     }
     this.els.publishModal.classList.remove("hidden");
   }
@@ -1080,7 +1080,7 @@ class StudioEditor {
         },
       );
 
-      const inviteUrl = `/${encodeURIComponent(result.slug)}`;
+      const inviteUrl = `/invite?slug=${encodeURIComponent(result.slug)}`;
 
       // Show success
       this.closeAllModals();

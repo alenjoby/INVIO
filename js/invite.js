@@ -214,6 +214,9 @@ function getTemplatePathById(templateId) {
     "wedding-3": "templates/wedding/wedding_template_3.html",
     "wedding-4": "templates/wedding/wedding_template_4.html",
     "wedding-5": "templates/wedding/wedding_template_5.html",
+    "funeral-1": "templates/funeral/funeral-template-1.html",
+    "funeral-2": "templates/funeral/funeral-template-2.html",
+    "funeral-3": "templates/funeral/funeral-template-3.html",
   };
   return templateMap[templateId] || "templates/wedding/wedding_template_1.html";
 }

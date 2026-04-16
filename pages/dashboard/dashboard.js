@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initDashboard() {
   if (!authApi.isAuthenticated()) {
-    window.location.href = "/auth";
+    window.location.href = "/pages/auth/index.html";
     return;
   }
 
@@ -101,7 +101,7 @@ function configureStudioLink(invitation) {
       template: invitation.template_id,
       id: invitation.id,
     }).toString();
-    window.location.href = `/studio?${query}`;
+    window.location.href = `/pages/studio/index.html?${query}`;
   };
 }
 
@@ -116,7 +116,7 @@ function configureCopyLinkButton(invitation) {
       return;
     }
 
-    const shareLink = `${window.location.origin}/${encodeURIComponent(slug)}`;
+    const shareLink = `${window.location.origin}/invite?slug=${encodeURIComponent(slug)}`;
     try {
       await navigator.clipboard.writeText(shareLink);
       alert("Link copied!");
