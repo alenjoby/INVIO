@@ -10,7 +10,7 @@
 const CONFIG = {
   LOCAL_URL: "http://localhost:4000",
   // TODO: Update this after your first Render deployment
-  PRODUCTION_URL: "https://invio-backend.onrender.com", 
+  PRODUCTION_URL: "https://invio-backend-znac.onrender.com", 
 };
 
 // Auto-detect environment based on hostname
