@@ -374,7 +374,7 @@ function bindEvents() {
       template: templateId,
       name: templateName || "Template",
     });
-    const studioPath = `/studio?${params.toString()}`;
+    const studioPath = `/pages/studio/index.html?${params.toString()}`;
 
     // Payment/checkout flow is temporarily disabled while Studio preview is being stabilized.
     window.location.href = studioPath;
