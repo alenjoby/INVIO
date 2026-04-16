@@ -16,7 +16,7 @@
     { "source": "/studio", "destination": "/pages/studio/index.html" },
     { "source": "/auth", "destination": "/pages/auth/index.html" },
     {
-      "source": "/:slug([a-z0-9-]{1,60})",
+      "source": "/:slug([a-z0-9][a-z0-9-]*)",
       "destination": "/invite.html?slug=:slug"
     }
   ],

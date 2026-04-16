@@ -14,9 +14,16 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const params = new URLSearchParams(window.location.search);
-  const slug = getSlugFromUrl(params);
+  let slug = params.get("slug");
 
   if (!slug) {
+    const pathSegments = window.location.pathname.split("/").filter(Boolean);
+    if (pathSegments.length > 0) {
+      slug = pathSegments[pathSegments.length - 1];
+    }
+  }
+
+  if (!slug || slug === "invite" || slug === "invite.html") {
     showError("Missing Link", "Open a published link with a slug in the URL.");
     return;
   }
@@ -534,35 +541,4 @@ function showError(title, message) {
   refs.errorScreen.classList.add("visible");
   if (refs.errorTitle) refs.errorTitle.textContent = title;
   if (refs.errorText) refs.errorText.textContent = message;
-}
-
-function getSlugFromUrl(params) {
-  const querySlug = params.get("slug");
-  if (querySlug) {
-    return querySlug;
-  }
-
-  const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
-  if (!path || path.includes("/")) {
-    return "";
-  }
-
-  const reservedPaths = new Set([
-    "invite",
-    "invite.html",
-    "templates",
-    "templates.html",
-    "dashboard",
-    "studio",
-    "auth",
-    "checkout",
-    "index.html",
-    "favicon.ico",
-  ]);
-
-  if (reservedPaths.has(path.toLowerCase())) {
-    return "";
-  }
-
-  return decodeURIComponent(path);
 }
