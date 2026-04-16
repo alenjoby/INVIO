@@ -479,7 +479,7 @@ class StudioEditor {
 
       // 2. Keep inline visual logic (reveals, scroll effects, particles)
       // but remove anything that tries to redirect or open popups
-      const hasVisualKeywords = /ScrollTrigger|gsap\.to|lenis|reveal|opacity|transform|particles|canvas|ctx\.|scroll|addEventListener/i.test(
+      const hasVisualKeywords = /ScrollTrigger|gsap\.to|lenis|reveal|opacity|transform|particles|canvas|ctx\.|scroll|addEventListener|IntersectionObserver|setTimeout|anime|Splitting|Lottie|confetti|lucide|phosphor/i.test(
         content,
       );
       const hasDangerousKeywords = /window\.location|top\.location|alert\(|confirm\(|prompt\(/i.test(
@@ -543,12 +543,16 @@ class StudioEditor {
         "html, body {",
         "  opacity: 1 !important;",
         "  visibility: visible !important;",
+        "  background-color: transparent !important;",
         "}",
-        "body * {",
+        /* We ONLY force opacity/visibility on elements marked as editable 
+           to ensure they can be clicked/found, but we allow the template 
+           to manage the visibility of everything else (like curtains, 
+           reveal-wrappers, etc.) to preserve the premium animations. */
+        "[data-edit] {",
         "  opacity: 1 !important;",
-        "  transform: none !important;",
-        "  filter: none !important;",
         "  visibility: visible !important;",
+        "  z-index: 999 !important;",
         "}",
       ].join("\n");
       frameDoc.head.appendChild(style);
