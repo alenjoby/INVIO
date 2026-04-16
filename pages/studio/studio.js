@@ -1161,12 +1161,12 @@ class StudioEditor {
   }
 
   async apiRequest(endpoint, options = {}) {
-    const token = this.getAuthToken();
+    let token = this.getAuthToken();
     if (!token) {
       throw new Error("Not authenticated");
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    let response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -1174,6 +1174,21 @@ class StudioEditor {
         ...(options.headers || {}),
       },
     });
+
+    if (response.status === 401) {
+      const refreshed = await this.tryRefreshAuthToken();
+      if (refreshed) {
+        token = this.getAuthToken();
+        response = await fetch(`${API_URL}${endpoint}`, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            ...(options.headers || {}),
+          },
+        });
+      }
+    }
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
@@ -1183,8 +1198,51 @@ class StudioEditor {
     return response.json();
   }
 
+  async tryRefreshAuthToken() {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      const accessToken = data?.session?.access_token;
+      const nextRefreshToken = data?.session?.refresh_token;
+
+      if (!accessToken) {
+        return false;
+      }
+
+      localStorage.setItem("authToken", accessToken);
+      if (nextRefreshToken) {
+        localStorage.setItem("authRefreshToken", nextRefreshToken);
+      }
+
+      return true;
+    } catch (error) {
+      console.warn("Token refresh failed:", error);
+      return false;
+    }
+  }
+
   getAuthToken() {
     return localStorage.getItem("authToken");
+  }
+
+  getRefreshToken() {
+    return localStorage.getItem("authRefreshToken");
   }
 
   isAuthenticated() {

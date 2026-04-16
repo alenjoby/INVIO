@@ -142,19 +142,10 @@ async function handleSuccess() {
 
   // Call backend to mark as purchased/published before showing success
   if (invitationId) {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      throw new Error("Session expired. Please sign in again.");
-    }
-
-    const response = await fetch(
+    const response = await postWithAuthRetry(
       `${CONFIG.API_BASE}/invitations/${invitationId}/purchase`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
       },
     );
 
@@ -174,6 +165,84 @@ async function handleSuccess() {
   setTimeout(() => {
     window.location.href = "/dashboard";
   }, 2500);
+}
+
+async function postWithAuthRetry(url, options = {}) {
+  let token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("Session expired. Please sign in again.");
+  }
+
+  let response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
+    },
+  });
+
+  if (response.status !== 401) {
+    return response;
+  }
+
+  const refreshed = await refreshAuthToken();
+  if (!refreshed) {
+    return response;
+  }
+
+  token = localStorage.getItem("authToken");
+  if (!token) {
+    return response;
+  }
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
+    },
+  });
+}
+
+async function refreshAuthToken() {
+  const refreshToken = localStorage.getItem("authRefreshToken");
+  if (!refreshToken) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    const accessToken = data?.session?.access_token;
+    const nextRefreshToken = data?.session?.refresh_token;
+
+    if (!accessToken) {
+      return false;
+    }
+
+    localStorage.setItem("authToken", accessToken);
+    if (nextRefreshToken) {
+      localStorage.setItem("authRefreshToken", nextRefreshToken);
+    }
+
+    return true;
+  } catch (error) {
+    console.warn("Checkout token refresh failed:", error);
+    return false;
+  }
 }
 
 function setLoading(isLoading) {

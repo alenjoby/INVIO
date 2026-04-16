@@ -9,6 +9,7 @@ import { API_URL } from "./env.js";
 class AuthAPI {
   constructor() {
     this.token = localStorage.getItem("authToken");
+    this.refreshTokenValue = localStorage.getItem("authRefreshToken");
     this.user = localStorage.getItem("authUser")
       ? JSON.parse(localStorage.getItem("authUser"))
       : null;
@@ -22,11 +23,24 @@ class AuthAPI {
     localStorage.setItem("authToken", token);
   }
 
+  setRefreshToken(refreshToken) {
+    this.refreshTokenValue = refreshToken || null;
+    if (refreshToken) {
+      localStorage.setItem("authRefreshToken", refreshToken);
+    } else {
+      localStorage.removeItem("authRefreshToken");
+    }
+  }
+
   /**
    * Get auth token
    */
   getToken() {
     return this.token;
+  }
+
+  getRefreshToken() {
+    return this.refreshTokenValue;
   }
 
   /**
@@ -49,8 +63,10 @@ class AuthAPI {
    */
   clearAuth() {
     this.token = null;
+    this.refreshTokenValue = null;
     this.user = null;
     localStorage.removeItem("authToken");
+    localStorage.removeItem("authRefreshToken");
     localStorage.removeItem("authUser");
   }
 
@@ -91,6 +107,7 @@ class AuthAPI {
 
     if (data.session?.access_token) {
       this.setToken(data.session.access_token);
+      this.setRefreshToken(data.session.refresh_token || null);
       this.setUser(data.user);
     }
 
@@ -108,6 +125,7 @@ class AuthAPI {
 
     if (data.session?.access_token) {
       this.setToken(data.session.access_token);
+      this.setRefreshToken(data.session.refresh_token || null);
       this.setUser(data.user);
     }
 
@@ -145,6 +163,7 @@ class AuthAPI {
 
     if (data.session?.access_token) {
       this.setToken(data.session.access_token);
+      this.setRefreshToken(data.session.refresh_token || null);
       this.setUser(data.user);
     }
 
