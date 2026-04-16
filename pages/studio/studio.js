@@ -3,9 +3,15 @@
  * Orchestrates template loading, state management, and event handling
  */
 
+const _isLocalhost =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
 const API_URL =
-  (typeof window !== "undefined" && window.__INVIO_API_URL__) ||
-  "http://localhost:4000";
+  window.__INVIO_API_URL__ ||
+  (_isLocalhost
+    ? "http://localhost:4000"
+    : "https://invio-backend-znac.onrender.com");
 const PURCHASED_STORAGE_KEY = "invio_purchased_templates";
 
 class StudioEditor {
@@ -1161,13 +1167,22 @@ class StudioEditor {
       params.set("publishIntent", "1");
     }
 
-    return `${window.location.pathname}?${params.toString()}`;
+    // Ensure the path always includes index.html so Vercel doesn't 404
+    let pathname = window.location.pathname;
+    if (pathname.endsWith("/studio") || pathname.endsWith("/studio/")) {
+      pathname = "/pages/studio/index.html";
+    } else if (!pathname.endsWith(".html")) {
+      pathname = pathname.replace(/\/$/, "") + "/index.html";
+    }
+
+    return `${pathname}?${params.toString()}`;
   }
 
   redirectToAuth(includePublishIntent = false) {
     const redirect = this.buildStudioReturnPath(includePublishIntent);
     const authParams = new URLSearchParams({ redirect });
-    window.location.href = `../auth/index.html?${authParams.toString()}`;
+    // Use absolute path so this works on both localhost and Vercel
+    window.location.href = `/pages/auth/index.html?${authParams.toString()}`;
   }
 
   isTemplatePurchased(templateId) {
