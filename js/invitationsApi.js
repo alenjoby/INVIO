@@ -6,10 +6,7 @@
 
 import { authApi } from "./authApi.js";
 
-const API_URL =
-  (typeof window !== "undefined" && window.__INVIO_API_URL__) ||
-  (typeof process !== "undefined" && process.env && process.env.API_URL) ||
-  "http://localhost:4000";
+import { API_URL } from "./env.js";
 
 class InvitationsAPI {
   /**

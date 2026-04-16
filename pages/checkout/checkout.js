@@ -1,9 +1,11 @@
+import { API_URL } from "../../js/env.js";
+
 /**
  * Checkout Logic - Simple payment flow (OTP removed)
  */
 
 const CONFIG = {
-  API_BASE: (window.__INVIO_API_URL__ || "http://localhost:4000") + "/api",
+  API_BASE: API_URL + "/api",
   PLATFORM_FEE: 0.0,
   STORAGE_KEY: "invio_purchased_templates",
 };

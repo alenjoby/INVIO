@@ -1,6 +1,6 @@
 import { invitationsApi } from "./invitationsApi.js";
 
-const API_URL = (typeof window !== "undefined" && window.__INVIO_API_URL__) || "http://localhost:4000";
+import { API_URL } from "./env.js";
 
 const refs = {
   frame: document.getElementById("inviteFrame"),
