@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   const params = new URLSearchParams(window.location.search);
-  const slug = params.get("slug");
+  const slug = getSlugFromUrl(params);
 
   if (!slug) {
     showError("Missing Link", "Open a published link with a slug in the URL.");
@@ -23,16 +23,17 @@ async function init() {
 
   try {
     const invitation = await invitationsApi.getPublished(slug);
-    
+
     // Update Document Title
     document.title = invitation.title || "INVIO | Invitation";
-    
+
     await loadTemplateToFrame(invitation);
   } catch (error) {
     console.error("Failed to load invitation:", error);
     showError(
       "Invitation Not Found",
-      error?.message || "The invitation could not be loaded or is not published."
+      error?.message ||
+        "The invitation could not be loaded or is not published.",
     );
   }
 }
@@ -47,16 +48,16 @@ async function loadTemplateToFrame(invitation) {
     // Fetch Base Template HTML
     const templateUrl = new URL(templatePath, window.location.href).href;
     const response = await fetch(templateUrl, { cache: "no-store" });
-    
+
     if (!response.ok) throw new Error("Failed to load template assets");
-    
+
     const templateHtml = await response.text();
     const cleanHtml = stripTemplateScripts(templateHtml);
     const framedHtml = injectBaseHref(cleanHtml, templateUrl);
 
     // Prepare Iframe
     refs.frame.src = "about:blank";
-    
+
     await new Promise((resolve) => {
       const checkReady = () => {
         try {
@@ -79,7 +80,7 @@ async function loadTemplateToFrame(invitation) {
     frameDoc.close();
 
     // Wait for parse
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     // Hide scrollbars until loaded in frame
     injectViewerStyles(frameDoc);
@@ -94,14 +95,13 @@ async function loadTemplateToFrame(invitation) {
       injectInteractions(frameDoc, invitation);
     }
 
-    // Reveal 
+    // Reveal
     setTimeout(() => {
       refs.loader.classList.add("hidden");
       refs.frame.style.visibility = "visible";
       refs.frame.style.opacity = "1";
       triggerFrameAnimations(frameDoc);
     }, 500);
-
   } catch (error) {
     throw error;
   }
@@ -118,9 +118,17 @@ function applyEdits(frameDoc, edits) {
 
     if (type === "text" && edits.text && edits.text[id] !== undefined) {
       el.textContent = edits.text[id];
-    } else if (type === "image" && edits.images && edits.images[id] !== undefined) {
+    } else if (
+      type === "image" &&
+      edits.images &&
+      edits.images[id] !== undefined
+    ) {
       el.src = edits.images[id];
-    } else if (type === "color" && edits.colors && edits.colors[id] !== undefined) {
+    } else if (
+      type === "color" &&
+      edits.colors &&
+      edits.colors[id] !== undefined
+    ) {
       el.style.setProperty("--" + id, edits.colors[id]);
       if (el.style.color !== "") el.style.color = edits.colors[id];
     }
@@ -132,7 +140,7 @@ function autoRegisterEditableElements(frameDoc) {
   const usedIds = new Set(
     Array.from(frameDoc.querySelectorAll("[data-id]"))
       .map((el) => el.getAttribute("data-id"))
-      .filter(Boolean)
+      .filter(Boolean),
   );
 
   frameDoc.querySelectorAll("img").forEach((img) => {
@@ -143,15 +151,19 @@ function autoRegisterEditableElements(frameDoc) {
     img.setAttribute("data-id", dataId);
   });
 
-  const textSelectors = "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
+  const textSelectors =
+    "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
   frameDoc.querySelectorAll(textSelectors).forEach((el) => {
     if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
-    
+
     // Quick validation check
     const text = el.textContent.replace(/\s+/g, " ").trim();
-    if (!text || el.closest("script,style,noscript,head,svg,canvas,iframe")) return;
-    
-    const nonBreakChildren = Array.from(el.children).filter(child => child.tagName !== "BR");
+    if (!text || el.closest("script,style,noscript,head,svg,canvas,iframe"))
+      return;
+
+    const nonBreakChildren = Array.from(el.children).filter(
+      (child) => child.tagName !== "BR",
+    );
     if (el.tagName === "DIV" && nonBreakChildren.length > 0) return;
     if (el.children.length > 0 && nonBreakChildren.length > 1) return;
     if (text.length > 220 && el.tagName === "DIV") return;
@@ -202,20 +214,137 @@ function getTemplatePathById(templateId) {
 function getTemplateDesign(templateId, path) {
   const tid = path.split("/").pop().toLowerCase();
   const designs = {
-    "wedding_template_1.html": { accent: "#d4af37", bg: "#ffffff", titleFont: "Playfair Display", bodyFont: "Baskervville", style: "border-radius: 0; border: 1px solid #d4af37; box-shadow: 0 10px 40px rgba(0,0,0,0.05);", mapFilter: "grayscale(1) contrast(1.2) brightness(0.9)" },
-    "wedding_template_2.html": { accent: "#7c8c7c", bg: "#f9f7f2", titleFont: "Playfair Display", bodyFont: "Montserrat", style: "border-radius: 20px; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.03);", mapFilter: "sepia(20%) grayscale(0.5)" },
-    "wedding_template_3.html": { accent: "#c5a059", bg: "#0a1a2f", titleFont: "Cormorant Garamond", bodyFont: "Montserrat", dark: true, style: "border-radius: 0; border: 2px solid #c5a059; padding: 60px;", mapFilter: "invert(90%) hue-rotate(180deg) grayscale(0.2)" },
-    "wedding_template_4.html": { accent: "#e5baba", bg: "#fffcfc", titleFont: "Playfair Display", bodyFont: "Montserrat", style: "border-radius: 50px; border: 1px solid #f0e0e0; box-shadow: 0 10px 30px rgba(229,186,186,0.1);", mapFilter: "hue-rotate(-10deg) saturate(0.8)" },
-    "wedding_template_5.html": { accent: "#5c0000", bg: "#e8dfd0", titleFont: "Mrs Saint Delafield", bodyFont: "Cormorant Garamond", style: "border-radius: 2px; border: none; box-shadow: 2px 2px 0 rgba(0,0,0,0.1); clip-path: polygon(0% 0%, 100% 0%, 98% 100%, 2% 98%);", mapFilter: "sepia(50%) contrast(1.1)" },
-    "academic 1.html": { accent: "#ccff00", bg: "#0a0a0a", titleFont: "Orbitron", bodyFont: "Space Grotesk", dark: true, style: "border-radius: 12px; border: 1px solid #ccff00; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(204,255,0,0.1);", mapFilter: "invert(100%) hue-rotate(180deg) brightness(0.8)" },
-    "academic 2.html": { accent: "#00f2ff", bg: "#050505", titleFont: "Archivo Black", bodyFont: "Inter", dark: true, style: "border-radius: 0; border-left: 5px solid #00f2ff; background: rgba(255,255,255,0.02);", mapFilter: "invert(90%) hue-rotate(160deg)" },
-    "academic 3.html": { accent: "#d4af37", bg: "#0a0b10", titleFont: "Playfair Display", bodyFont: "Space Grotesk", dark: true, style: "border-radius: 0; border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37;", mapFilter: "invert(100%) grayscale(100%) contrast(1.5)" },
-    "birthday_template_1.html": { accent: "#ff5e78", bg: "#ffffff", titleFont: "Fredoka", bodyFont: "Montserrat", style: "border-radius: 25px; border: 4px solid #f0f0f0; transform: rotate(-1deg);", mapFilter: "saturate(1.5)" },
-    "birthday_template_2.html": { accent: "#d4af37", bg: "#050505", titleFont: "hero2", bodyFont: "Montserrat", dark: true, style: "border-radius: 100px 100px 0 0; border: 1px solid rgba(212,175,55,0.2);", mapFilter: "grayscale(100%) brightness(0.7)" },
-    "birthday_template_3.html": { accent: "#ffb6c1", bg: "#f3efe8", titleFont: "Courier New", bodyFont: "Courier New", style: "border-radius: 0; border: 2px dashed #ffb6c1; background: #fff;", mapFilter: "sepia(40%)" },
-    "template1.html": { accent: "#ff003c", bg: "#0a0004", titleFont: "Playfair Display", bodyFont: "Space Grotesk", dark: true, style: "border-radius: 8px; border: 1px solid #ff003c; box-shadow: 0 0 30px rgba(255,0,60,0.2);", mapFilter: "invert(100%) hue-rotate(320deg) brightness(0.8)" },
-    "template2.html": { accent: "#ff5c8d", bg: "#fff0f5", titleFont: "Plus Jakarta Sans", bodyFont: "Plus Jakarta Sans", style: "border-radius: 30px; border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(20px);", mapFilter: "hue-rotate(330deg) saturate(1.2)" },
-    "template3.html": { accent: "#d6336c", bg: "#1a1a24", titleFont: "Shadows Into Light", bodyFont: "Poppins", dark: true, style: "border-radius: 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3);", mapFilter: "invert(90%) hue-rotate(280deg)" },
+    "wedding_template_1.html": {
+      accent: "#d4af37",
+      bg: "#ffffff",
+      titleFont: "Playfair Display",
+      bodyFont: "Baskervville",
+      style:
+        "border-radius: 0; border: 1px solid #d4af37; box-shadow: 0 10px 40px rgba(0,0,0,0.05);",
+      mapFilter: "grayscale(1) contrast(1.2) brightness(0.9)",
+    },
+    "wedding_template_2.html": {
+      accent: "#7c8c7c",
+      bg: "#f9f7f2",
+      titleFont: "Playfair Display",
+      bodyFont: "Montserrat",
+      style:
+        "border-radius: 20px; border: none; box-shadow: 0 8px 30px rgba(0,0,0,0.03);",
+      mapFilter: "sepia(20%) grayscale(0.5)",
+    },
+    "wedding_template_3.html": {
+      accent: "#c5a059",
+      bg: "#0a1a2f",
+      titleFont: "Cormorant Garamond",
+      bodyFont: "Montserrat",
+      dark: true,
+      style: "border-radius: 0; border: 2px solid #c5a059; padding: 60px;",
+      mapFilter: "invert(90%) hue-rotate(180deg) grayscale(0.2)",
+    },
+    "wedding_template_4.html": {
+      accent: "#e5baba",
+      bg: "#fffcfc",
+      titleFont: "Playfair Display",
+      bodyFont: "Montserrat",
+      style:
+        "border-radius: 50px; border: 1px solid #f0e0e0; box-shadow: 0 10px 30px rgba(229,186,186,0.1);",
+      mapFilter: "hue-rotate(-10deg) saturate(0.8)",
+    },
+    "wedding_template_5.html": {
+      accent: "#5c0000",
+      bg: "#e8dfd0",
+      titleFont: "Mrs Saint Delafield",
+      bodyFont: "Cormorant Garamond",
+      style:
+        "border-radius: 2px; border: none; box-shadow: 2px 2px 0 rgba(0,0,0,0.1); clip-path: polygon(0% 0%, 100% 0%, 98% 100%, 2% 98%);",
+      mapFilter: "sepia(50%) contrast(1.1)",
+    },
+    "academic 1.html": {
+      accent: "#ccff00",
+      bg: "#0a0a0a",
+      titleFont: "Orbitron",
+      bodyFont: "Space Grotesk",
+      dark: true,
+      style:
+        "border-radius: 12px; border: 1px solid #ccff00; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(204,255,0,0.1);",
+      mapFilter: "invert(100%) hue-rotate(180deg) brightness(0.8)",
+    },
+    "academic 2.html": {
+      accent: "#00f2ff",
+      bg: "#050505",
+      titleFont: "Archivo Black",
+      bodyFont: "Inter",
+      dark: true,
+      style:
+        "border-radius: 0; border-left: 5px solid #00f2ff; background: rgba(255,255,255,0.02);",
+      mapFilter: "invert(90%) hue-rotate(160deg)",
+    },
+    "academic 3.html": {
+      accent: "#d4af37",
+      bg: "#0a0b10",
+      titleFont: "Playfair Display",
+      bodyFont: "Space Grotesk",
+      dark: true,
+      style:
+        "border-radius: 0; border-top: 1px solid #d4af37; border-bottom: 1px solid #d4af37;",
+      mapFilter: "invert(100%) grayscale(100%) contrast(1.5)",
+    },
+    "birthday_template_1.html": {
+      accent: "#ff5e78",
+      bg: "#ffffff",
+      titleFont: "Fredoka",
+      bodyFont: "Montserrat",
+      style:
+        "border-radius: 25px; border: 4px solid #f0f0f0; transform: rotate(-1deg);",
+      mapFilter: "saturate(1.5)",
+    },
+    "birthday_template_2.html": {
+      accent: "#d4af37",
+      bg: "#050505",
+      titleFont: "hero2",
+      bodyFont: "Montserrat",
+      dark: true,
+      style:
+        "border-radius: 100px 100px 0 0; border: 1px solid rgba(212,175,55,0.2);",
+      mapFilter: "grayscale(100%) brightness(0.7)",
+    },
+    "birthday_template_3.html": {
+      accent: "#ffb6c1",
+      bg: "#f3efe8",
+      titleFont: "Courier New",
+      bodyFont: "Courier New",
+      style: "border-radius: 0; border: 2px dashed #ffb6c1; background: #fff;",
+      mapFilter: "sepia(40%)",
+    },
+    "template1.html": {
+      accent: "#ff003c",
+      bg: "#0a0004",
+      titleFont: "Playfair Display",
+      bodyFont: "Space Grotesk",
+      dark: true,
+      style:
+        "border-radius: 8px; border: 1px solid #ff003c; box-shadow: 0 0 30px rgba(255,0,60,0.2);",
+      mapFilter: "invert(100%) hue-rotate(320deg) brightness(0.8)",
+    },
+    "template2.html": {
+      accent: "#ff5c8d",
+      bg: "#fff0f5",
+      titleFont: "Plus Jakarta Sans",
+      bodyFont: "Plus Jakarta Sans",
+      style:
+        "border-radius: 30px; border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(20px);",
+      mapFilter: "hue-rotate(330deg) saturate(1.2)",
+    },
+    "template3.html": {
+      accent: "#d6336c",
+      bg: "#1a1a24",
+      titleFont: "Shadows Into Light",
+      bodyFont: "Poppins",
+      dark: true,
+      style:
+        "border-radius: 20px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.3);",
+      mapFilter: "invert(90%) hue-rotate(280deg)",
+    },
   };
   return designs[tid] || designs["wedding_template_1.html"];
 }
@@ -233,7 +362,9 @@ function injectInteractions(frameDoc, invitation) {
   if (!container) {
     container = frameDoc.createElement("div");
     container.id = "__invio-interactions";
-    const firstScript = Array.from(frameDoc.body.children).find(el => el.tagName === "SCRIPT");
+    const firstScript = Array.from(frameDoc.body.children).find(
+      (el) => el.tagName === "SCRIPT",
+    );
     if (firstScript && firstScript.parentNode === frameDoc.body) {
       frameDoc.body.insertBefore(container, firstScript);
     } else {
@@ -292,7 +423,8 @@ function injectInteractions(frameDoc, invitation) {
     if (mapQuery.includes("google.com/maps")) {
       const placeMatch = mapQuery.match(/\/place\/([^\/\?]+)/);
       const coordMatch = mapQuery.match(/@(-?\d+\.\d+,-?\d+\.\d+)/);
-      if (placeMatch) mapQuery = decodeURIComponent(placeMatch[1].replace(/\+/g, " "));
+      if (placeMatch)
+        mapQuery = decodeURIComponent(placeMatch[1].replace(/\+/g, " "));
       else if (coordMatch) mapQuery = coordMatch[1];
     }
     const gMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
@@ -311,35 +443,44 @@ function injectInteractions(frameDoc, invitation) {
 
   // Bind RSVP submit
   if (inter.rsvp?.enabled) {
-    const rsvpForm = container.querySelector('#invio-rsvp-form');
+    const rsvpForm = container.querySelector("#invio-rsvp-form");
     if (rsvpForm) {
-      rsvpForm.addEventListener('submit', async (e) => {
+      rsvpForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        const btn = container.querySelector('#rsvp-submit');
-        const name = container.querySelector('#rsvp-name').value;
-        const email = container.querySelector('#rsvp-email').value;
-        const status = container.querySelector('#rsvp-status').value;
-        
+
+        const btn = container.querySelector("#rsvp-submit");
+        const name = container.querySelector("#rsvp-name").value;
+        const email = container.querySelector("#rsvp-email").value;
+        const status = container.querySelector("#rsvp-status").value;
+
         btn.disabled = true;
         btn.textContent = "Sending...";
 
         try {
           // Send to backend
-          const response = await fetch(`${API_URL}/api/invitations/${invitation.id}/rsvp`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestName: name, guestEmail: email, rsvpStatus: status })
-          });
+          const response = await fetch(
+            `${API_URL}/api/invitations/${invitation.id}/rsvp`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                guestName: name,
+                guestEmail: email,
+                rsvpStatus: status,
+              }),
+            },
+          );
 
           if (!response.ok) throw new Error("Failed to submit RSVP");
 
           // Show success
-          rsvpForm.style.display = 'none';
-          container.querySelector('#rsvp-success').style.display = 'block';
+          rsvpForm.style.display = "none";
+          container.querySelector("#rsvp-success").style.display = "block";
         } catch (err) {
           console.error("RSVP Error:", err);
-          alert("Wait, there was an issue sending your RSVP. Please try again.");
+          alert(
+            "Wait, there was an issue sending your RSVP. Please try again.",
+          );
           btn.disabled = false;
           btn.textContent = "Send RSVP";
         }
@@ -358,7 +499,7 @@ function triggerFrameAnimations(frameDoc) {
         if (e.isIntersecting) e.target.classList.add("active");
       });
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 },
   );
   frameDoc.querySelectorAll(".invio-reveal").forEach((el) => obs.observe(el));
 }
@@ -379,7 +520,8 @@ function injectViewerStyles(frameDoc) {
 function injectBaseHref(html, templateUrl) {
   const baseTag = `<base href="${templateUrl}">`;
   if (/<base\s/i.test(html)) return html.replace(/<base\s[^>]*>/i, baseTag);
-  if (/<head\b[^>]*>/i.test(html)) return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
+  if (/<head\b[^>]*>/i.test(html))
+    return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
   return `${baseTag}${html}`;
 }
 
@@ -392,4 +534,35 @@ function showError(title, message) {
   refs.errorScreen.classList.add("visible");
   if (refs.errorTitle) refs.errorTitle.textContent = title;
   if (refs.errorText) refs.errorText.textContent = message;
+}
+
+function getSlugFromUrl(params) {
+  const querySlug = params.get("slug");
+  if (querySlug) {
+    return querySlug;
+  }
+
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+  if (!path || path.includes("/")) {
+    return "";
+  }
+
+  const reservedPaths = new Set([
+    "invite",
+    "invite.html",
+    "templates",
+    "templates.html",
+    "dashboard",
+    "studio",
+    "auth",
+    "checkout",
+    "index.html",
+    "favicon.ico",
+  ]);
+
+  if (reservedPaths.has(path.toLowerCase())) {
+    return "";
+  }
+
+  return decodeURIComponent(path);
 }

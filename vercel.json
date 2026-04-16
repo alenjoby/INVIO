@@ -14,7 +14,11 @@
     { "source": "/checkout/(.*)", "destination": "/pages/checkout/index.html" },
     { "source": "/checkout", "destination": "/pages/checkout/index.html" },
     { "source": "/studio", "destination": "/pages/studio/index.html" },
-    { "source": "/auth", "destination": "/pages/auth/index.html" }
+    { "source": "/auth", "destination": "/pages/auth/index.html" },
+    {
+      "source": "/:slug([a-z0-9-]{1,60})",
+      "destination": "/invite.html?slug=:slug"
+    }
   ],
   "headers": [
     {

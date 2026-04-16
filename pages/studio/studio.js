@@ -108,6 +108,7 @@ class StudioEditor {
       resetColorBtn: document.getElementById("resetColorBtn"),
       // Modals
       publishSlug: document.getElementById("publishSlug"),
+      slugPrefix: document.querySelector(".slug-prefix"),
       confirmPublishBtn: document.getElementById("confirmPublishBtn"),
       shareLink: document.getElementById("shareLink"),
       copyLinkBtn: document.getElementById("copyLinkBtn"),
@@ -230,6 +231,13 @@ class StudioEditor {
     this.els.confirmPublishBtn.addEventListener("click", () =>
       this.publishInvite(),
     );
+
+    this.els.publishSlug?.addEventListener("input", (e) => {
+      const normalized = this.normalizePublicSlug(e.target.value);
+      if (e.target.value !== normalized) {
+        e.target.value = normalized;
+      }
+    });
 
     // Copy share link
     this.els.copyLinkBtn.addEventListener("click", () =>
@@ -1023,12 +1031,27 @@ class StudioEditor {
 
     // Pre-fill slug from invitation name
     const name = this.els.invitationName.value || "invitation";
-    this.els.publishSlug.value = name.toLowerCase().replace(/\s+/g, "-");
+    this.els.publishSlug.value = this.normalizePublicSlug(name);
+    if (this.els.slugPrefix) {
+      this.els.slugPrefix.textContent = `${window.location.origin}/`;
+    }
     this.els.publishModal.classList.remove("hidden");
   }
 
+  normalizePublicSlug(value) {
+    return String(value || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60);
+  }
+
   async publishInvite() {
-    const slug = this.els.publishSlug.value.trim();
+    const slug = this.normalizePublicSlug(this.els.publishSlug.value);
+    this.els.publishSlug.value = slug;
 
     if (!slug) {
       this.showToast("Please enter an invitation name", "error");
@@ -1045,10 +1068,13 @@ class StudioEditor {
       const invitationId = this.state.data.inviteId;
       const result = await this.apiRequest(
         `/api/invitations/${invitationId}/publish`,
-        { method: "POST" },
+        {
+          method: "POST",
+          body: JSON.stringify({ slug }),
+        },
       );
 
-      const inviteUrl = `/invite.html?slug=${encodeURIComponent(result.slug)}`;
+      const inviteUrl = `/${encodeURIComponent(result.slug)}`;
 
       // Show success
       this.closeAllModals();

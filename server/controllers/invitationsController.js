@@ -1,6 +1,52 @@
 import { supabaseAdmin } from "../config/supabase.js";
 import { generateSlug } from "../utils/generateSlug.js";
 
+function normalizeSlug(value) {
+  const cleaned = String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return cleaned.slice(0, 60);
+}
+
+async function resolveAvailableSlug(baseSlug, currentInvitationId) {
+  const safeBase = normalizeSlug(baseSlug) || "invitation";
+  let candidate = safeBase;
+  let counter = 2;
+
+  while (counter < 500) {
+    let query = supabaseAdmin
+      .from("invitations")
+      .select("id")
+      .eq("slug", candidate)
+      .limit(1);
+
+    if (currentInvitationId) {
+      query = query.neq("id", currentInvitationId);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      return candidate;
+    }
+
+    const suffix = `-${counter}`;
+    const trimmedBase = safeBase.slice(0, Math.max(1, 60 - suffix.length));
+    candidate = `${trimmedBase}${suffix}`;
+    counter += 1;
+  }
+
+  throw new Error("Could not generate a unique invitation slug");
+}
+
 /**
  * Create a new draft invitation
  */
@@ -166,10 +212,39 @@ export const publishInvitation = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    const requestedSlug = req.body?.slug;
+
+    const { data: currentInvitation, error: currentError } = await supabaseAdmin
+      .from("invitations")
+      .select("id, title")
+      .eq("id", id)
+      .eq("user_id", userId)
+      .single();
+
+    if (currentError || !currentInvitation) {
+      if (currentError?.code === "PGRST116") {
+        return res.status(404).json({ error: "Invitation not found" });
+      }
+      return res
+        .status(400)
+        .json({ error: currentError?.message || "Invitation not found" });
+    }
+
+    const baseSlug = normalizeSlug(
+      requestedSlug || currentInvitation.title || "",
+    );
+    if (!baseSlug) {
+      return res
+        .status(400)
+        .json({ error: "Invitation link name is required" });
+    }
+
+    const finalSlug = await resolveAvailableSlug(baseSlug, id);
 
     const { data, error } = await supabaseAdmin
       .from("invitations")
       .update({
+        slug: finalSlug,
         status: "published",
         published_at: new Date().toISOString(),
       })
@@ -184,9 +259,13 @@ export const publishInvitation = async (req, res) => {
     }
 
     // Return slug for sharing
+    const frontendBase = String(process.env.FRONTEND_URL || "").replace(
+      /\/+$/,
+      "",
+    );
     res.json({
       ...data,
-      shareUrl: `${process.env.FRONTEND_URL}/invite.html?slug=${encodeURIComponent(data.slug)}`,
+      shareUrl: `${frontendBase}/${encodeURIComponent(data.slug)}`,
     });
   } catch (err) {
     console.error("Publish invitation error:", err);
@@ -198,10 +277,10 @@ export const publishInvitation = async (req, res) => {
  * Purchase invitation (alias for publish, to be used by checkout flow)
  */
 export const purchaseInvitation = async (req, res) => {
-  // Currently, purchasing just publishes it. 
+  // Currently, purchasing just publishes it.
   // In a real billing scenario, you might mark paid = true on a different table.
   return publishInvitation(req, res);
-}
+};
 
 /**
  * Delete invitation

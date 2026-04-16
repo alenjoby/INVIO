@@ -108,7 +108,7 @@ function configureCopyLinkButton(invitation) {
       return;
     }
 
-    const shareLink = `${window.location.origin}/invite.html?slug=${encodeURIComponent(slug)}`;
+    const shareLink = `${window.location.origin}/${encodeURIComponent(slug)}`;
     try {
       await navigator.clipboard.writeText(shareLink);
       alert("Link copied!");
