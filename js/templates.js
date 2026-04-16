@@ -662,7 +662,7 @@ function buildAuthUrl(openSignup = false, redirectPath = "") {
   }
 
   const query = params.toString();
-  return query ? `/auth?${query}` : "/auth";
+  return query ? `/pages/auth/index.html?${query}` : "/pages/auth/index.html";
 }
 
 function setActiveCurrencyButton() {

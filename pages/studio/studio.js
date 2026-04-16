@@ -1202,13 +1202,13 @@ class StudioEditor {
       params.set("publishIntent", "1");
     }
 
-    return `/studio?${params.toString()}`;
+    return `/pages/studio/index.html?${params.toString()}`;
   }
 
   redirectToAuth(includePublishIntent = false) {
     const redirect = this.buildStudioReturnPath(includePublishIntent);
     const authParams = new URLSearchParams({ redirect });
-    window.location.href = `/auth?${authParams.toString()}`;
+    window.location.href = `/pages/auth/index.html?${authParams.toString()}`;
   }
 
   isTemplatePurchased(templateId) {
@@ -1226,7 +1226,7 @@ class StudioEditor {
       invitationId: invitationId,
     });
 
-    window.location.href = `/checkout?${params.toString()}`;
+    window.location.href = `/pages/checkout/index.html?${params.toString()}`;
   }
 
   // Bug #8 fix: execCommand("copy") is deprecated — use Clipboard API with fallback
