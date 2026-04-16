@@ -158,6 +158,40 @@ const TEMPLATE_CATALOG = [
     tags: ["storybook", "premium", "collage"],
     isNew: true,
   },
+  // Funeral templates
+  {
+    id: "funeral-1",
+    name: "Cinematic Legacy",
+    category: "funeral",
+    price: 0,
+    image: "assets/images/funeral/hero-portrait.jpg",
+    templatePath: "templates/funeral/funeral-template-1.html",
+    design: "Minimal Memorial",
+    layout: "cinematic",
+    tags: ["memorial", "tribute", "classic"],
+  },
+  {
+    id: "funeral-2",
+    name: "The Living Canvas",
+    category: "funeral",
+    price: 0,
+    image: "assets/images/funeral/portrait-oldman.jpg",
+    templatePath: "templates/funeral/funeral-template-2.html",
+    design: "Warm Tribute",
+    layout: "wide",
+    tags: ["tribute", "warm", "elegant"],
+  },
+  {
+    id: "funeral-3",
+    name: "In Loving Memory",
+    category: "funeral",
+    price: 0,
+    image: "assets/images/funeral/portrait-gp.jpg",
+    templatePath: "templates/funeral/funeral-template-3.html",
+    design: "Dramatic Slides",
+    layout: "tall",
+    tags: ["memorial", "slides", "modern"],
+  },
 ];
 
 const state = {
