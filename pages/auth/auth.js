@@ -19,9 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const goToSignupBtn = document.getElementById("go-to-signup");
   const goToLoginBtn = document.getElementById("go-to-login");
 
+  function toggleRequired(container, isRequired) {
+    const inputs = container.querySelectorAll("input[data-required-toggle]");
+    inputs.forEach((input) => {
+      if (isRequired) {
+        input.setAttribute("required", "");
+      } else {
+        input.removeAttribute("required");
+      }
+    });
+  }
+
   function switchState(hideBox, showBox) {
+    // Disable validation on hidden fields during transition
+    toggleRequired(hideBox, false);
+
     if (typeof gsap !== "undefined") {
-      // GSAP Animation
       gsap.to(hideBox, {
         opacity: 0,
         y: -20,
@@ -30,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onComplete: () => {
           hideBox.classList.add("is-hidden");
           showBox.classList.remove("is-hidden");
+          toggleRequired(showBox, true);
 
           gsap.fromTo(
             showBox,
@@ -39,9 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       });
     } else {
-      // Fallback if GSAP fails to load
       hideBox.classList.add("is-hidden");
       showBox.classList.remove("is-hidden");
+      toggleRequired(showBox, true);
     }
   }
 
@@ -55,9 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
     switchState(signupBox, loginBox);
   });
 
+  // --- Initial Mode Handling ---
   if (startMode === "signup") {
     loginBox.classList.add("is-hidden");
     signupBox.classList.remove("is-hidden");
+    toggleRequired(loginBox, false);
+    toggleRequired(signupBox, true);
+  } else {
+    toggleRequired(signupBox, false);
+    toggleRequired(loginBox, true);
   }
 
   const loginForm = document.getElementById("login-form");

@@ -529,23 +529,23 @@ class StudioEditor {
   getTemplatePathById(templateId) {
     // Map template IDs to file paths
     const templateMap = {
-      "academic-1": "../../templates/academic/academic 1.html",
-      "academic-2": "../../templates/academic/academic 2.html",
-      "academic-3": "../../templates/academic/academic 3.html",
-      "birthday-1": "../../templates/birthday/birthday_template_1.html",
-      "birthday-2": "../../templates/birthday/birthday_template_2.html",
-      "birthday-3": "../../templates/birthday/birthday_template_3.html",
-      "valentines-1": "../../templates/valentines/Template1.html",
-      "valentines-2": "../../templates/valentines/Template2.html",
-      "valentines-3": "../../templates/valentines/Template3.html",
-      "wedding-1": "../../templates/wedding/wedding_template_1.html",
-      "wedding-2": "../../templates/wedding/wedding_template_2.html",
-      "wedding-3": "../../templates/wedding/wedding_template_3.html",
-      "wedding-4": "../../templates/wedding/wedding_template_4.html",
-      "wedding-5": "../../templates/wedding/wedding_template_5.html",
-      "funeral-1": "../../templates/funeral/funeral-template-1.html",
-      "funeral-2": "../../templates/funeral/funeral-template-2.html",
-      "funeral-3": "../../templates/funeral/funeral-template-3.html",
+      "academic-1": "/templates/academic/academic 1.html",
+      "academic-2": "/templates/academic/academic 2.html",
+      "academic-3": "/templates/academic/academic 3.html",
+      "birthday-1": "/templates/birthday/birthday_template_1.html",
+      "birthday-2": "/templates/birthday/birthday_template_2.html",
+      "birthday-3": "/templates/birthday/birthday_template_3.html",
+      "valentines-1": "/templates/valentines/Template1.html",
+      "valentines-2": "/templates/valentines/Template2.html",
+      "valentines-3": "/templates/valentines/Template3.html",
+      "wedding-1": "/templates/wedding/wedding_template_1.html",
+      "wedding-2": "/templates/wedding/wedding_template_2.html",
+      "wedding-3": "/templates/wedding/wedding_template_3.html",
+      "wedding-4": "/templates/wedding/wedding_template_4.html",
+      "wedding-5": "/templates/wedding/wedding_template_5.html",
+      "funeral-1": "/templates/funeral/funeral-template-1.html",
+      "funeral-2": "/templates/funeral/funeral-template-2.html",
+      "funeral-3": "/templates/funeral/funeral-template-3.html",
     };
 
     if (templateMap[templateId]) {
@@ -1166,14 +1166,23 @@ class StudioEditor {
       throw new Error("Not authenticated");
     }
 
-    let response = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        ...(options.headers || {}),
-      },
-    });
+    let response;
+    try {
+      response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          ...(options.headers || {}),
+        },
+      });
+    } catch (err) {
+      console.warn("Network error or timeout:", err);
+      if (err.message.includes("Failed to fetch")) {
+        this.showToast("Backend waking up... please wait", "info");
+      }
+      throw err;
+    }
 
     if (response.status === 401) {
       const refreshed = await this.tryRefreshAuthToken();
