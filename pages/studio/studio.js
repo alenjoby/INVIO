@@ -545,10 +545,17 @@ class StudioEditor {
         "  visibility: visible !important;",
         "  background-color: transparent !important;",
         "}",
-        /* We ONLY force opacity/visibility on elements marked as editable 
-           to ensure they can be clicked/found, but we allow the template 
-           to manage the visibility of everything else (like curtains, 
-           reveal-wrappers, etc.) to preserve the premium animations. */
+        /* We force visibility ONLY on specific classes that templates use to hide content
+           before animation (fade-ins, reveals, etc.). This ensures the content is editable
+           immediately without breaking opening animations like curtains or sliding doors
+           which DON'T usually have these specific utility classes. */
+        ".fade, .hidden, .invisible, .reveal, .reveal-item, .hero-img.fade, .gsap-reveal, [data-reveal] {",
+        "  opacity: 1 !important;",
+        "  visibility: visible !important;",
+        "  transform: none !important;",
+        "  transition: none !important;",
+        "}",
+        /* Still ensure [data-edit] elements are reachable regardless of their parent's state */
         "[data-edit] {",
         "  opacity: 1 !important;",
         "  visibility: visible !important;",
