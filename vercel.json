@@ -7,6 +7,11 @@
     { "source": "/invite", "destination": "/invite.html" },
     { "source": "/templates", "destination": "/templates.html" },
     { "source": "/dashboard", "destination": "/pages/dashboard/index.html" },
+    {
+      "source": "/checkout/index",
+      "destination": "/pages/checkout/index.html"
+    },
+    { "source": "/checkout/(.*)", "destination": "/pages/checkout/index.html" },
     { "source": "/checkout", "destination": "/pages/checkout/index.html" },
     { "source": "/studio", "destination": "/pages/studio/index.html" },
     { "source": "/auth", "destination": "/pages/auth/index.html" }

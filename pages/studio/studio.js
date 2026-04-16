@@ -1011,8 +1011,11 @@ class StudioEditor {
       // Ensure it's saved in the backend before heading to checkout
       await this.saveNow();
       if (!this.state.data.inviteId) {
-          this.showToast("Cannot proceed to payment without a saved invitation", "error");
-          return;
+        this.showToast(
+          "Cannot proceed to payment without a saved invitation",
+          "error",
+        );
+        return;
       }
       this.redirectToCheckoutForPayment(this.state.data.inviteId);
       return;
@@ -1200,7 +1203,8 @@ class StudioEditor {
       invitationId: invitationId,
     });
 
-    window.location.href = `../checkout/index.html?${params.toString()}`;
+    // Use an absolute file path so routing works regardless of current URL shape.
+    window.location.href = `/pages/checkout/index.html?${params.toString()}`;
   }
 
   // Bug #8 fix: execCommand("copy") is deprecated — use Clipboard API with fallback
