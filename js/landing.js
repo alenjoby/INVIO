@@ -112,4 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("scroll", updateHeaderState, { passive: true });
   window.addEventListener("resize", refreshCountdowns, { passive: true });
   window.setInterval(refreshCountdowns, 1000);
+
+  // Mobile Menu Toggle
+  const menuToggle = document.querySelector(".menu-toggle");
+  const navLinks = document.querySelector(".nav-links");
+  const siteNav = document.querySelector(".site-nav");
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener("click", () => {
+      const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", !isExpanded);
+      navLinks.classList.toggle("is-open");
+      siteNav.classList.toggle("menu-open");
+    });
+  }
 });

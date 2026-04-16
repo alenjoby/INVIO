@@ -127,6 +127,10 @@ input {
   color: var(--text);
 }
 
+.menu-toggle {
+  display: none;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -706,20 +710,43 @@ input {
   .site-nav {
     min-height: auto;
     padding: 0.75rem 0;
-    justify-content: center;
+    justify-content: space-between;
     flex-wrap: wrap;
   }
 
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto;
+    order: 2;
+  }
+
   .nav-links {
+    display: none;
+    flex-direction: column;
     width: 100%;
-    order: 3;
-    justify-content: center;
-    gap: 0.8rem;
+    order: 4;
+    text-align: center;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid var(--line);
+    margin-top: 1rem;
+  }
+
+  .nav-links.is-open {
+    display: flex;
   }
 
   .site-nav .button {
     width: 100%;
-    order: 2;
+    order: 3;
+    margin-top: 0.8rem;
   }
 
   .controls {

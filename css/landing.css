@@ -145,6 +145,10 @@ button {
   color: var(--accent);
 }
 
+.menu-toggle {
+  display: none;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -978,11 +982,36 @@ button {
     padding-block: 0.8rem;
   }
 
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto;
+  }
+
   .nav-links {
+    display: none;
+    flex-direction: column;
     order: 3;
     width: 100%;
-    justify-content: center;
-    gap: 1rem;
+    text-align: center;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid var(--line);
+    margin-top: 1rem;
+  }
+
+  .nav-links.is-open {
+    display: flex;
+  }
+
+  .site-nav {
+    flex-wrap: wrap;
   }
 
   .hero-copy h1,

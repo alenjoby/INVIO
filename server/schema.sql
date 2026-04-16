@@ -139,3 +139,37 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 CREATE OR REPLACE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 13. Create Storage Bucket for Media
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('invitation_media', 'invitation_media', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 14. Storage Policies
+-- Allow public access to read files
+CREATE POLICY "Public Access" 
+ON storage.objects FOR SELECT 
+USING (bucket_id = 'invitation_media');
+
+-- Allow authenticated users to upload files
+CREATE POLICY "Authenticated users can upload"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'invitation_media' AND 
+  auth.role() = 'authenticated'
+);
+
+-- Allow users to update/delete their own files (using folder path uuid)
+CREATE POLICY "Users can update their own files"
+ON storage.objects FOR UPDATE
+USING (
+  bucket_id = 'invitation_media' AND 
+  (auth.uid())::text = (string_to_array(name, '/'))[1]
+);
+
+CREATE POLICY "Users can delete their own files"
+ON storage.objects FOR DELETE
+USING (
+  bucket_id = 'invitation_media' AND 
+  (auth.uid())::text = (string_to_array(name, '/'))[1]
+);

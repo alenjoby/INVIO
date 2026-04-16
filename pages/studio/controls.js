@@ -117,10 +117,10 @@ class ControlsManager {
   /**
    * Handle image file upload
    */
-  handleImageFile(element, fieldId, file, previewImg) {
+  async handleImageFile(element, fieldId, file, previewImg) {
     // Validate
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      alert("Only JPG and PNG allowed");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      alert("Only JPG, PNG and WEBP allowed");
       return;
     }
 
@@ -129,16 +129,48 @@ class ControlsManager {
       return;
     }
 
-    // Read and apply
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target.result;
+    // Show loading state
+    previewImg.src = "";
+    const controlsContainer = document.getElementById("imageControls");
+    const originalText = controlsContainer.innerHTML;
+
+    try {
+      // 1. Prepare form data
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // 2. Setup auth token
+      const token = localStorage.getItem("invio_token");
+      if (!token) throw new Error("Authentication required");
+
+      const API_URL = typeof window.API_URL !== "undefined" ? window.API_URL : "http://localhost:4000";
+      
+      // 3. Upload to our API endpoint
+      const response = await fetch(`${API_URL}/api/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Upload failed");
+      }
+
+      const data = await response.json();
+      const dataUrl = data.url;
+
+      // 4. Update the iframe and state with live URL
       element.src = dataUrl;
       previewImg.src = dataUrl;
       this.state.updateImage(fieldId, dataUrl);
       document.getElementById("imagePreview").classList.remove("hidden");
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      alert(err.message || "Failed to upload image.");
+      console.error(err);
+    }
   }
 
   /**
