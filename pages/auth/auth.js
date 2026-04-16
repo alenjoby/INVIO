@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const goToSignupBtn = document.getElementById("go-to-signup");
   const goToLoginBtn = document.getElementById("go-to-login");
 
+  /**
+   * Toggles the 'required' attribute on form inputs based on their visibility.
+   * This prevents browser errors when trying to focus hidden required fields.
+   */
   function toggleRequired(container, isRequired) {
     const inputs = container.querySelectorAll("input[data-required-toggle]");
     inputs.forEach((input) => {
@@ -28,9 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
         input.removeAttribute("required");
       }
     });
+    console.log(
+      `[Auth] Toggled required=${isRequired} for #${container.id} (${inputs.length} inputs)`,
+    );
   }
 
   function switchState(hideBox, showBox) {
+    console.log(`[Auth] Switching state: hide=${hideBox.id}, show=${showBox.id}`);
     // Disable validation on hidden fields during transition
     toggleRequired(hideBox, false);
 
@@ -43,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onComplete: () => {
           hideBox.classList.add("is-hidden");
           showBox.classList.remove("is-hidden");
+          // Re-enable validation for the new active form
           toggleRequired(showBox, true);
 
           gsap.fromTo(

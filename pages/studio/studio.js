@@ -340,7 +340,7 @@ class StudioEditor {
         `[loadTemplate] Template HTML size: ${templateHtml.length} bytes`,
       );
 
-      const previewHtml = this.stripTemplateScripts(templateHtml);
+      const previewHtml = this.sanitizeTemplateHtml(templateHtml);
 
       const framedHtml = this.injectBaseHref(previewHtml, templateUrl);
       console.log(
@@ -392,47 +392,26 @@ class StudioEditor {
         }, 200);
       });
 
-      // Verify iframe content is actually present
+      // Verify iframe content exists (even if still loading)
       try {
         const frameDoc = this.els.frame.contentDocument;
-        if (
-          !frameDoc ||
-          !frameDoc.body ||
-          frameDoc.body.innerHTML.trim().length === 0
-        ) {
-          console.warn(
-            "[loadTemplate] ⚠️ WARNING: iframe contentDocument is empty or inaccessible!",
-          );
-          // Insert diagnostic message
-          if (frameDoc && frameDoc.body) {
-            frameDoc.body.innerHTML = `
-              <div style="padding: 2rem; font-family: sans-serif; color: red;">
-                <h2>⚠️ Template failed to load</h2>
-                <p>The template HTML was not properly injected into the preview.</p>
-                <p style="font-size: 0.9em; color: gray;">
-                  This is likely a file loading issue. Please check:
-                  <br/>• Template file path: ${templatePath}
-                  <br/>• Full URL: ${templateUrl}
-                </p>
-              </div>
-            `;
-          }
-          this.showToast("Template failed to load - content missing", "error");
-          return;
+        if (!frameDoc) {
+          throw new Error("Iframe document inaccessible");
+        }
+
+        // We used to return early here if body.innerHTML was empty, 
+        // but that caused race conditions. We now proceed to inject 
+        // editor styles regardless.
+        if (!frameDoc.body || frameDoc.body.innerHTML.trim().length === 0) {
+          console.warn("[loadTemplate] Iframe body is empty, continuing injection anyway...");
         }
       } catch (e) {
-        console.error(
-          "[loadTemplate] Could not access iframe contentDocument:",
-          e,
-        );
-        this.showToast(
-          "Could not access template preview: " + e.message,
-          "error",
-        );
+        console.error("[loadTemplate] Could not access iframe contentDocument:", e);
+        this.showToast("Problem accessing template preview: " + e.message, "error");
         return;
       }
 
-      this.injectEditorStyles(); // inject --accent into iframe (Bug #3 fix)
+      this.injectEditorStyles(); // restore editor cursor and accent colors
       this.injectPreviewVisibilityStyles();
 
       console.log("[loadTemplate] Scanning frame elements...");
@@ -469,8 +448,53 @@ class StudioEditor {
     return `${baseTag}${html}`;
   }
 
-  stripTemplateScripts(html) {
-    return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+  /**
+   * Instead of stripping ALL scripts, we selectively keep visual/animation libs
+   * like GSAP and Lenis so the Studio preview matches the Live preview's "vibe".
+   */
+  sanitizeTemplateHtml(html) {
+    // 1. Keep common visual libraries (whitelisted CDNs)
+    const whitelist = [
+      "gsap",
+      "ScrollTrigger",
+      "lenis",
+      "confetti",
+      "phosphor",
+      "font-awesome",
+    ];
+
+    // Identify scripts
+    const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+
+    return html.replace(scriptRegex, (match, content) => {
+      // If it's a library from a CDN on our whitelist, keep it
+      const isWhitelisted = whitelist.some((lib) =>
+        match.toLowerCase().includes(lib.toLowerCase()),
+      );
+
+      if (isWhitelisted) {
+        console.log(`[Studio] Keeping whitelisted library: ${match.slice(0, 50)}...`);
+        return match;
+      }
+
+      // 2. Keep inline visual logic (reveals, scroll effects, particles)
+      // but remove anything that tries to redirect or open popups
+      const hasVisualKeywords = /ScrollTrigger|gsap\.to|lenis|reveal|opacity|transform|particles|canvas|ctx\.|scroll|addEventListener/i.test(
+        content,
+      );
+      const hasDangerousKeywords = /window\.location|top\.location|alert\(|confirm\(|prompt\(/i.test(
+        content,
+      );
+
+      if (hasVisualKeywords && !hasDangerousKeywords) {
+        console.log("[Studio] Keeping inline visual script block");
+        return match;
+      }
+
+      // Default: Strip the script to prevent editor breakage
+      console.log(`[Studio] Stripping script: ${match.slice(0, 50)}...`);
+      return "";
+    });
   }
 
   /**
@@ -490,9 +514,16 @@ class StudioEditor {
       style.id = "__invio-editor-styles";
       style.textContent = [
         ":root { --accent: #BFA77A; }",
-        "[data-edit] { cursor: pointer !important; transition: outline 0.12s ease; }",
+        /* Ensure editor can always interact and see cursor */
+        "body, html { cursor: default !important; user-select: auto !important; }",
+        "* { cursor: inherit; }",
+        "[data-edit] { cursor: pointer !important; transition: outline 0.12s ease; position: relative; }",
+        "[data-edit]:hover { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
+        /* Hide distracting template overlays like custom cursors */
+        "#cursor, #cursor-ring, .cursor-dot, .cursor-circle { display: none !important; pointer-events: none !important; }",
       ].join("\n");
       frameDoc.head.appendChild(style);
+      console.log("[Studio] Injected enhanced editor styles into iframe");
     } catch (err) {
       console.warn("Could not inject editor styles:", err);
     }
