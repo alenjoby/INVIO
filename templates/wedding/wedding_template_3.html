@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elara &amp; Soren | The Wedding Booklet</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600&family=Parisienne&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --earth: #7b5532;
+        --ink: #312c28;
+        --paper: #fbf6ef;
+        --paper-deep: #f0e6d8;
+        --paper-line: rgba(49, 44, 40, 0.12);
+        --gold: #b69162;
+        --wine: #6b433c;
+        --shadow: 0 28px 90px rgba(28, 24, 21, 0.16);
+        --shell: min(1180px, calc(100% - 2rem));
+        /* Swap these image URLs later without touching the layout */
+        --book-cover-image: url("https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1600&q=80");
+        --book-story-image: url("https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1400&q=80");
+        --book-table-image: url("https://unsplash.com/photos/eUzcM5Zd9yg/download?force=true&w=1400");
+        --book-venue-image: url("https://unsplash.com/photos/sGIMrQSEaGI/download?force=true&w=1400");
+        --book-prelude-image: url("https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1400&q=80");
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html.lenis {
+        height: auto;
+      }
+
+      .lenis.lenis-smooth {
+        scroll-behavior: auto !important;
+      }
+
+      .lenis.lenis-stopped {
+        overflow: hidden;
+      }
+
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--ink);
+        font-family: "Manrope", sans-serif;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(182, 145, 98, 0.18),
+            transparent 22%
+          ),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(123, 85, 50, 0.16),
+            transparent 18%
+          ),
+          linear-gradient(180deg, #e8ddd0 0%, #efe5d8 38%, #e5d9cb 100%);
+      }
+
+      body.invitation-locked {
+        overflow: hidden;
+        height: 100vh;
+        touch-action: none;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+        background-size: 140px 140px;
+        opacity: 0.34;
+        mask-image: radial-gradient(
+          circle at center,
+          black 34%,
+          transparent 95%
+        );
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+        background: none;
+      }
+
+      .page-shell {
+        width: var(--shell);
+        margin: 0 auto;
+      }
+
+      .book-stage {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 6rem 0 4rem;
+        position: relative;
+      }
+
+      .book-object {
+        width: min(980px, 100%);
+        perspective: 2000px;
+      }
+
+      .book-cover {
+        position: relative;
+        min-height: min(76vh, 760px);
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(32, 24, 22, 0.24),
+            rgba(32, 24, 22, 0.3)
+          ),
+          var(--book-cover-image) center/cover,
+          linear-gradient(
+            145deg,
+            rgba(107, 67, 60, 0.96),
+            rgba(65, 45, 39, 0.98)
+          ),
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0)
+          );
+        transform-origin: left center;
+        transition:
+          transform 1.2s cubic-bezier(0.2, 0.8, 0.1, 1),
+          box-shadow 1.2s ease;
+      }
+
+      .book-cover::before {
+        content: "";
+        position: absolute;
+        inset: 1.2rem;
+        border: 1px solid rgba(251, 246, 239, 0.22);
+        border-radius: 1.4rem;
+      }
+
+      .book-cover::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 4.25rem;
+        width: 1px;
+        background: linear-gradient(
+          180deg,
+          transparent,
+          rgba(251, 246, 239, 0.22),
+          transparent
+        );
+      }
+
+      .book-object.open .book-cover {
+        transform: rotateY(-18deg) translateX(-3.5%);
+        box-shadow: 28px 36px 110px rgba(28, 24, 21, 0.22);
+      }
+
+      .cover-inner {
+        position: relative;
+        z-index: 1;
+        min-height: inherit;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: clamp(2rem, 4vw, 3rem);
+        color: var(--paper);
+      }
+
+      .cover-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        opacity: 0.82;
+      }
+
+      .cover-center {
+        text-align: center;
+        padding: 3rem 0;
+      }
+
+      .cover-script {
+        font-family: "Parisienne", cursive;
+        font-size: clamp(3.2rem, 7vw, 5.8rem);
+        line-height: 0.9;
+        color: #e9d5b5;
+      }
+
+      .cover-title {
+        margin-top: 0.8rem;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3rem, 8vw, 6.5rem);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+      }
+
+      .cover-subtitle {
+        max-width: 33rem;
+        margin: 1.5rem auto 0;
+        font-size: 1rem;
+        line-height: 1.9;
+        color: rgba(251, 246, 239, 0.82);
+      }
+
+      .seal-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .seal {
+        width: 6.4rem;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(
+          circle at 30% 28%,
+          #8e5d53,
+          #6b433c 62%,
+          #4c2e2a 100%
+        );
+        box-shadow:
+          inset 0 0 0 1px rgba(251, 246, 239, 0.16),
+          0 18px 34px rgba(0, 0, 0, 0.18);
+        color: #f3e6d0;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2rem;
+        letter-spacing: 0.04em;
+      }
+
+      .cover-footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .open-booklet {
+        padding: 1rem 1.45rem;
+        border-radius: 999px;
+        background: rgba(251, 246, 239, 0.12);
+        border: 1px solid rgba(251, 246, 239, 0.18);
+        color: var(--paper);
+        font-size: 0.78rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        transition:
+          transform 0.35s ease,
+          background-color 0.35s ease;
+      }
+
+      .open-booklet:hover {
+        transform: translateY(-2px);
+        background: rgba(251, 246, 239, 0.18);
+      }
+
+      .cover-note {
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(251, 246, 239, 0.68);
+      }
+
+      .booklet {
+        padding: 0 0 7rem;
+        opacity: 0;
+        transform: translateY(32px);
+        pointer-events: none;
+        transition:
+          opacity 0.85s ease,
+          transform 0.85s ease;
+      }
+
+      .booklet.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .spread {
+        position: relative;
+        margin: 0 auto 2rem;
+        width: var(--shell);
+        border-radius: 2rem;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.4),
+          rgba(255, 255, 255, 0.14)
+        );
+      }
+
+      .spread::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(49, 44, 40, 0.06),
+            transparent 8%,
+            transparent 48%,
+            rgba(49, 44, 40, 0.05) 50%,
+            transparent 52%,
+            transparent 92%,
+            rgba(49, 44, 40, 0.06)
+          ),
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.24),
+            rgba(255, 255, 255, 0)
+          );
+        pointer-events: none;
+      }
+
+      .spread-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+
+      .page {
+        min-height: 38rem;
+        padding: clamp(1.5rem, 3vw, 2.4rem);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.38),
+            rgba(255, 255, 255, 0.08)
+          ),
+          linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
+        position: relative;
+      }
+
+      .page + .page {
+        border-left: 1px solid rgba(49, 44, 40, 0.08);
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: baseline;
+        margin-bottom: 1.2rem;
+        font-size: 0.74rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.52);
+      }
+
+      .page-number {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1rem;
+        letter-spacing: 0.12em;
+      }
+
+      .page-script {
+        font-family: "Parisienne", cursive;
+        font-size: clamp(2.3rem, 4vw, 3.5rem);
+        color: var(--wine);
+        line-height: 0.95;
+      }
+
+      .page-title {
+        margin-top: 0.5rem;
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(2.2rem, 4vw, 3.6rem);
+        line-height: 0.98;
+        text-transform: uppercase;
+        letter-spacing: -0.04em;
+      }
+
+      .lede {
+        margin-top: 1rem;
+        max-width: 28rem;
+        line-height: 1.9;
+        color: rgba(49, 44, 40, 0.78);
+      }
+
+      .ornament-line {
+        width: 6rem;
+        height: 1px;
+        margin: 1.4rem 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+      }
+
+      .mini-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.54);
+      }
+
+      .facts-grid {
+        display: grid;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .fact-card {
+        border: 1px solid var(--paper-line);
+        border-radius: 1.2rem;
+        padding: 1rem 1.1rem;
+        background: rgba(255, 255, 255, 0.34);
+      }
+
+      .fact-label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.48);
+      }
+
+      .icon {
+        width: 1.05rem;
+        height: 1.05rem;
+        flex: 0 0 auto;
+        opacity: 0.78;
+      }
+
+      .icon use {
+        fill: currentColor;
+      }
+
+      .fact-value {
+        margin-top: 0.55rem;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.5rem;
+        line-height: 1.15;
+      }
+
+      .photo-placeholder {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--paper-line);
+        border-radius: 1.5rem;
+        min-height: 16rem;
+        background-color: #d8ccbb;
+        background-position: center;
+        background-size: cover;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+      }
+
+      .photo-placeholder::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(49, 44, 40, 0.2)
+        );
+      }
+
+      .photo-placeholder::after {
+        content: "";
+      }
+
+      .photo-story {
+        min-height: 18rem;
+        margin-top: 1.6rem;
+        background-image: var(--book-story-image);
+      }
+
+      .photo-table {
+        min-height: 18rem;
+        background-image: var(--book-table-image);
+      }
+
+      .photo-venue {
+        min-height: 20rem;
+        margin-top: 1.5rem;
+        background-image: var(--book-venue-image);
+      }
+
+      .editorial-quote {
+        height: 100%;
+        border: 1px solid var(--paper-line);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(182, 145, 98, 0.2),
+            transparent 26%
+          ),
+          rgba(255, 255, 255, 0.34);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 1.25rem;
+      }
+
+      .editorial-quote blockquote {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(1.8rem, 3vw, 2.8rem);
+        line-height: 1.15;
+        max-width: 12ch;
+      }
+
+      .editorial-quote p {
+        line-height: 1.9;
+        color: rgba(49, 44, 40, 0.76);
+        max-width: 30rem;
+      }
+
+      .photo-prelude {
+        min-height: 18rem;
+        background-image: var(--book-prelude-image);
+      }
+
+      .chapter-list {
+        display: grid;
+        gap: 0.9rem;
+        margin-top: 1.5rem;
+      }
+
+      .chapter-item {
+        padding: 1rem 0;
+        border-top: 1px solid var(--paper-line);
+        display: grid;
+        grid-template-columns: 6.5rem 1fr;
+        gap: 1rem;
+      }
+
+      .chapter-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.5);
+      }
+
+      .chapter-name {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.55rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .chapter-copy {
+        line-height: 1.8;
+        color: rgba(49, 44, 40, 0.74);
+      }
+
+      .side-tab {
+        position: absolute;
+        top: 2.4rem;
+        right: 1.25rem;
+        padding: 0.5rem 0.7rem;
+        border: 1px solid var(--paper-line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.44);
+        font-size: 0.68rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.56);
+      }
+
+      .paper-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.6rem;
+      }
+
+      .paper-card {
+        border: 1px solid var(--paper-line);
+        border-radius: 1.2rem;
+        background: rgba(255, 255, 255, 0.34);
+        padding: 1rem 1rem 1.15rem;
+      }
+
+      .paper-card h4 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.45rem;
+        margin-bottom: 0.45rem;
+      }
+
+      .paper-card p {
+        line-height: 1.8;
+        color: rgba(49, 44, 40, 0.74);
+      }
+
+      .postscript {
+        margin-top: 1.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--paper-line);
+        line-height: 1.85;
+        color: rgba(49, 44, 40, 0.76);
+      }
+
+      .rsvp-sheet {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid var(--paper-line);
+        border-radius: 1.5rem;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.48),
+            rgba(255, 255, 255, 0.18)
+          ),
+          repeating-linear-gradient(
+            180deg,
+            transparent,
+            transparent 34px,
+            rgba(49, 44, 40, 0.03) 35px
+          );
+        padding: 1.4rem;
+      }
+
+      .rsvp-form {
+        display: grid;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .field-group label {
+        display: block;
+        font-size: 0.7rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(49, 44, 40, 0.5);
+        margin-bottom: 0.45rem;
+      }
+
+      .field-group input,
+      .field-group select,
+      .field-group textarea {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(49, 44, 40, 0.12);
+        border-radius: 1rem;
+        padding: 0.95rem 1rem;
+        color: var(--ink);
+        resize: vertical;
+      }
+
+      .field-group textarea {
+        min-height: 7rem;
+      }
+
+      .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.35rem;
+      }
+
+      .submit-note {
+        font-size: 0.78rem;
+        line-height: 1.7;
+        color: rgba(49, 44, 40, 0.56);
+      }
+
+      .submit-button {
+        padding: 1rem 1.35rem;
+        border-radius: 999px;
+        background: var(--wine);
+        color: var(--paper);
+        font-size: 0.78rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition:
+          transform 0.3s ease,
+          background-color 0.3s ease;
+      }
+
+      .submit-button:hover {
+        transform: translateY(-2px);
+        background: #56332d;
+      }
+
+      .signature-box {
+        margin-top: 1.3rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      .signature-name {
+        font-family: "Parisienne", cursive;
+        font-size: 2.3rem;
+        color: var(--wine);
+      }
+
+      .success-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: rgba(39, 32, 29, 0.42);
+        backdrop-filter: blur(16px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.45s ease,
+          visibility 0.45s ease;
+      }
+
+      .success-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .success-card {
+        width: min(34rem, 100%);
+        border-radius: 2rem;
+        padding: 2rem;
+        text-align: center;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.42),
+            rgba(255, 255, 255, 0.1)
+          ),
+          linear-gradient(180deg, var(--paper), var(--paper-deep));
+        box-shadow: var(--shadow);
+      }
+
+      .success-card h2 {
+        font-family: "Parisienne", cursive;
+        font-size: clamp(3rem, 8vw, 4.8rem);
+        color: var(--wine);
+      }
+
+      .success-card p {
+        margin-top: 0.8rem;
+        line-height: 1.85;
+        color: rgba(49, 44, 40, 0.74);
+      }
+
+      .close-success {
+        margin-top: 1.5rem;
+        padding: 0.9rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid rgba(49, 44, 40, 0.12);
+        background: rgba(255, 255, 255, 0.44);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: var(--ink);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(34px);
+      }
+
+      @media (max-width: 420px) {
+        .book-stage {
+          padding-top: 4.2rem;
+          padding-bottom: 2.5rem;
+        }
+
+        .book-cover {
+          min-height: 33rem;
+        }
+
+        .cover-inner {
+          padding: 1.2rem;
+        }
+
+        .cover-script {
+          font-size: clamp(2.4rem, 12vw, 3.4rem);
+        }
+
+        .cover-title {
+          font-size: clamp(2.2rem, 13vw, 3.4rem);
+          line-height: 0.98;
+        }
+
+        .cover-subtitle {
+          font-size: 0.92rem;
+          line-height: 1.65;
+        }
+
+        .seal {
+          width: 5.1rem;
+          font-size: 1.65rem;
+        }
+
+        .page {
+          padding: 1.1rem;
+        }
+
+        .page-title {
+          font-size: clamp(1.7rem, 10.5vw, 2.3rem);
+          line-height: 1.02;
+        }
+
+        .page-script {
+          font-size: clamp(1.9rem, 9.2vw, 2.8rem);
+        }
+
+        .lede,
+        .chapter-copy,
+        .paper-card p,
+        .postscript {
+          line-height: 1.65;
+        }
+
+        .open-booklet,
+        .submit-button {
+          letter-spacing: 0.18em;
+          padding: 0.88rem 1rem;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .spread-grid,
+        .paper-columns {
+          grid-template-columns: 1fr;
+        }
+
+        .page {
+          min-height: auto;
+        }
+
+        .page + .page {
+          border-left: 0;
+          border-top: 1px solid rgba(49, 44, 40, 0.08);
+        }
+
+        .chapter-item {
+          grid-template-columns: 1fr;
+          gap: 0.4rem;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .book-stage {
+          padding-top: 5rem;
+        }
+
+        .book-cover {
+          min-height: 39rem;
+          border-radius: 1.5rem;
+        }
+
+        .book-cover::after {
+          left: 2.8rem;
+        }
+
+        .cover-topline {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .cover-footer,
+        .submit-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .open-booklet,
+        .submit-button {
+          width: 100%;
+        }
+
+        .spread,
+        .success-card {
+          border-radius: 1.5rem;
+        }
+      }
+
+      @media (min-width: 1400px) {
+        :root {
+          --shell: min(1320px, calc(100% - 3.5rem));
+        }
+
+        .book-object {
+          width: min(1080px, 100%);
+        }
+
+        .page {
+          min-height: 42rem;
+        }
+
+        .cover-subtitle,
+        .lede,
+        .chapter-copy,
+        .postscript {
+          max-width: 32rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+
+        .reveal,
+        .booklet {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="invitation-locked">
+    <svg
+      aria-hidden="true"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    >
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <path
+          d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9ZM6 8h14V7a1 1 0 0 0-1-1h-1v1a1 1 0 1 1-2 0V6H8v1a1 1 0 1 1-2 0V6H5a1 1 0 0 0-1 1v1Z"
+        />
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24">
+        <path
+          d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7Zm0 2a5 5 0 0 0-5 5c0 3.28 3.73 8.63 5 10.34 1.27-1.71 5-7.06 5-10.34a5 5 0 0 0-5-5Zm0 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z"
+        />
+      </symbol>
+      <symbol id="i-dress" viewBox="0 0 24 24">
+        <path
+          d="M12 2c1.2 0 2.3.6 3 1.6l1.1 1.6a1 1 0 0 1-.2 1.4l-1 .7 1.8 4.6 3.4 7.6a1 1 0 0 1-.9 1.4H4.8a1 1 0 0 1-.9-1.4l3.4-7.6 1.8-4.6-1-.7a1 1 0 0 1-.2-1.4L9 3.6c.7-1 1.8-1.6 3-1.6Zm0 2c-.5 0-1 .2-1.3.7l-.6.9 2 1.4 2-1.4-.6-.9C13 4.2 12.5 4 12 4Zm0 4.8-1.8-1.3-.7.5 1.8 4.6L8 20h8l-3.3-7.4L14.5 8l-.7-.5-1.8 1.3Z"
+        />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <path
+          d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm1 3v5.2l3.6 2.1a1 1 0 1 1-1 1.7l-4.1-2.4A1 1 0 0 1 11 12V7a1 1 0 1 1 2 0Z"
+        />
+      </symbol>
+      <symbol id="i-pen" viewBox="0 0 24 24">
+        <path
+          d="M14.1 3.3a2.5 2.5 0 0 1 3.5 0l3.1 3.1a2.5 2.5 0 0 1 0 3.5l-9.9 9.9a1 1 0 0 1-.5.3l-6 1.5a1 1 0 0 1-1.2-1.2l1.5-6a1 1 0 0 1 .3-.5l9.9-9.9ZM15.5 5l-9.1 9.1-1 4 4-1L18.5 8l-3-3Z"
+        />
+      </symbol>
+      <symbol id="i-book" viewBox="0 0 24 24">
+        <path
+          d="M6 3h10a3 3 0 0 1 3 3v14a1 1 0 0 1-1 1H7a3 3 0 0 0-3 3v-18a3 3 0 0 1 2-2.8Zm0 2a1 1 0 0 0-1 1v14.2c.6-.4 1.3-.7 2-.7h10V6a1 1 0 0 0-1-1H6Zm3 3h6a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2Z"
+        />
+      </symbol>
+    </svg>
+
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-card">
+        <h2>Thank you</h2>
+        <p>
+          Your note has been added to our final page. We cannot wait to share
+          this chapter with you in September.
+        </p>
+        <button class="close-success" id="closeSuccess">
+          Return to booklet
+        </button>
+      </div>
+    </div>
+
+    <main>
+      <section class="book-stage">
+        <div class="book-object" id="bookObject">
+          <div class="book-cover">
+            <div class="cover-inner">
+              <div class="cover-topline">
+                <span>Invio Atelier Booklet</span>
+                <span>Lake Como, Italy</span>
+              </div>
+
+              <div class="cover-center">
+                <p
+                  class="cover-script"
+                  data-edit="text"
+                  data-id="cover-subtitle"
+                >
+                  A quiet beginning
+                </p>
+                <h1 class="cover-title">
+                  <span data-edit="text" data-id="couple-names-cover"
+                    >Elara &amp; Soren</span
+                  >
+                </h1>
+                <p class="cover-subtitle">
+                  A wedding invitation designed as a keepsake. Bound in
+                  candlelight, written in chapters, and opened by the people we
+                  love most.
+                </p>
+                <div class="seal-row">
+                  <div class="seal" data-edit="text" data-id="initials-seal">
+                    E/S
+                  </div>
+                </div>
+              </div>
+
+              <div class="cover-footer">
+                <button class="open-booklet" id="openBooklet">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <use href="#i-book"></use>
+                  </svg>
+                  Open the invitation
+                </button>
+                <span
+                  class="cover-note"
+                  data-edit="text"
+                  data-id="wedding-date-cover"
+                  >Saturday 14 September 2027</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="booklet" id="bookletContent">
+        <article class="spread reveal">
+          <div class="spread-grid">
+            <div class="page">
+              <div class="page-header">
+                <span>Cover story</span>
+                <span class="page-number">01</span>
+              </div>
+              <p class="page-script">For our favorite people</p>
+              <h2 class="page-title">
+                You are invited to witness our next chapter
+              </h2>
+              <div class="ornament-line"></div>
+              <p class="lede">
+                We have always imagined our wedding as something intimate and
+                cinematic: long light at the lake, soft music moving through the
+                garden, and a room filled with the people who know our hearts by
+                memory.
+              </p>
+              <div class="photo-placeholder photo-story"></div>
+              <div class="facts-grid">
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-calendar"></use></svg
+                    >Date
+                  </p>
+                  <p
+                    class="fact-value"
+                    data-edit="text"
+                    data-id="wedding-date-fact"
+                  >
+                    14 September 2027
+                  </p>
+                </div>
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-pin"></use></svg
+                    >Venue
+                  </p>
+                  <p class="fact-value" data-edit="text" data-id="venue-fact">
+                    Villa Celestia, Lake Como
+                  </p>
+                </div>
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-dress"></use></svg
+                    >Dress
+                  </p>
+                  <p class="fact-value" data-edit="text" data-id="dress-code">
+                    Black Tie Garden
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="page">
+              <span class="side-tab">Prelude</span>
+              <div class="editorial-quote">
+                <blockquote>
+                  "Less like attending an event, more like stepping inside a
+                  memory."
+                </blockquote>
+                <div class="photo-placeholder photo-prelude"></div>
+                <p>
+                  This booklet holds everything we wanted the invitation to feel
+                  like: tactile, story-led, and deeply personal. Each spread is
+                  part of the atmosphere we are inviting you into.
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="spread reveal">
+          <div class="spread-grid">
+            <div class="page">
+              <div class="page-header">
+                <span>Chapter one</span>
+                <span class="page-number">02</span>
+              </div>
+              <p class="page-script">The mood</p>
+              <h2 class="page-title">Warm paper, old gold, candle shadow</h2>
+              <div class="ornament-line"></div>
+              <p class="lede">
+                Our world for this weekend is editorial, soft, and grounded. We
+                wanted a celebration with tactile details: silk ribbons, layered
+                florals, quiet stone, handwritten menus, and music that never
+                rushes the room.
+              </p>
+              <p class="postscript">
+                Think of this invitation as the first object from the wedding
+                itself, something held in the hand before the first glass is
+                raised.
+              </p>
+            </div>
+
+            <div class="page">
+              <div class="page-header">
+                <span>Chapter one</span>
+                <span class="page-number">03</span>
+              </div>
+              <div class="photo-placeholder photo-table"></div>
+              <div class="paper-columns">
+                <div class="paper-card">
+                  <h4>Arrival</h4>
+                  <p>
+                    Aperitivo on the upper terrace as the lake turns silver and
+                    the first strings begin.
+                  </p>
+                </div>
+                <div class="paper-card">
+                  <h4>Ceremony</h4>
+                  <p>
+                    Vows in the sculpture garden at golden hour, framed by
+                    cypress and candle glass.
+                  </p>
+                </div>
+                <div class="paper-card">
+                  <h4>Dinner</h4>
+                  <p>
+                    A long table under lantern trees with layered courses,
+                    conversation, and slow toasts.
+                  </p>
+                </div>
+                <div class="paper-card">
+                  <h4>Afterglow</h4>
+                  <p>
+                    Dessert, dancing, and a final room reveal for the part of
+                    the night that lingers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="spread reveal">
+          <div class="spread-grid">
+            <div class="page">
+              <div class="page-header">
+                <span>Chapter two</span>
+                <span class="page-number">04</span>
+              </div>
+              <p class="page-script">The day itself</p>
+              <h2 class="page-title">An itinerary that unfolds like a film</h2>
+              <div class="chapter-list">
+                <div class="chapter-item">
+                  <div class="chapter-time">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-clock"></use></svg
+                    >4:30 PM
+                  </div>
+                  <div>
+                    <h3 class="chapter-name">Arrival and aperitivo</h3>
+                    <p class="chapter-copy">
+                      Champagne, citrus spritz, and live strings on the upper
+                      terrace.
+                    </p>
+                  </div>
+                </div>
+                <div class="chapter-item">
+                  <div class="chapter-time">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-clock"></use></svg
+                    >6:00 PM
+                  </div>
+                  <div>
+                    <h3 class="chapter-name">Ceremony</h3>
+                    <p class="chapter-copy">
+                      A seated garden ceremony as the light turns soft and
+                      honeyed.
+                    </p>
+                  </div>
+                </div>
+                <div class="chapter-item">
+                  <div class="chapter-time">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-clock"></use></svg
+                    >7:15 PM
+                  </div>
+                  <div>
+                    <h3 class="chapter-name">Dinner and toasts</h3>
+                    <p class="chapter-copy">
+                      Candlelit supper in the courtyard with music woven quietly
+                      through the courses.
+                    </p>
+                  </div>
+                </div>
+                <div class="chapter-item">
+                  <div class="chapter-time">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-clock"></use></svg
+                    >9:30 PM
+                  </div>
+                  <div>
+                    <h3 class="chapter-name">The afterglow</h3>
+                    <p class="chapter-copy">
+                      Dessert, dancing, and the late-night room opening after
+                      dinner concludes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="page">
+              <span class="side-tab">Details</span>
+              <div class="page-header">
+                <span>Chapter two</span>
+                <span class="page-number">05</span>
+              </div>
+              <p class="page-script">Travel notes</p>
+              <h2 class="page-title">A weekend, not a single evening</h2>
+              <div class="facts-grid">
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-pin"></use></svg
+                    >Stay
+                  </p>
+                  <p class="fact-value">
+                    Arrival by Friday evening is recommended
+                  </p>
+                </div>
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-pin"></use></svg
+                    >Transfers
+                  </p>
+                  <p class="fact-value">
+                    Private car details shared after RSVP
+                  </p>
+                </div>
+                <div class="fact-card">
+                  <p class="fact-label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-book"></use></svg
+                    >Palette
+                  </p>
+                  <p class="fact-value">
+                    Earth, black, champagne, and muted florals
+                  </p>
+                </div>
+              </div>
+              <div class="photo-placeholder photo-venue"></div>
+              <p class="postscript">
+                We will send hotel selections, transfer windows, and the welcome
+                note as soon as your attendance is confirmed.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="spread reveal">
+          <div class="spread-grid">
+            <div class="page">
+              <div class="page-header">
+                <span>Final page</span>
+                <span class="page-number">06</span>
+              </div>
+              <p class="page-script">With love</p>
+              <h2 class="page-title">Please add your name to our last page</h2>
+              <div class="ornament-line"></div>
+              <p class="lede">
+                RSVP by 15 July 2027. If you can stay the weekend, tell us. If
+                you have song requests, add them. If there is something we
+                should know to make your visit beautiful, leave us a note.
+              </p>
+              <div class="signature-box">
+                <p class="mini-note">Signed</p>
+                <p
+                  class="signature-name"
+                  data-edit="text"
+                  data-id="couple-names-signature"
+                >
+                  Elara and Soren
+                </p>
+              </div>
+            </div>
+
+            <div class="page">
+              <div class="page-header">
+                <span>RSVP sheet</span>
+                <span class="page-number">07</span>
+              </div>
+              <div class="rsvp-sheet">
+                <div>
+                  <p class="mini-note">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <use href="#i-pen"></use></svg
+                    >Return this page to us
+                  </p>
+                  <form class="rsvp-form" id="rsvpForm">
+                    <div class="field-group">
+                      <label for="guestName">Full name</label>
+                      <input
+                        id="guestName"
+                        type="text"
+                        placeholder="Your name"
+                        required
+                      />
+                    </div>
+                    <div class="field-group">
+                      <label for="guestCount">Number of guests</label>
+                      <select id="guestCount" required>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                      </select>
+                    </div>
+                    <div class="field-group">
+                      <label for="attendance">Will you attend?</label>
+                      <select id="attendance" required>
+                        <option value="yes">Yes, with joy</option>
+                        <option value="no">Regretfully decline</option>
+                      </select>
+                    </div>
+                    <div class="field-group">
+                      <label for="notes">Notes or song request</label>
+                      <textarea
+                        id="notes"
+                        placeholder="Tell us anything we should know"
+                      ></textarea>
+                    </div>
+                    <div class="submit-row">
+                      <p class="submit-note">
+                        A formal reply is not required for this prototype. This
+                        interaction is part of the invitation experience.
+                      </p>
+                      <button type="submit" class="submit-button">
+                        Send response
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      gsap.registerPlugin(ScrollTrigger);
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      let lenis = null;
+      if (!reduceMotion) {
+        lenis = new Lenis({
+          lerp: 0.08,
+          smoothWheel: true,
+        });
+
+        function onFrame(time) {
+          lenis.raf(time);
+          requestAnimationFrame(onFrame);
+        }
+
+        requestAnimationFrame(onFrame);
+      }
+
+      const bookObject = document.getElementById("bookObject");
+      const openBookletButton = document.getElementById("openBooklet");
+      const bookletContent = document.getElementById("bookletContent");
+      const rsvpForm = document.getElementById("rsvpForm");
+      const successOverlay = document.getElementById("successOverlay");
+      const closeSuccessButton = document.getElementById("closeSuccess");
+
+      function openBooklet() {
+        bookObject.classList.add("open");
+        bookletContent.classList.add("visible");
+        document.body.classList.remove("invitation-locked");
+        setTimeout(() => {
+          bookletContent.scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "start",
+          });
+        }, 260);
+      }
+
+      openBookletButton.addEventListener("click", openBooklet);
+
+      rsvpForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        successOverlay.classList.add("active");
+      });
+
+      closeSuccessButton.addEventListener("click", () => {
+        successOverlay.classList.remove("active");
+      });
+
+      if (!reduceMotion) {
+        gsap.from(".book-cover", {
+          y: 50,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power3.out",
+        });
+
+        gsap.from(".cover-center > *", {
+          y: 24,
+          opacity: 0,
+          stagger: 0.12,
+          duration: 0.9,
+          delay: 0.2,
+          ease: "power3.out",
+        });
+
+        document.querySelectorAll(".reveal").forEach((spread) => {
+          gsap.to(spread, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: spread,
+              start: "top 82%",
+            },
+          });
+        });
+
+        gsap.to(".book-cover", {
+          rotateZ: -1,
+          yPercent: -3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".book-stage",
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
+      } else {
+        document.querySelectorAll(".reveal").forEach((spread) => {
+          spread.style.opacity = "1";
+          spread.style.transform = "none";
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Valentine | Scratch Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #1a1a24; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 100vh;
+            font-family: 'Poppins', sans-serif; overflow: hidden; perspective: 1000px;
+        }
+        
+        .instruction { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 30px; animation: pulse 2s infinite;}
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        
+        .card-wrapper { transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+        
+        .scratch-container {
+            position: relative; width: 320px; height: 320px;
+            border-radius: 20px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); background: #fff;
+            border: 4px solid #fff; transform: translateZ(20px);
+            touch-action: none; /* Prevents pull-to-refresh on mobile */
+        }
+        
+        .hidden-message {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; text-align: center; background: radial-gradient(circle, #fff0f3 0%, #ffe0e6 100%);
+            opacity: 0; transform: scale(0.9); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        .hidden-message.revealed { opacity: 1; transform: scale(1); pointer-events: auto;}
+        .hidden-message h1 { font-family: 'Shadows Into Light', cursive; font-size: 3rem; color: #d6336c; line-height: 1.1; text-shadow: 2px 2px 4px rgba(214, 51, 108, 0.2);}
+        .hidden-message p { font-size: 0.9rem; color: #666; margin-top: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;}
+
+        canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%23ffd700" stroke="%23b8860b" stroke-width="2"/></svg>') 12 12, auto;
+            transition: opacity 0.8s ease; z-index: 5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="instruction" id="inst">Click & Drag to Scratch</div>
+    
+    <div class="card-wrapper" id="wrapper">
+        <div class="scratch-container">
+            <div class="hidden-message" id="msg">
+                <h1>You are my<br>favorite plot twist.</h1>
+                <p>Happy Valentine's</p>
+            </div>
+            <canvas id="scratch-pad"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('scratch-pad');
+        const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('wrapper');
+        const msg = document.getElementById('msg');
+        const inst = document.getElementById('inst');
+        let isDrawing = false;
+        let isRevealed = false;
+
+        canvas.width = 320; canvas.height = 320;
+
+        // Draw Premium Holographic Foil
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, "#e0e0e0"); gradient.addColorStop(0.3, "#f8f8f8");
+        gradient.addColorStop(0.5, "#d3d3d3"); gradient.addColorStop(0.7, "#f8f8f8");
+        gradient.addColorStop(1, "#b0b0b0");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Overlay Text on Foil
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        ctx.font = "700 28px Poppins"; ctx.textAlign = "center";
+        ctx.fillText("SCRATCH ME", 160, 170);
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top, rawX: clientX, rawY: clientY };
+        }
+
+        function scratch(e) {
+            if (!isDrawing || isRevealed) return;
+            e.preventDefault(); 
+            const pos = getMousePos(e);
+            
+            // Tilt Effect while scratching (Desktop only)
+            if (window.matchMedia("(pointer: fine)").matches) {
+                const xAxis = (window.innerWidth / 2 - pos.rawX) / 20;
+                const yAxis = (window.innerHeight / 2 - pos.rawY) / 20;
+                wrapper.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1.05)`;
+            }
+
+            // Erase Logic - INCREASED BRUSH SIZE
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath(); 
+            ctx.arc(pos.x, pos.y, 45, 0, Math.PI * 2); 
+            ctx.fill();
+            
+            // Check clearance sparingly to save memory
+            if(Math.random() > 0.8) checkPercentCleared();
+        }
+
+        // Desktop Events
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mousemove', scratch);
+        window.addEventListener('mouseup', () => { 
+            isDrawing = false; 
+            wrapper.style.transform = `rotateY(0deg) rotateX(0deg) scale(1)`; 
+        });
+        
+        // Mobile Events - ADDED PASSIVE: FALSE TO FIX SCROLLING BUG
+        canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, { passive: false });
+        canvas.addEventListener('touchmove', scratch, { passive: false });
+        window.addEventListener('touchend', () => { 
+            isDrawing = false; 
+            wrapper.style.transform = `rotateY(0deg) rotateX(0deg) scale(1)`; 
+        });
+
+        function checkPercentCleared() {
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let transparentPixels = 0;
+            // Check alpha channel. If it's less than 32, count it as erased.
+            for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] < 32) transparentPixels++; }
+            
+            const percentCleared = (transparentPixels / (pixels.length / 4)) * 100;
+            
+            // LOWERED THRESHOLD TO 25% FOR FASTER REVEAL
+            if (percentCleared > 25 && !isRevealed) {
+                isRevealed = true;
+                canvas.style.opacity = '0';
+                inst.innerText = "Target Acquired";
+                msg.classList.add('revealed');
+                
+                setTimeout(() => {
+                    canvas.style.display = 'none';
+                    try {
+                        const heart = confetti.shapeFromText({ text: '❤️' });
+                        confetti({
+                            particleCount: 150, spread: 100, origin: { y: 0.6 },
+                            shapes: [heart], scalar: 3, zIndex: 9999, colors: ['#d6336c', '#ff87ab', '#ffb3c6']
+                        });
+                    } catch(err) {
+                        // Fallback if browser doesn't support emoji confetti
+                        confetti({
+                            particleCount: 150, spread: 100, origin: { y: 0.6 },
+                            zIndex: 9999, colors: ['#d6336c', '#ff87ab', '#ffb3c6']
+                        });
+                    }
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

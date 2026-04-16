@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Birthday Story</title>
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+  <body>
+    <!-- STARS BACKGROUND -->
+    <div id="stars-container"></div>
+
+    <!-- CURTAIN ANIMATION -->
+    <div class="curtains">
+      <div class="curtain-panel curtain-left"></div>
+      <div class="curtain-panel curtain-right"></div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <section class="section intro">
+      <h1 id="typing-text" class="typing-cursor"></h1>
+    </section>
+
+    <!-- SECTION 2 (IMAGE FOCUS) -->
+    <section class="section image-section">
+      <img
+        src="../../assets/images/birthday/template_3/girl.webp"
+        class="hero-img fade"
+      />
+      <p class="fade caption">and it's all about her ✨</p>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section class="section">
+      <img
+        src="../../assets/images/birthday/template_3/disco.png"
+        class="disco fade"
+      />
+
+      <h1 class="title fade">
+        <span class="cut pink">Happy</span><br />
+        <span class="cut green">Birthday</span><br />
+        <span class="cut yellow" data-edit="text" data-id="birthday-person-name"
+          >Sophie</span
+        >
+      </h1>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section class="section">
+      <p class="fade">Join me to celebrate one more year!</p>
+
+      <!-- Set your target date and time here (Format: YYYY-MM-DDTHH:MM:SS) -->
+      <div
+        class="countdown fade"
+        id="countdown"
+        data-date="2026-04-11T19:00:00"
+        data-edit="text"
+        data-id="party-datetime"
+      >
+        <div class="time-box">
+          <span id="days">00</span><span class="label">Days</span>
+        </div>
+        <div class="time-box">
+          <span id="hours">00</span><span class="label">Hours</span>
+        </div>
+        <div class="time-box">
+          <span id="minutes">00</span><span class="label">Mins</span>
+        </div>
+        <div class="time-box">
+          <span id="seconds">00</span><span class="label">Secs</span>
+        </div>
+      </div>
+
+      <p class="fade location-text" data-edit="text" data-id="venue-address">
+        123 Anywhere Street, Any City
+      </p>
+
+      <div class="fade">
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950147!2d-73.98731968482413!3d40.75889497932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"
+            width="100%"
+            height="100%"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 RSVP -->
+    <section class="section rsvp-section">
+      <h2 class="fade">Will you be part of this moment?</h2>
+
+      <div class="buttons fade">
+        <button class="accept">Accept</button>
+        <button class="decline">Decline</button>
+      </div>
+
+      <p id="rsvp-message" class="rsvp-message"></p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Courier New", cursive;
+        background: #f3efe8;
+        scroll-behavior: smooth;
+      }
+
+      /* SECTIONS */
+      .section {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      /* TITLE STYLE */
+      .title {
+        font-size: 50px;
+        line-height: 1.2;
+      }
+
+      .cut {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 5px;
+        transform: rotate(-3deg);
+        font-weight: bold;
+      }
+
+      .pink {
+        background: #ffb6c1;
+      }
+      .green {
+        background: #b5d99c;
+      }
+      .yellow {
+        background: #ffe066;
+      }
+
+      /* TYPING CURSOR */
+      .typing-cursor::after {
+        content: "|";
+        color: #ffb6c1;
+        animation: blink 1s step-end infinite;
+        margin-left: 4px;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* DISCO */
+      .disco {
+        width: 150px;
+        margin-bottom: 20px;
+      }
+
+      /* RSVP BUTTONS */
+      .buttons {
+        margin-top: 30px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
+
+      button {
+        padding: 14px 35px;
+        margin: 0;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: inherit;
+        cursor: pointer;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+      }
+
+      .accept {
+        background: #2c2c2c;
+        color: #ffffff;
+        border: 1px solid #2c2c2c;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .accept:hover {
+        background: #000000;
+        box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+      }
+
+      .decline {
+        background: transparent;
+        color: #555;
+        border: 1px solid #b3b3b3;
+      }
+
+      .decline:hover {
+        background: #f4f4f4;
+        border-color: #888;
+        color: #111;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      /* RSVP MESSAGE */
+      .rsvp-message {
+        margin-top: 25px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2c2c2c;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .rsvp-message.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ANIMATION BASE */
+      .fade {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 1s ease;
+      }
+
+      .fade.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* IMAGE SECTION */
+      .image-section {
+        background: #f8f4ee;
+      }
+
+      /* HERO IMAGE */
+      .hero-img {
+        width: 220px;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        transform: rotate(-3deg);
+        transition: 0.5s;
+      }
+
+      .hero-img:hover {
+        transform: rotate(0deg) scale(1.05);
+      }
+
+      /* CAPTION */
+      .caption {
+        margin-top: 15px;
+        font-style: italic;
+        font-size: 16px;
+      }
+
+      /* MAKE SECTIONS LESS EMPTY */
+      .section {
+        padding: 20px;
+      }
+
+      /* ADD SOFT GRADIENT FEEL */
+      .intro {
+        background: linear-gradient(to bottom, #f3efe8, #f8f4ee);
+      }
+
+      .rsvp-section {
+        background: linear-gradient(to top, #f3efe8, #ffffff);
+      }
+
+      /* COUNTDOWN TIMER */
+      .countdown {
+        display: flex;
+        gap: 15px;
+        margin: 30px 0;
+      }
+
+      .time-box {
+        display: flex;
+        flex-direction: column;
+        min-width: 70px;
+        perspective: 600px; /* Gives the 3D depth to the flip */
+      }
+
+      .time-box span:first-child {
+        font-size: 32px;
+        font-weight: bold;
+        color: #ffb6c1;
+        background: #2c2c2c;
+        padding: 15px 10px;
+        border-radius: 8px;
+        position: relative;
+        box-shadow:
+          0 10px 15px rgba(0, 0, 0, 0.2),
+          inset 0 2px 5px rgba(255, 255, 255, 0.1);
+      }
+
+      /* The middle crease of the calendar page */
+      .time-box span:first-child::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+        transform: translateY(-50%);
+      }
+
+      .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #888;
+        margin-top: 5px;
+        letter-spacing: 1px;
+      }
+
+      /* FLIP ANIMATION */
+      @keyframes flipCard {
+        0% {
+          transform: rotateX(0deg);
+        }
+        50% {
+          transform: rotateX(-90deg);
+        }
+        100% {
+          transform: rotateX(0deg);
+        }
+      }
+
+      .flip-animate {
+        animation: flipCard 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .location-text {
+        margin-top: 10px;
+        color: #666;
+      }
+
+      /* MAP CONTAINER */
+      .map-container {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 350px;
+        height: 150px;
+        border-radius: 15px;
+        overflow: hidden;
+
+        /* 3D styling */
+        transform: perspective(800px) rotateX(20deg) rotateY(-15deg);
+        box-shadow:
+          -15px 20px 25px rgba(0, 0, 0, 0.2),
+          0 0 0 5px #ffffff;
+        transition: all 0.4s ease;
+      }
+
+      .map-container:hover {
+        transform: perspective(800px) rotateX(5deg) rotateY(-5deg)
+          translateZ(15px);
+        box-shadow:
+          -5px 10px 15px rgba(0, 0, 0, 0.1),
+          0 0 0 5px #ffffff;
+      }
+
+      /* CURTAIN ANIMATION */
+      .curtains {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        display: flex;
+        pointer-events: none;
+      }
+
+      .curtain-panel {
+        width: 50%;
+        height: 100%;
+        background: #2c2c2c;
+        pointer-events: auto; /* Blocks interactions underneath while closed */
+      }
+
+      .curtain-left {
+        border-right: 2px solid #ffb6c1; /* Premium pink accent */
+        animation: curtainOpenLeft 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.5s
+          forwards;
+      }
+
+      .curtain-right {
+        border-left: 2px solid #ffb6c1; /* Premium pink accent */
+        animation: curtainOpenRight 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.5s
+          forwards;
+      }
+
+      @keyframes curtainOpenLeft {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+          pointer-events: none;
+        }
+      }
+
+      @keyframes curtainOpenRight {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(100%);
+          pointer-events: none;
+        }
+      }
+
+      /* STARS BACKGROUND */
+      #stars-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .star {
+        position: absolute;
+        background-color: #2c2c2c;
+        border-radius: 50%;
+        opacity: 0;
+        animation: floatUp linear infinite;
+      }
+
+      @keyframes floatUp {
+        0% {
+          opacity: 0;
+          transform: translateY(0) scale(0.5);
+        }
+        50% {
+          opacity: 0.5;
+          transform: translateY(-30vh) scale(1.2);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-60vh) scale(0.5);
+        }
+      }
+    </style>
+
+    <script>
+      const faders = document.querySelectorAll(".fade");
+
+      const observerOptions = {
+        root: null,
+        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.15,
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      faders.forEach((el) => observer.observe(el));
+
+      // Typing Animation for Intro
+      const typingText = document.getElementById("typing-text");
+      if (typingText) {
+        const text = "A special day is coming...";
+        let charIndex = 0;
+
+        // Wait 2s for the curtain animation to finish (0.5s delay + 1.5s duration)
+        setTimeout(() => {
+          const typeInterval = setInterval(() => {
+            if (charIndex < text.length) {
+              typingText.textContent += text.charAt(charIndex);
+              charIndex++;
+            } else {
+              clearInterval(typeInterval); // Stop when typing is done
+              setTimeout(
+                () => typingText.classList.remove("typing-cursor"),
+                1000,
+              ); // Remove cursor after 1s
+            }
+          }, 100); // 100ms per character typing speed
+        }, 2000);
+      }
+
+      // Parallax effect for the disco image
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const discos = document.querySelectorAll(".disco");
+            discos.forEach((disco) => {
+              const section = disco.closest(".section");
+              if (section) {
+                const rect = section.getBoundingClientRect();
+                const distanceFromCenter =
+                  rect.top + rect.height / 2 - window.innerHeight / 2;
+                disco.style.transform = `translateY(${distanceFromCenter * 0.2}px)`;
+              }
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Countdown Timer Logic
+      const countdownEl = document.getElementById("countdown");
+      let targetDate;
+
+      if (countdownEl && countdownEl.dataset.date) {
+        targetDate = new Date(countdownEl.dataset.date);
+      } else {
+        // Fallback: November 28th at 19:00 (7 PM)
+        targetDate = new Date(new Date().getFullYear(), 10, 28, 19, 0, 0);
+        if (new Date() > targetDate) {
+          targetDate.setFullYear(targetDate.getFullYear() + 1);
+        }
+      }
+
+      setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetDate.getTime() - now;
+
+        if (distance < 0) return; // Stop if we reached the time
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Helper function to trigger the 3D flip animation only when the number changes
+        function updateFlip(id, value) {
+          const el = document.getElementById(id);
+          if (el && el.innerText !== value) {
+            el.innerText = value;
+            el.classList.remove("flip-animate");
+            void el.offsetWidth; // Force a reflow to restart the CSS animation
+            el.classList.add("flip-animate");
+          }
+        }
+
+        const daysEl = document.getElementById("days");
+        if (daysEl) {
+          updateFlip("days", String(days).padStart(2, "0"));
+          updateFlip("hours", String(hours).padStart(2, "0"));
+          updateFlip("minutes", String(minutes).padStart(2, "0"));
+          updateFlip("seconds", String(seconds).padStart(2, "0"));
+        }
+      }, 1000);
+
+      // RSVP Button Logic
+      const acceptBtn = document.querySelector(".accept");
+      const declineBtn = document.querySelector(".decline");
+      const rsvpMessage = document.getElementById("rsvp-message");
+
+      if (acceptBtn && declineBtn && rsvpMessage) {
+        acceptBtn.addEventListener("click", () => {
+          rsvpMessage.textContent = "See you soon!";
+          rsvpMessage.classList.add("show");
+
+          // Trigger confetti if the library is loaded
+          if (typeof confetti === "function") {
+            confetti({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
+          }
+        });
+
+        declineBtn.addEventListener("click", () => {
+          rsvpMessage.textContent = "Sorry to see you leave";
+          rsvpMessage.classList.add("show");
+        });
+      }
+
+      // Twinkling Stars Background Logic
+      const starsContainer = document.getElementById("stars-container");
+      if (starsContainer) {
+        const numStars = 60;
+        for (let i = 0; i < numStars; i++) {
+          const star = document.createElement("div");
+          star.classList.add("star");
+
+          // Randomize position across the viewport
+          star.style.left = `${Math.random() * 100}vw`;
+          star.style.top = `${Math.random() * 100}vh`;
+
+          // Randomize size between 1px and 3px
+          const size = Math.random() * 2 + 1;
+          star.style.width = `${size}px`;
+          star.style.height = `${size}px`;
+
+          // Randomize the animation duration (10s - 20s) for a slow float and delay (0s - 10s)
+          star.style.animationDuration = `${Math.random() * 10 + 10}s`;
+          star.style.animationDelay = `${Math.random() * 10}s`;
+
+          starsContainer.appendChild(star);
+        }
+      }
+    </script>
+  </body>
+</html>

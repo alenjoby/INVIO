@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE NEXUS | Elite Holographic Invitation</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Cinzel:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+      :root {
+        /* NEW THEME: Frost & Crimson */
+        --accent: #900c3f; /* Deep Crimson */
+        --accent-glow: rgba(144, 12, 63, 0.5);
+        --bg-deep: #1a0810; /* Deep wine/charcoal base */
+        --text-dark: #1f1b24; /* Dark text for the frosted glass */
+        --text-muted: #5e5a66; /* Muted dark text */
+
+        /* Frosted Glass Variables */
+        --glass-front: rgba(255, 255, 255, 0.15);
+        --glass-back: rgba(245, 245, 250, 0.85);
+        --border-light: rgba(255, 255, 255, 0.6);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        cursor: none !important;
+      }
+
+      /* Touchscreen fallback */
+      @media (hover: none) and (pointer: coarse) {
+        #cursor,
+        #cursor-ring {
+          display: none !important;
+        }
+        * {
+          cursor: auto !important;
+        }
+      }
+
+      body,
+      html {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-deep);
+        background-image:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(144, 12, 63, 0.3) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 50%
+          );
+        background-attachment: fixed;
+        color: #ffffff;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      /* DELICATE NOISE OVERLAY */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("https://www.transparenttextures.com/patterns/stardust.png");
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      /* CUSTOM CURSOR */
+      #cursor {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: #ffffff;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 35px;
+        height: 35px;
+        border: 1px solid var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.3s ease,
+          height 0.3s ease,
+          background-color 0.3s ease,
+          border-color 0.3s ease;
+      }
+      body.hovering-interactive #cursor-ring {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(144, 12, 63, 0.1);
+        border-color: #ffffff;
+      }
+      body.hovering-interactive #cursor {
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+
+      /* FULL-SCREEN CANVAS BACKGROUND */
+      #network-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* =========================================
+           3D MONOLITH CARD SYSTEM
+           ========================================= */
+      .viewport {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 2000px;
+      }
+
+      .monolith-container {
+        width: 90vw;
+        max-width: 480px;
+        height: 80vh;
+        max-height: 700px;
+        transform-style: preserve-3d;
+        transition: transform 0.2s ease-out;
+        z-index: 10;
+      }
+
+      .monolith-card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 1.5s cubic-bezier(0.8, 0, 0.2, 1);
+      }
+
+      .monolith-card.is-flipped {
+        transform: rotateY(180deg);
+      }
+
+      /* Shared face styling */
+      .card-face {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      /* --- FRONT FACE (SECURITY LOCK) --- */
+      .card-front {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.02) 100%
+        );
+        border: 1px solid var(--border-light);
+        border-top: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .auth-ring {
+        width: 120px;
+        height: 120px;
+        border: 1px dashed rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 40px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.5s ease;
+      }
+      .auth-ring::before {
+        content: "";
+        position: absolute;
+        width: 140%;
+        height: 140%;
+        border: 1px solid transparent;
+        border-top-color: var(--accent);
+        border-bottom-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 6s linear infinite;
+        opacity: 0.5;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .auth-ring:hover {
+        box-shadow: 0 0 40px var(--accent-glow);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--accent);
+        transform: scale(1.05);
+      }
+
+      .auth-icon {
+        font-size: 3rem;
+        color: var(--accent);
+        text-shadow: 0 0 15px var(--accent-glow);
+        pointer-events: none;
+      }
+
+      .auth-text {
+        font-family: "Space Grotesk";
+        font-size: 0.75rem;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: #ffffff;
+        text-align: center;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* --- BACK FACE (THE INVITATION) --- */
+      .card-back {
+        transform: rotateY(180deg);
+        display: flex;
+        flex-direction: column;
+        padding: 40px;
+        background: var(--glass-back);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        color: var(--text-dark);
+      }
+
+      /* TYPOGRAPHY */
+      .crest {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        text-align: center;
+        color: var(--accent);
+      }
+      .motto {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: 0.9rem;
+        letter-spacing: 4px;
+        color: var(--accent);
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .dept {
+        font-size: 0.6rem;
+        letter-spacing: 4px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      .title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 3.5rem;
+        line-height: 0.9;
+        margin-bottom: 10px;
+        text-align: center;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .subtitle {
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+        line-height: 1.5;
+        color: var(--text-muted);
+        text-align: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+      }
+
+      .details-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+      }
+      .details p {
+        font-size: 0.8rem;
+        margin: 8px 0;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+      }
+      .details strong {
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
+
+      /* LIVE COUNTDOWN */
+      .countdown-wrapper {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+      }
+      .time-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .time-val {
+        font-family: "Space Grotesk", monospace;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .time-lbl {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        margin-top: 5px;
+        font-weight: 600;
+      }
+
+      /* CARD BUTTONS */
+      .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: auto;
+        width: 100%;
+      }
+      .rsvp-btn {
+        flex: 1;
+        padding: 18px 0;
+        border: 1px solid var(--accent);
+        background: transparent;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-weight: 500;
+        font-family: "Space Grotesk";
+        transition: all 0.4s ease;
+        font-size: 0.7rem;
+        position: relative;
+        overflow: hidden;
+        pointer-events: auto;
+        text-align: center;
+        color: var(--accent);
+      }
+
+      .btn-accept::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: var(--accent);
+        transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        z-index: -1;
+      }
+      .btn-accept:hover {
+        color: #ffffff;
+      }
+      .btn-accept:hover::before {
+        height: 100%;
+      }
+      .btn-accept.success {
+        background: var(--accent) !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 30px rgba(144, 12, 63, 0.4);
+        pointer-events: none;
+      }
+
+      .btn-decline {
+        border-color: var(--text-muted);
+        color: var(--text-muted);
+      }
+      .btn-decline::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: var(--text-dark);
+        transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        z-index: -1;
+      }
+      .btn-decline:hover {
+        color: #ffffff;
+        border-color: var(--text-dark);
+      }
+      .btn-decline:hover::before {
+        height: 100%;
+      }
+      .btn-decline.failed {
+        background: rgba(0, 0, 0, 0.05) !important;
+        color: #888 !important;
+        border-color: #ddd !important;
+        pointer-events: none;
+      }
+
+      #rsvp-status {
+        text-align: center;
+        font-family: "Space Grotesk";
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+        color: var(--accent);
+        margin-top: 15px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <canvas id="network-canvas"></canvas>
+
+    <div class="viewport">
+      <div class="monolith-container" id="monolith">
+        <div class="monolith-card" id="card">
+          <div class="card-face card-front">
+            <div
+              class="crest"
+              style="
+                font-size: 3rem;
+                margin-bottom: 20px;
+                color: #ffffff;
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+              "
+            >
+              🏛️
+            </div>
+            <div
+              class="title"
+              style="
+                font-size: 2.5rem;
+                color: #ffffff;
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+              "
+            >
+              THE NEXUS
+            </div>
+            <div style="height: 60px"></div>
+
+            <div class="auth-ring interactive-el" id="auth-btn">
+              <div class="auth-icon">Ψ</div>
+            </div>
+            <div class="auth-text">Click crest to authenticate</div>
+          </div>
+
+          <div class="card-face card-back">
+            <div class="dept" data-edit="text" data-id="college-name">
+              College of Advanced Sciences
+            </div>
+            <div class="title" data-edit="text" data-id="event-title">
+              The Nexus
+            </div>
+            <div class="motto" data-edit="text" data-id="event-motto">
+              Lux et Veritas
+            </div>
+            <div class="subtitle" data-edit="text" data-id="event-subtitle">
+              Symposium of Pedagogy
+            </div>
+
+            <div class="details-row details">
+              <div>
+                <p>
+                  <strong>DATE:</strong>
+                  <span data-edit="text" data-id="event-date"
+                    >12 October 2026</span
+                  >
+                </p>
+                <p>
+                  <strong>LOCATION:</strong>
+                  <span data-edit="text" data-id="event-venue"
+                    >University Hall</span
+                  >
+                </p>
+                <p>
+                  <strong>ATTIRE:</strong>
+                  <span data-edit="text" data-id="dress-code"
+                    >Academic Regalia</span
+                  >
+                </p>
+              </div>
+              <div style="text-align: right">
+                <p style="color: var(--accent); margin-bottom: 10px">
+                  <strong>STATUS:</strong> <br />AWAITING
+                </p>
+                <div
+                  style="
+                    font-family: monospace;
+                    font-size: 1rem;
+                    letter-spacing: -2px;
+                    color: var(--text-muted);
+                    opacity: 0.5;
+                  "
+                >
+                  ||| || ||| | ||
+                </div>
+              </div>
+            </div>
+
+            <div id="countdown-container" class="countdown-wrapper">
+              <div class="time-box">
+                <span id="c-days" class="time-val">00</span
+                ><span class="time-lbl">Days</span>
+              </div>
+              <div class="time-box">
+                <span id="c-hours" class="time-val">00</span
+                ><span class="time-lbl">Hours</span>
+              </div>
+              <div class="time-box">
+                <span id="c-minutes" class="time-val">00</span
+                ><span class="time-lbl">Minutes</span>
+              </div>
+              <div class="time-box">
+                <span id="c-seconds" class="time-val">00</span
+                ><span class="time-lbl">Seconds</span>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button
+                id="accept-btn"
+                class="rsvp-btn btn-accept interactive-el"
+              >
+                Confirm
+              </button>
+              <button
+                id="decline-btn"
+                class="rsvp-btn btn-decline interactive-el"
+              >
+                Decline
+              </button>
+            </div>
+
+            <p id="rsvp-status"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- 1. CARD FLIP MECHANIC ---
+      const authBtn = document.getElementById("auth-btn");
+      const cardElement = document.getElementById("card");
+      let isFlipped = false;
+
+      authBtn.addEventListener("click", () => {
+        isFlipped = true;
+        cardElement.classList.add("is-flipped");
+      });
+
+      // --- 2. 3D HOVER TILT (APPLIED TO CONTAINER) ---
+      const monolith = document.getElementById("monolith");
+
+      document.addEventListener("mousemove", (e) => {
+        if (window.matchMedia("(pointer: fine)").matches) {
+          const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+          const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+          const tiltX = isFlipped ? -xAxis : xAxis;
+          monolith.style.transform = `rotateY(${tiltX}deg) rotateX(${yAxis}deg)`;
+        }
+      });
+
+      // --- 3. CURSOR LOGIC ---
+      const cursor = document.getElementById("cursor");
+      const cursorRing = document.getElementById("cursor-ring");
+      let mouseX = window.innerWidth / 2,
+        mouseY = window.innerHeight / 2;
+      let ringX = mouseX,
+        ringY = mouseY;
+
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (cursor) cursor.style.left = mouseX + "px";
+        if (cursor) cursor.style.top = mouseY + "px";
+      });
+
+      function renderCursor() {
+        ringX += (mouseX - ringX) * 0.12;
+        ringY += (mouseY - ringY) * 0.12;
+        if (cursorRing) cursorRing.style.left = ringX + "px";
+        if (cursorRing) cursorRing.style.top = ringY + "px";
+        requestAnimationFrame(renderCursor);
+      }
+      requestAnimationFrame(renderCursor);
+
+      document.querySelectorAll(".interactive-el").forEach((el) => {
+        el.addEventListener("mouseenter", () =>
+          document.body.classList.add("hovering-interactive"),
+        );
+        el.addEventListener("mouseleave", () =>
+          document.body.classList.remove("hovering-interactive"),
+        );
+      });
+
+      // --- 4. LIVE COUNTDOWN ---
+      function startCountdown() {
+        const targetDate = new Date("October 12, 2026 18:00:00").getTime();
+        setInterval(() => {
+          const now = new Date().getTime();
+          const distance = targetDate - now;
+          if (distance < 0) return;
+
+          document.getElementById("c-days").innerText = String(
+            Math.floor(distance / (1000 * 60 * 60 * 24)),
+          ).padStart(2, "0");
+          document.getElementById("c-hours").innerText = String(
+            Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          ).padStart(2, "0");
+          document.getElementById("c-minutes").innerText = String(
+            Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          ).padStart(2, "0");
+          document.getElementById("c-seconds").innerText = String(
+            Math.floor((distance % (1000 * 60)) / 1000),
+          ).padStart(2, "0");
+        }, 1000);
+      }
+      startCountdown();
+
+      // --- 5. BACKGROUND CONSTELLATION ---
+      const canvas = document.getElementById("network-canvas");
+      const ctx = canvas.getContext("2d");
+      const nodes = [];
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      class NetworkNode {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vx = (Math.random() - 0.5) * 0.2;
+          this.vy = (Math.random() - 0.5) * 0.2;
+          this.radius = Math.random() * 1.5 + 0.5;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+          let dx = mouseX - this.x;
+          let dy = mouseY - this.y;
+          if (Math.sqrt(dx * dx + dy * dy) < 150) {
+            this.x += dx * 0.002;
+            this.y += dy * 0.002;
+          }
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(144, 12, 63, 0.4)";
+          ctx.fill();
+        }
+      }
+      for (let i = 0; i < 45; i++) {
+        nodes.push(new NetworkNode());
+      }
+
+      function animateCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < nodes.length; i++) {
+          nodes[i].update();
+          nodes[i].draw();
+          for (let j = i + 1; j < nodes.length; j++) {
+            let dx = nodes[i].x - nodes[j].x;
+            let dy = nodes[i].y - nodes[j].y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 110) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(144, 12, 63, ${0.15 * (1 - distance / 110)})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animateCanvas);
+      }
+      animateCanvas();
+
+      // --- 6. RSVP BUTTON LOGIC ---
+      const acceptBtn = document.getElementById("accept-btn");
+      const declineBtn = document.getElementById("decline-btn");
+      const statusText = document.getElementById("rsvp-status");
+
+      acceptBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        acceptBtn.innerText = "Confirmed";
+        acceptBtn.classList.add("success");
+        declineBtn.style.display = "none";
+        statusText.innerText = "ACCESS GRANTED";
+        statusText.style.opacity = "1";
+
+        try {
+          const gradHat = confetti.shapeFromText({ text: "🎓" });
+          const end = Date.now() + 3000;
+          (function frame() {
+            // Crimson and Silver Confetti
+            confetti({
+              particleCount: 2,
+              angle: 60,
+              spread: 55,
+              origin: { x: 0, y: 0.8 },
+              colors: ["#900C3F", "#ffffff"],
+              shapes: ["square"],
+              scalar: 0.8,
+              disableForReducedMotion: true,
+              zIndex: 9999,
+            });
+            confetti({
+              particleCount: 2,
+              angle: 120,
+              spread: 55,
+              origin: { x: 1, y: 0.8 },
+              colors: ["#900C3F", "#ffffff"],
+              shapes: ["square"],
+              scalar: 0.8,
+              disableForReducedMotion: true,
+              zIndex: 9999,
+            });
+            if (Math.random() < 0.2) {
+              confetti({
+                particleCount: 1,
+                angle: Math.random() * 60 + 60,
+                spread: 55,
+                origin: { x: Math.random(), y: 0.9 },
+                shapes: [gradHat],
+                scalar: 3,
+                disableForReducedMotion: true,
+                zIndex: 9999,
+              });
+            }
+            if (Date.now() < end) {
+              requestAnimationFrame(frame);
+            }
+          })();
+        } catch (err) {
+          confetti({
+            particleCount: 150,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ["#900C3F", "#ffffff"],
+            zIndex: 9999,
+          });
+        }
+      });
+
+      declineBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        declineBtn.innerText = "Declined";
+        declineBtn.classList.add("failed");
+        acceptBtn.style.display = "none";
+        statusText.innerText = "ABSENCE NOTED";
+        statusText.style.color = "var(--text-muted)";
+        statusText.style.opacity = "1";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alex & Josh — Wedding Invitation</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Smooth Scroll & Animation Libraries -->
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+      /* FONTS */
+      @font-face {
+        font-family: "Symphony";
+        src: url("../../assets/fonts/wedding-template-2-script.ttf")
+          format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Cormorant";
+        src: local("Cormorant Garamond");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Body";
+        src: local("Arial");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      :root {
+        --primary: #686531; /* Forest Green */
+        --accent: #afac82; /* Olive/Tan */
+        --bg: #fcf5ea; /* Cream */
+        --white: #ffffff;
+        --text-dark: #686531;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Cormorant", serif;
+        background-color: var(--bg);
+        color: var(--text-dark);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-weight: 400;
+      }
+
+      .luxury-script {
+        font-family: "Symphony", cursive;
+      }
+
+      /* LENIS SMOOTH SCROLL */
+      html.lenis {
+        height: auto;
+      }
+      .lenis.lenis-smooth {
+        scroll-behavior: auto !important;
+      }
+      .lenis.lenis-smooth [data-lenis-prevent] {
+        overscroll-behavior: contain;
+      }
+      .lenis.lenis-stopped {
+        overflow: hidden;
+      }
+
+      /* HEADER */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 30px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        mix-blend-mode: difference;
+        color: var(--white);
+        pointer-events: none;
+      }
+
+      .header-logo {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      /* HERO SECTION */
+      .hero {
+        height: 100vh;
+        width: 100%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 120%; /* For parallax offset */
+        object-fit: cover;
+        opacity: 0.7;
+        transform: translateY(0);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: var(--white);
+      }
+
+      .hero-title {
+        font-size: clamp(3rem, 10vw, 8rem);
+        line-height: 0.8;
+        margin-bottom: 20px;
+      }
+
+      .hero-date {
+        font-size: 1.5rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+
+      /* INTRO SECTION */
+      .intro {
+        padding: 15vh 10%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+
+      .intro-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+        border-radius: 10px;
+      }
+
+      .intro-img {
+        width: 100%;
+        height: 110%;
+        object-fit: cover;
+      }
+
+      .intro-text-box {
+        max-width: 500px;
+      }
+
+      .intro-tag {
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+        display: block;
+        color: var(--accent);
+      }
+
+      .intro-heading {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 1.1;
+        margin-bottom: 40px;
+      }
+
+      .intro-p {
+        font-family: "Body", sans-serif;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        opacity: 0.8;
+      }
+
+      /* THE DAY (TIMELINE) */
+      .timeline-section {
+        background-color: var(--white);
+        padding: 15vh 5%;
+        text-align: center;
+      }
+
+      .section-title {
+        font-size: clamp(3rem, 8vw, 6rem);
+        color: var(--accent);
+        margin-bottom: 80px;
+      }
+
+      .timeline {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 40px;
+      }
+
+      .timeline-item {
+        flex: 1;
+        min-width: 200px;
+        padding: 20px;
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      .timeline-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 30px;
+        fill: var(--accent);
+      }
+
+      .timeline-time {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .timeline-label {
+        font-size: 2.2rem;
+        font-family: "Symphony", cursive;
+      }
+
+      /* RSVP SECTION REVISED */
+      .rsvp-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url("../../assets/images/wedding/wedding_template_2/hero-background.jpg");
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        padding: 50px 20px;
+      }
+
+      .rsvp-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 250, 243, 0.2); /* Subtle light overlay */
+        backdrop-filter: blur(5px);
+      }
+
+      .rsvp-container {
+        position: relative;
+        z-index: 5;
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      .rsvp-header-text {
+        font-size: clamp(6rem, 15vw, 12rem);
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 0.6;
+        margin-bottom: -40px;
+        font-family: "Cormorant", serif;
+        letter-spacing: 15px;
+        z-index: 1;
+        position: relative;
+      }
+
+      .envelope-box {
+        position: relative;
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        aspect-ratio: 1 / 1.4;
+        background: #fff;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background: url("../../assets/images/wedding/wedding_template_2/rsvp-envelope-background.png");
+        background-size: cover;
+        background-position: center;
+      }
+
+      .envelope-box:hover {
+        transform: translateY(-10px) scale(1.02);
+      }
+
+      .envelope-names {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-90deg);
+        font-family: "Symphony", cursive;
+        font-size: 2.5rem;
+        color: var(--accent);
+        opacity: 0.8;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      .wax-seal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        z-index: 10;
+      }
+
+      .seal-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .seal-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        pointer-events: none;
+        width: 70%;
+        line-height: 1.2;
+      }
+
+      /* FORM OVERLAY (Slides up when envelope clicked) */
+      .rsvp-form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10%;
+        transform: translateY(100%);
+        transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+
+      .rsvp-form-overlay.active {
+        transform: translateY(0);
+      }
+
+      .close-form {
+        position: absolute;
+        top: 40px;
+        right: 40px;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        cursor: pointer;
+        color: var(--primary);
+      }
+
+      .rsvp-form {
+        display: grid;
+        gap: 25px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      input,
+      select,
+      textarea {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(104, 101, 49, 0.3);
+        padding: 15px 5px;
+        font-family: inherit;
+        font-size: 1.2rem;
+        color: var(--primary);
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        border-bottom-color: var(--primary);
+      }
+
+      .btn-submit {
+        background-color: var(--primary);
+        color: var(--white);
+        border: none;
+        padding: 20px 40px;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition:
+          transform 0.3s,
+          background-color 0.3s;
+      }
+
+      .btn-submit:hover {
+        background-color: #4b5823;
+        transform: scale(1.02);
+      }
+
+      /* HOTELS */
+      .hotels-section {
+        padding: 15vh 10%;
+        text-align: center;
+      }
+
+      .hotels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 40px;
+        margin-top: 60px;
+      }
+
+      .hotel-card {
+        background: var(--white);
+        padding: 50px 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        transition: transform 0.3s;
+      }
+
+      .hotel-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .hotel-name {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+      }
+
+      .hotel-meta {
+        font-family: "Body", sans-serif;
+        opacity: 0.7;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+      }
+
+      .hotel-link {
+        color: var(--accent);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        border-bottom: 1px solid var(--accent);
+        padding-bottom: 5px;
+      }
+
+      /* DETAILS / FOOTER */
+      .details-section {
+        background-color: var(--primary);
+        color: var(--white);
+        padding: 15vh 10%;
+        text-align: center;
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 100px;
+      }
+
+      .detail-item h3 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        color: var(--accent);
+      }
+
+      .footer-logo {
+        margin-top: 15vh;
+        font-size: 5rem;
+      }
+
+      /* MOBILE RESPONSIVE */
+      @media (max-width: 1024px) {
+        .intro {
+          grid-template-columns: 1fr;
+        }
+        .rsvp-section {
+          grid-template-columns: 1fr;
+        }
+        .rsvp-img-box {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 20px;
+        }
+        .hero-title {
+          font-size: 4.5rem;
+        }
+        .rsvp-heading {
+          font-size: 3rem;
+        }
+        .section-title {
+          font-size: 4rem;
+        }
+      }
+
+      /* SUCCESS MESSAGE */
+      .success-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--primary);
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s;
+      }
+      .success-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="success-overlay" id="successOverlay">
+      <h2 class="luxury-script" style="font-size: 6rem">Thank You!</h2>
+      <p style="letter-spacing: 4px; text-transform: uppercase">
+        We can't wait to celebrate with you.
+      </p>
+      <button
+        class="btn-submit"
+        style="
+          margin-top: 40px;
+          background: var(--white);
+          color: var(--primary);
+        "
+        onclick="closeSuccess()"
+      >
+        Close
+      </button>
+    </div>
+
+    <header>
+      <div class="header-logo">
+        <span data-edit="text" data-id="couple-names-header">Alex & Josh</span>
+      </div>
+      <div class="header-date">
+        <span data-edit="text" data-id="wedding-date-header">07 . 08 . 27</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <img
+          src="../../assets/images/wedding/wedding_template_2/hero-background.jpg"
+          alt="Alex & Josh"
+          class="hero-bg"
+          id="heroBg"
+        />
+        <div class="hero-content">
+          <p class="hero-date">Join us to celebrate</p>
+          <h1 class="hero-title luxury-script">
+            <span data-edit="text" data-id="couple-names-hero"
+              >Alex & Josh</span
+            >
+          </h1>
+          <p class="hero-date">
+            <span data-edit="text" data-id="venue-hero"
+              >Skiper villa, Tuscany, Italy</span
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- INTRO -->
+      <section class="intro">
+        <div class="intro-img-wrapper" id="introImgWrap">
+          <img
+            src="../../assets/images/wedding/wedding_template_2/couple-portrait.jpg"
+            alt="Wedding Portrait"
+            class="intro-img"
+          />
+        </div>
+        <div class="intro-text-box fade-in">
+          <span class="intro-tag">Friends & Family</span>
+          <h2 class="intro-heading">
+            We are so excited to celebrate this special moment in our lives with
+            our closest family and friends.
+          </h2>
+          <p class="intro-p">
+            As we count down to our big day, we’ve created this website to keep
+            you updated on all the details. We can’t wait to celebrate with you
+            all!
+          </p>
+        </div>
+      </section>
+
+      <!-- TIMELINE -->
+      <section class="timeline-section">
+        <h2 class="section-title">The Day</h2>
+        <div class="timeline">
+          <!-- Item 1 -->
+          <div class="timeline-item">
+            <svg class="timeline-icon" viewBox="0 0 64 64">
+              <path
+                d="M32 2C15.4 2 2 15.4 2 32s13.4 30 30 30 30-13.4 30-30S48.6 2 32 2zm0 56c-14.3 0-26-11.7-26-26S17.7 6 32 6s26 11.7 26 26-11.7 26-26 26zm1-27.4V15h-2v17.4l11.4 11.4 1.4-1.4-10.8-10.8z"
+              />
+            </svg>
+            <span
+              class="timeline-time"
+              data-edit="text"
+              data-id="timeline-1-time"
+              >1:00 PM</span
+            >
+            <h3
+              class="timeline-label"
+              data-edit="text"
+              data-id="timeline-1-event"
+            >
+              Ceremony
+            </h3>
+          </div>
+          <!-- Item 2 -->
+          <div class="timeline-item">
+            <svg class="timeline-icon" viewBox="0 0 64 64">
+              <path
+                d="M54 10H10v4h44v-4zM10 18v32c0 2.2 1.8 4 4 4h36c2.2 0 4-1.8 4-4V18H10zm22 28c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10z"
+              />
+            </svg>
+            <span
+              class="timeline-time"
+              data-edit="text"
+              data-id="timeline-2-time"
+              >2:00 PM</span
+            >
+            <h3
+              class="timeline-label"
+              data-edit="text"
+              data-id="timeline-2-event"
+            >
+              Cocktails
+            </h3>
+          </div>
+          <!-- Item 3 -->
+          <div class="timeline-item">
+            <svg class="timeline-icon" viewBox="0 0 64 64">
+              <path
+                d="M32 2c-8.8 0-16 7.2-16 16v8H8v28c0 4.4 3.6 8 8 8h32c4.4 0 8-3.6 8-8V26h-8v-8c0-8.8-7.2-16-16-16zm12 24v4h-24v-4h24zM32 6c6.6 0 12 5.4 12 12v8H20v-8c0-6.6 5.4-12 12-12z"
+              />
+            </svg>
+            <span
+              class="timeline-time"
+              data-edit="text"
+              data-id="timeline-3-time"
+              >4:00 PM</span
+            >
+            <h3
+              class="timeline-label"
+              data-edit="text"
+              data-id="timeline-3-event"
+            >
+              Cake Cutting
+            </h3>
+          </div>
+          <!-- Item 4 -->
+          <div class="timeline-item">
+            <svg class="timeline-icon" viewBox="0 0 64 64">
+              <path
+                d="M56 12v40c0 4.4-3.6 8-8 8H16c-4.4 0-8-3.6-8-8V12c0-4.4 3.6-8 8-8h32c4.4 0 8 3.6 8 8zm-4 0c0-2.2-1.8-4-4-4H16c-2.2 0-4 1.8-4 4v40c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V12zm-32 8h24v4H20v-4zm0 8h24v4H20v-4zm0 8h24v4H20v-4z"
+              />
+            </svg>
+            <span
+              class="timeline-time"
+              data-edit="text"
+              data-id="timeline-4-time"
+              >7:00 PM</span
+            >
+            <h3
+              class="timeline-label"
+              data-edit="text"
+              data-id="timeline-4-event"
+            >
+              Dinner
+            </h3>
+          </div>
+          <!-- Item 5 -->
+          <div class="timeline-item">
+            <svg class="timeline-icon" viewBox="0 0 64 64">
+              <path
+                d="M32 4C16.5 4 4 16.5 4 32s12.5 28 28 28 28-12.5 28-28S47.5 4 32 4zm0 50c-12.1 0-22-9.9-22-22S19.9 10 32 10s22 9.9 22 22-9.9 22-22 22zm-4-32l12 12-12 12-2.8-2.8 9.2-9.2-9.2-9.2L28 22z"
+              />
+            </svg>
+            <span
+              class="timeline-time"
+              data-edit="text"
+              data-id="timeline-5-time"
+              >8:00 PM</span
+            >
+            <h3
+              class="timeline-label"
+              data-edit="text"
+              data-id="timeline-5-event"
+            >
+              Party
+            </h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- RSVP SECTION REVISED -->
+      <section class="rsvp-section" id="rsvp">
+        <div class="rsvp-container">
+          <h2 class="rsvp-header-text">RSVP</h2>
+          <div class="envelope-box" id="openEnvelope">
+            <div
+              class="envelope-names"
+              data-edit="text"
+              data-id="envelope-names"
+            >
+              alex and josh
+            </div>
+            <div class="wax-seal">
+              <img
+                src="../../assets/images/wedding/wedding_template_2/rsvp-seal.png"
+                alt="Seal"
+                class="seal-img"
+              />
+              <div class="seal-text">Here<br />RSVP<br />Here</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSVP FORM OVERLAY -->
+        <div class="rsvp-form-overlay" id="rsvpOverlay">
+          <div class="close-form" id="closeForm">Close [x]</div>
+          <h2 class="rsvp-heading luxury-script" style="margin-bottom: 30px">
+            RSVP
+          </h2>
+          <form
+            class="rsvp-form"
+            id="rsvpForm"
+            style="width: 100%; max-width: 500px"
+          >
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="Your Name" required />
+            </div>
+            <div class="form-group">
+              <label>Number of Guests</label>
+              <select required>
+                <option value="1">1 Person</option>
+                <option value="2">2 People</option>
+                <option value="3">3 People</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Will you attend?</label>
+              <select required>
+                <option value="yes">Yes, I'll be there!</option>
+                <option value="no">Regretfully decline</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Dietary Requirements / Comments</label>
+              <textarea
+                rows="3"
+                placeholder="Tell us anything we need to know..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Confirm Attendance</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- HOTELS -->
+      <section class="hotels-section">
+        <h2 class="section-title luxury-script">Where to stay</h2>
+        <div class="hotels-grid">
+          <!-- Hotel 1 -->
+          <div class="hotel-card">
+            <h3 class="hotel-name" data-edit="text" data-id="hotel-1-name">
+              Grand Hotel
+            </h3>
+            <p class="hotel-meta">
+              <span data-edit="text" data-id="hotel-1-address"
+                >Via Regina 0, 99019 Tremezzo, Lombardia</span
+              ><br />A 2 min walk to the venue
+            </p>
+            <a href="#" class="hotel-link">Book here</a>
+          </div>
+          <!-- Hotel 2 -->
+          <div class="hotel-card">
+            <h3 class="hotel-name" data-edit="text" data-id="hotel-2-name">
+              Villa d'Este
+            </h3>
+            <p class="hotel-meta">
+              <span data-edit="text" data-id="hotel-2-address"
+                >Via Regina 40, 22012 Cernobbio, Lombardia</span
+              ><br />A 2 min walk to the venue
+            </p>
+            <a href="#" class="hotel-link">Book here</a>
+          </div>
+          <!-- Hotel 3 -->
+          <div class="hotel-card">
+            <h3 class="hotel-name" data-edit="text" data-id="hotel-3-name">
+              Hotel d'gina
+            </h3>
+            <p class="hotel-meta">
+              <span data-edit="text" data-id="hotel-3-address"
+                >Via Regina 43, Cernobbio, Lombardia</span
+              ><br />A 2 min walk to the venue
+            </p>
+            <a href="#" class="hotel-link">Book here</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- DETAILS -->
+      <section class="details-section">
+        <div class="details-grid">
+          <div class="detail-item fade-in">
+            <h3>Dress Code</h3>
+            <p class="intro-p" style="color: var(--white)">
+              We kindly ask guests to wear cocktail or semi-formal attire,
+              preferably in earthy or neutral tones.
+            </p>
+          </div>
+          <div class="detail-item fade-in">
+            <h3>Gifts</h3>
+            <p class="intro-p" style="color: var(--white)">
+              Your presence at our wedding is the greatest gift we could
+              receive, but if you would like to contribute to our honeymoon
+              fund, we have a registry available.
+            </p>
+          </div>
+        </div>
+        <div
+          class="footer-logo luxury-script"
+          data-edit="text"
+          data-id="couple-names-footer"
+        >
+          Alex & Josh
+        </div>
+        <p
+          style="margin-top: 20px; letter-spacing: 3px; opacity: 0.5"
+          data-edit="text"
+          data-id="wedding-date-footer"
+        >
+          07 . 08 . 2027
+        </p>
+      </section>
+    </main>
+
+    <script>
+      // Initialize Lenis Smooth Scroll
+      const lenis = new Lenis();
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // GSAP Animations
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero Parallax
+      gsap.to("#heroBg", {
+        yPercent: 20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      // Intro Image Parallax
+      gsap.to(".intro-img", {
+        yPercent: -15,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".intro",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      // Timeline Stagger
+      gsap.to(".timeline-item", {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: ".timeline",
+          start: "top 80%",
+        },
+      });
+
+      // Simple Fade In
+      document.querySelectorAll(".fade-in").forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 50,
+          duration: 1,
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+        });
+      });
+
+      // RSVP Form Handling
+      const openEnvelope = document.getElementById("openEnvelope");
+      const rsvpOverlay = document.getElementById("rsvpOverlay");
+      const closeForm = document.getElementById("closeForm");
+      const rsvpForm = document.getElementById("rsvpForm");
+      const successOverlay = document.getElementById("successOverlay");
+
+      if (openEnvelope) {
+        openEnvelope.addEventListener("click", () => {
+          rsvpOverlay.classList.add("active");
+          lenis.stop();
+        });
+      }
+
+      if (closeForm) {
+        closeForm.addEventListener("click", () => {
+          rsvpOverlay.classList.remove("active");
+          lenis.start();
+        });
+      }
+
+      rsvpForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        rsvpOverlay.classList.remove("active");
+        successOverlay.classList.add("active");
+        // lenis.stop() is handled by the overlay logic or already stopped
+      });
+
+      function closeSuccess() {
+        successOverlay.classList.remove("active");
+        lenis.start(); // Restart scroll
+      }
+    </script>
+  </body>
+</html>

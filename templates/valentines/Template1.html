@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Midnight Valentine | Cinematic</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0004;
+        --neon-red: #ff003c;
+        --neon-glow: rgba(255, 0, 60, 0.4);
+        --text-light: #f5e6ea;
+        --text-muted: #8a7a80;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: var(--bg);
+        color: var(--text-light);
+        font-family: "Space Grotesk", sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-image: radial-gradient(
+          circle at 50% 40%,
+          rgba(255, 0, 60, 0.15) 0%,
+          transparent 60%
+        );
+      }
+
+      canvas#embers {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .grain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: url("https://www.transparenttextures.com/patterns/stardust.png");
+        opacity: 0.2;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      /* =========================================
+           3D FOLDING CARD SYSTEM
+           ========================================= */
+      .card-container {
+        perspective: 2000px;
+        width: min(90vw, 380px);
+        height: 540px;
+        z-index: 10;
+        transition: transform 0.1s ease-out;
+      }
+
+      .card-book {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .card-container.is-open .card-book {
+        transform: translateX(50%);
+      }
+
+      @media (max-width: 768px) {
+        .card-container.is-open .card-book {
+          transform: translateX(50%) scale(0.65);
+        }
+      }
+
+      /* --- THE INSIDE RIGHT PAGE --- */
+      .page-right {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(20, 0, 5, 0.9) 0%,
+          rgba(5, 0, 2, 1) 100%
+        );
+        border: 1px solid rgba(255, 0, 60, 0.2);
+        box-shadow:
+          20px 20px 50px rgba(0, 0, 0, 0.9),
+          inset 0 0 20px rgba(255, 0, 60, 0.05);
+        padding: 40px 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1;
+      }
+
+      /* --- THE COVER (FRONT & INSIDE LEFT) --- */
+      .page-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: left center;
+        transform-style: preserve-3d;
+        transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2;
+      }
+
+      .card-container.is-open .page-cover {
+        transform: rotateY(-180deg);
+        box-shadow: -20px 20px 50px rgba(0, 0, 0, 0.9);
+      }
+
+      .cover-face {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 0, 60, 0.3);
+        background: linear-gradient(
+          180deg,
+          rgba(20, 0, 5, 0.95) 0%,
+          rgba(5, 0, 2, 1) 100%
+        );
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .cover-front {
+        z-index: 2;
+        cursor: pointer;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+      }
+      .cover-front:hover .neon-heart {
+        transform: scale(1.1) translateZ(30px);
+      }
+
+      .cover-back {
+        z-index: 1;
+        transform: rotateY(180deg);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* =========================================
+           CONTENT STYLING
+           ========================================= */
+      .neon-heart {
+        font-size: 4rem;
+        color: var(--neon-red);
+        text-shadow:
+          0 0 20px var(--neon-glow),
+          0 0 40px var(--neon-glow);
+        animation: heartbeat 1.5s ease-in-out infinite;
+        margin-bottom: 20px;
+        transition: 0.3s;
+      }
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+          text-shadow: 0 0 40px var(--neon-red);
+        }
+      }
+
+      .title {
+        font-family: "Playfair Display", serif;
+        font-size: 2.2rem;
+        font-style: italic;
+        margin-bottom: 10px;
+        font-weight: 400;
+        color: #fff;
+      }
+      .instruction {
+        font-size: 0.7rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--neon-red);
+        margin-top: 40px;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Sync Lyrics Styles */
+      .lyrics-container {
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lyrics {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        letter-spacing: 1px;
+        font-style: italic;
+        font-family: "Playfair Display", serif;
+        transition: opacity 0.2s ease; /* Faster fade in/out for better sync */
+      }
+
+      /* Valentine Interactive Section */
+      .val-question-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        min-height: 250px;
+      }
+      .question {
+        font-size: 1.5rem;
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        color: #fff;
+        margin-bottom: 30px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        text-align: center;
+      }
+      .val-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        position: relative;
+        width: 100%;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border-radius: 30px;
+        border: 1px solid var(--neon-red);
+        background: transparent;
+        color: var(--text-light);
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .btn-yes {
+        background: var(--neon-red);
+        box-shadow: 0 0 20px var(--neon-glow);
+        z-index: 5;
+      }
+      .btn-yes:hover {
+        background: #fff;
+        color: var(--neon-red);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+        transform: scale(1.05);
+      }
+      .btn-no {
+        position: relative;
+        background: rgba(255, 0, 60, 0.05);
+        z-index: 4;
+      }
+
+      /* Photo Reveal Style */
+      .photo-reveal {
+        width: 80%;
+        max-width: 220px;
+        border-radius: 12px;
+        border: 2px solid rgba(255, 0, 60, 0.4);
+        box-shadow:
+          0 15px 35px rgba(0, 0, 0, 0.8),
+          0 0 25px var(--neon-glow);
+        margin-bottom: 20px;
+        object-fit: cover;
+        aspect-ratio: 1/1;
+        animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0.6) translateY(20px);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* REAL Audio Player UI */
+      .player {
+        width: 100%;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: auto;
+      }
+      .track-info {
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--neon-red);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .controls {
+        display: flex;
+        gap: 25px;
+        align-items: center;
+      }
+
+      .btn-play {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--text-light);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transition: all 0.3s;
+      }
+      .btn-play:hover {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        transform: scale(1.05);
+      }
+      .play-icon {
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 10px solid var(--bg);
+        margin-left: 4px;
+        transition: 0.3s;
+      }
+      .play-icon.playing {
+        border: none;
+        width: 10px;
+        height: 12px;
+        border-left: 3px solid var(--bg);
+        border-right: 3px solid var(--bg);
+        margin-left: 0;
+      }
+
+      .progress-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        font-size: 0.6rem;
+        color: #888;
+      }
+      .progress-bar {
+        flex-grow: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        position: relative;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .progress-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%;
+        background: var(--neon-red);
+        box-shadow: 0 0 10px var(--neon-red);
+        border-radius: 3px;
+        pointer-events: none;
+      }
+      .progress-fill::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: -3px;
+        width: 10px;
+        height: 10px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #fff;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .progress-bar:hover .progress-fill::after {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        font-family: &quot;Caveat&quot;, cursive;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      "
+    >
+      preload
+    </div>
+
+    <audio
+      id="bg-audio"
+      src="Lady Gaga, Bruno Mars - Die With A Smile (Lyrics) - 7clouds (128k).mp3"
+    ></audio>
+
+    <canvas id="embers"></canvas>
+    <div class="grain"></div>
+
+    <div class="card-container" id="cardContainer">
+      <div class="card-book">
+        <div class="page-right">
+          <div class="val-question-container" id="val-container">
+            <div class="question" data-edit="text" data-id="valentine-question">
+              Will you be my Valentine?
+            </div>
+            <div class="val-buttons">
+              <button
+                class="btn btn-yes"
+                id="btn-yes"
+                data-edit="text"
+                data-id="btn-yes-text"
+              >
+                YES
+              </button>
+              <button
+                class="btn btn-no"
+                id="btn-no"
+                data-edit="text"
+                data-id="btn-no-text"
+              >
+                NO
+              </button>
+            </div>
+          </div>
+
+          <div class="player">
+            <div class="track-info">
+              <span style="color: #fff" data-edit="text" data-id="artist-name"
+                >Lady Gaga, Bruno Mars</span
+              ><span data-edit="text" data-id="song-name"
+                >Die With A Smile</span
+              >
+            </div>
+            <div class="controls">
+              <span
+                style="
+                  font-size: 0.8rem;
+                  color: #555;
+                  cursor: pointer;
+                  transition: 0.3s;
+                "
+                onmouseover="this.style.color = '#fff'"
+                onmouseout="this.style.color = '#555'"
+                >|◁</span
+              >
+              <div class="btn-play" id="playBtn">
+                <div class="play-icon" id="playIcon"></div>
+              </div>
+              <span
+                style="
+                  font-size: 0.8rem;
+                  color: #555;
+                  cursor: pointer;
+                  transition: 0.3s;
+                "
+                onmouseover="this.style.color = '#fff'"
+                onmouseout="this.style.color = '#555'"
+                >▷|</span
+              >
+            </div>
+            <div class="progress-container">
+              <span id="currTime">0:00</span>
+              <div class="progress-bar" id="progBar">
+                <div class="progress-fill" id="progFill"></div>
+              </div>
+              <span id="totalTime">0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-cover">
+          <div class="cover-face cover-front" id="coverFront">
+            <div class="neon-heart" id="frontHeart">♥</div>
+            <h1 class="title">Happy Valentines Day!</h1>
+            <div class="instruction">Click to Open</div>
+          </div>
+
+          <div class="cover-face cover-back">
+            <div
+              style="
+                font-size: 2rem;
+                color: var(--neon-red);
+                margin-bottom: 10px;
+                opacity: 0.5;
+              "
+            >
+              ♥
+            </div>
+
+            <div class="lyrics-container">
+              <p class="lyrics" id="lyricsText">Click play to begin...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- 1. CARD OPENING & AUDIO AUTOPLAY LOGIC ---
+      const cardContainer = document.getElementById("cardContainer");
+      const coverFront = document.getElementById("coverFront");
+
+      const audio = document.getElementById("bg-audio");
+      const playBtn = document.getElementById("playBtn");
+      const playIcon = document.getElementById("playIcon");
+      const progBar = document.getElementById("progBar");
+      const progFill = document.getElementById("progFill");
+      const currTime = document.getElementById("currTime");
+      const totalTime = document.getElementById("totalTime");
+
+      coverFront.addEventListener("click", () => {
+        if (!cardContainer.classList.contains("is-open")) {
+          cardContainer.classList.add("is-open");
+          audio
+            .play()
+            .then(() => {
+              playIcon.className = "play-icon playing";
+            })
+            .catch((e) => {
+              console.log("Audio file missing or blocked by browser.");
+            });
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (
+          cardContainer.classList.contains("is-open") &&
+          !cardContainer.contains(e.target)
+        ) {
+          cardContainer.classList.remove("is-open");
+        }
+      });
+
+      // --- 2. 3D Hover Tilt Logic ---
+      document.addEventListener("mousemove", (e) => {
+        if (
+          window.matchMedia("(pointer: fine)").matches &&
+          !cardContainer.classList.contains("is-open")
+        ) {
+          const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+          const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+          cardContainer.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        } else if (cardContainer.classList.contains("is-open")) {
+          cardContainer.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        }
+      });
+
+      // --- 3. Valentine Interaction Logic & Photo Reveal ---
+      const btnNo = document.getElementById("btn-no");
+      const btnYes = document.getElementById("btn-yes");
+      const valContainer = document.getElementById("val-container");
+
+      function dodgeMouse() {
+        const x = Math.random() * 150 - 75;
+        const y = Math.random() * 80 - 40;
+        btnNo.style.transform = `translate(${x}px, ${y}px)`;
+      }
+
+      btnNo.addEventListener("mouseenter", dodgeMouse);
+      btnNo.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          dodgeMouse();
+        },
+        { passive: false },
+      );
+
+      btnYes.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        // Replace the question with a photo and text
+        valContainer.innerHTML = `
+                <img src="nathan-dumlao-w5hhoYM_JsU-unsplash.jpg" alt="Us" class="photo-reveal">
+                <div class="title" style="font-size: 1.5rem; color: var(--neon-red); text-shadow: 0 0 20px var(--neon-glow); text-align: center;">I love you. ❤️</div>
+            `;
+
+        // Fire Confetti
+        const duration = 3000;
+        const end = Date.now() + duration;
+        const heart = confetti.shapeFromText({ text: "❤️" });
+
+        (function frame() {
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.8 },
+            colors: ["#ff003c", "#ffffff"],
+            shapes: ["circle"],
+            scalar: 0.8,
+            zIndex: 9999,
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.8 },
+            colors: ["#ff003c", "#ffffff"],
+            shapes: ["circle"],
+            scalar: 0.8,
+            zIndex: 9999,
+          });
+          if (Math.random() < 0.2) {
+            confetti({
+              particleCount: 1,
+              angle: Math.random() * 60 + 60,
+              spread: 55,
+              origin: { x: Math.random(), y: 0.9 },
+              shapes: [heart],
+              scalar: 4,
+              zIndex: 9999,
+            });
+          }
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      });
+
+      // --- 4. REAL Audio Player & RECALIBRATED LYRIC SYNC Logic ---
+      function formatTime(seconds) {
+        if (isNaN(seconds)) return "0:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+      }
+
+      audio.addEventListener("loadedmetadata", () => {
+        totalTime.innerText = formatTime(audio.duration);
+      });
+
+      playBtn.addEventListener("click", () => {
+        if (audio.paused) {
+          audio
+            .play()
+            .catch((e) =>
+              alert("Please place your mp3 in the same folder to hear music!"),
+            );
+          playIcon.className = "play-icon playing";
+        } else {
+          audio.pause();
+          playIcon.className = "play-icon";
+        }
+      });
+
+      // --- MASTER SYNC OFFSET ---
+      const syncOffset = 0;
+
+      // TIGHTENED LYRICS TIMELINE
+      const lyricsData = [
+        { time: 0.0, text: "🎶...<br>♥" },
+        { time: 9.0, text: "I, I just woke up from a dream" },
+        { time: 16.0, text: "Where you and I had to say goodbye" },
+        { time: 20.0, text: "And I don't know what it all means" },
+        { time: 25.0, text: "But since I survived, I realized" },
+        { time: 29.7, text: "Wherever you go, that's where I'll follow" },
+        { time: 34.0, text: "Nobody's promised tomorrow" },
+        {
+          time: 38.7,
+          text: "So I'ma love you every night<br>like it's the last night",
+        },
+        { time: 42.0, text: "Like it's the last night" },
+        {
+          time: 45.0,
+          text: "If the world was ending<br>I'd wanna be next to you",
+        },
+        {
+          time: 54.0,
+          text: "If the party was over<br>And our time on Earth was through",
+        },
+        {
+          time: 63.0,
+          text: "I'd wanna hold you just for a while<br>And die with a smile",
+        },
+        { time: 82.0, text: "🎶...<br>♥" },
+      ];
+
+      const lyricsTextEl = document.getElementById("lyricsText");
+      let currentLyricIndex = -1;
+
+      audio.addEventListener("timeupdate", () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progFill.style.width = `${percent}%`;
+        currTime.innerText = formatTime(audio.currentTime);
+
+        const adjustedTime = audio.currentTime - syncOffset;
+
+        let activeIndex = -1;
+        for (let i = 0; i < lyricsData.length; i++) {
+          if (adjustedTime >= lyricsData[i].time) activeIndex = i;
+        }
+
+        if (activeIndex !== -1 && activeIndex !== currentLyricIndex) {
+          currentLyricIndex = activeIndex;
+
+          lyricsTextEl.style.opacity = 0;
+
+          setTimeout(() => {
+            lyricsTextEl.innerHTML = lyricsData[activeIndex].text;
+            lyricsTextEl.style.opacity = 1;
+          }, 200);
+        }
+      });
+
+      progBar.addEventListener("click", (e) => {
+        const rect = progBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+        const clickPercent = clickX / width;
+        audio.currentTime = clickPercent * audio.duration;
+      });
+
+      // --- 5. Interactive Embers Canvas (NOW TINY HEARTS) ---
+      const canvas = document.getElementById("embers");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let mouseX2 = window.innerWidth / 2,
+        mouseY2 = window.innerHeight / 2;
+      document.addEventListener("mousemove", (e) => {
+        mouseX2 = e.clientX;
+        mouseY2 = e.clientY;
+      });
+
+      class Ember {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = canvas.height + Math.random() * 100;
+          // Size mapping for font size instead of circle radius
+          this.size = Math.random() * 10 + 6; // Sizes between 6px and 16px
+          this.speedY = Math.random() * 1 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.5;
+          this.opacity = Math.random() * 0.6 + 0.1; // Ensure they are semi-visible
+        }
+        update() {
+          this.y -= this.speedY;
+          this.x += this.speedX;
+          let dx = mouseX2 - this.x;
+          let dy = mouseY2 - this.y;
+          if (Math.sqrt(dx * dx + dy * dy) < 100) {
+            this.x -= dx * 0.02;
+            this.y -= dy * 0.02;
+          }
+          if (this.y < -20) {
+            this.y = canvas.height + 10;
+            this.x = Math.random() * canvas.width;
+          }
+        }
+        draw() {
+          ctx.fillStyle = `rgba(255, 0, 60, ${this.opacity})`;
+          ctx.font = `${this.size}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("♥", this.x, this.y);
+        }
+      }
+      const embersArray = Array.from({ length: 80 }, () => new Ember());
+      function animateEmbers() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        embersArray.forEach((ember) => {
+          ember.update();
+          ember.draw();
+        });
+        requestAnimationFrame(animateEmbers);
+      }
+      animateEmbers();
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
+  </body>
+</html>

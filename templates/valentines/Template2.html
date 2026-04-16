@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Valentine | Interactive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: #fff0f5; overflow: hidden; perspective: 1500px; /* Increased perspective for a larger card */
+        }
+        
+        /* Scaled up Floating Orbs for better background fill */
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: float 20s infinite alternate ease-in-out; }
+        .orb-1 { width: 600px; height: 600px; background: #ffb6c1; top: 5%; left: 15%; }
+        .orb-2 { width: 700px; height: 700px; background: #ffc8dd; bottom: -15%; right: 5%; animation-delay: -5s; }
+        .orb-3 { width: 450px; height: 450px; background: #f8ad9d; top: 35%; left: 55%; animation-delay: -10s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(150px, 150px) scale(1.2); } }
+        
+        /* GIANT Static Rotating Background Flowers */
+        .spinning-flower {
+            position: absolute; pointer-events: none; z-index: 1; user-select: none;
+            opacity: 0.25; /* Lowered opacity so giant flowers don't overwhelm the card */
+            transform-origin: center center;
+        }
+        @keyframes spinFlower {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spinFlowerReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        .glass-wrapper { transform-style: preserve-3d; transition: transform 0.1s ease-out; z-index: 10; }
+        
+        /* CARD STYLING */
+        .glass-card {
+            width: 480px; border-radius: 30px; background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 35px 65px rgba(0,0,0,0.1);
+            text-align: center; color: #333; position: relative; overflow: hidden;
+            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1), padding 0.6s ease;
+            height: 520px; padding: 80px 40px; display: flex; flex-direction: column; align-items: center;
+        }
+        
+        /* Interactive Mouse Glare */
+        .glare {
+            position: absolute; top: var(--y, 50%); left: var(--x, 50%);
+            width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, transparent 70%);
+            transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity 0.3s; mix-blend-mode: overlay;
+        }
+        .glass-card:hover .glare { opacity: 1; }
+
+        /* TYPOGRAPHY & ENHANCED 3D POP */
+        .content-front { transition: opacity 0.4s ease, transform 0.4s ease; display: flex; flex-direction: column; align-items: center; width: 100%; transform-style: preserve-3d;}
+        .icon { font-size: 5rem; margin-bottom: 25px; transform: translateZ(50px); }
+        .title { font-size: 2.4rem; font-weight: 700; margin-bottom: 15px; color: #1a1a1a; letter-spacing: -1px; transform: translateZ(40px);}
+        .subtitle { font-size: 1.1rem; font-weight: 300; line-height: 1.6; color: #666; transform: translateZ(30px); padding: 0 20px;}
+        
+        .btn {
+            margin-top: 45px; padding: 18px 45px; border-radius: 40px; background: #fff; border: none; color: #ff5c8d;
+            font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 1rem; letter-spacing: 1px; cursor: pointer;
+            box-shadow: 0 15px 30px rgba(255, 92, 141, 0.15); transition: all 0.3s; position: relative; z-index: 2;
+            transform: translateZ(40px);
+        }
+        .btn:hover { background: #ff5c8d; color: #fff; transform: translateZ(50px) translateY(-3px); box-shadow: 0 20px 35px rgba(255, 92, 141, 0.3); }
+
+        /* Hidden Letter Content */
+        .letter-content {
+            position: absolute; top: 60px; left: 40px; right: 40px; opacity: 0; transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; text-align: center;
+        }
+        .letter-text { font-family: 'Caveat', cursive; font-size: 2.2rem; color: #444; line-height: 1.5; text-align: left;}
+        
+        /* Valentine Question UI */
+        .val-question { font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 40px; line-height: 1.2; letter-spacing: -1px; }
+        .val-buttons { display: flex; justify-content: center; position: relative; height: 60px; width: 100%; margin-top: 20px;}
+        
+        .val-btn { 
+            padding: 15px 40px; border-radius: 30px; border: none; 
+            font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 1.1rem; 
+            cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .btn-yes { background: #ff5c8d; color: #fff; box-shadow: 0 10px 20px rgba(255, 92, 141, 0.3); z-index: 5; position: absolute; right: calc(50% + 10px); }
+        .btn-yes:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 15px 25px rgba(255, 92, 141, 0.4); }
+        .btn-no { background: #fff; color: #888; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: absolute; left: calc(50% + 10px); z-index: 4; }
+
+        /* State Classes */
+        .glass-card.is-open { height: 620px; padding-top: 50px; }
+        .glass-card.is-open .content-front { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+        .glass-card.is-open .letter-content { opacity: 1; transform: translateY(0); pointer-events: auto; transition-delay: 0.2s;}
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div style="font-family: 'Caveat', cursive; position: absolute; opacity: 0; pointer-events: none;">preload</div>
+
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+
+    <div class="glass-wrapper" id="wrapper">
+        <div class="glass-card" id="card">
+            <div class="glare" id="glare"></div>
+            
+            <div class="content-front" id="front">
+                <div class="icon">🌸</div>
+                <h1 class="title">I have a question...</h1>
+                <p class="subtitle">There is something I needed to ask you.</p>
+                <button class="btn" id="openBtn">OPEN TO READ</button>
+            </div>
+
+            <div class="letter-content" id="letter">
+                
+                <div id="question-block">
+                    <h2 class="val-question">Will you be my Valentine? 🥺</h2>
+                    <div class="val-buttons">
+                        <button class="val-btn btn-yes" id="btnYes">YES</button>
+                        <button class="val-btn btn-no" id="btnNo">NO</button>
+                    </div>
+                </div>
+
+                <div id="message-block" style="display: none; animation: fadeIn 1s ease forwards;">
+                    <p class="letter-text">
+                        I knew you'd say yes! ❤️<br><br>
+                        I love you so much — but I love us together even more.<br><br>
+                        I didn't think it was possible to find someone who fits so perfectly into my chaos.<br><br>
+                        MWAHHHHHHHH!
+                    </p>
+                    <button class="btn" id="closeBtn" style="margin-top: 40px; padding: 15px 35px; background: #f0f0f0; color:#888; box-shadow:none;">CLOSE</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. GIANT Static Rotating Background Flowers ---
+        function createFlowers() {
+            const flowerTypes = ['🌸', '🌷', '🌺', '🌼', '🌻'];
+            // Increased count to fill the screen nicely
+            for (let i = 0; i < 40; i++) {
+                let f = document.createElement('div');
+                f.className = 'spinning-flower';
+                f.innerText = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+                
+                // Allow them to spawn slightly off-screen to avoid hard edges
+                f.style.left = (Math.random() * 110 - 5) + 'vw';
+                f.style.top = (Math.random() * 110 - 5) + 'vh';
+                
+                // Slower spin for larger elements
+                let duration = (Math.random() * 40 + 20) + 's'; 
+                let animName = Math.random() > 0.5 ? 'spinFlower' : 'spinFlowerReverse';
+                f.style.animation = `${animName} ${duration} linear infinite`;
+                
+                // Massively increased size: Between 4rem and 12rem
+                f.style.fontSize = (Math.random() * 8 + 4) + 'rem';
+                document.body.appendChild(f);
+            }
+        }
+        createFlowers();
+
+        // --- 2. Fluid 3D Tilt & Glare Tracking ---
+        const wrapper = document.getElementById('wrapper');
+        const card = document.getElementById('card');
+        const glare = document.getElementById('glare');
+        const openBtn = document.getElementById('openBtn');
+        const closeBtn = document.getElementById('closeBtn');
+
+        document.addEventListener('mousemove', (e) => {
+            if (window.matchMedia("(pointer: fine)").matches) {
+                // Tilt
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 35;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 35;
+                wrapper.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                
+                // Glare Mapping
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                glare.style.setProperty('--x', `${x}px`);
+                glare.style.setProperty('--y', `${y}px`);
+            }
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            wrapper.style.transition = 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            wrapper.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            setTimeout(() => { wrapper.style.transition = 'transform 0.1s ease-out'; }, 600);
+        });
+
+        // --- 3. Card Expansion Logic ---
+        openBtn.addEventListener('click', () => card.classList.add('is-open'));
+        closeBtn.addEventListener('click', () => card.classList.remove('is-open'));
+
+        // --- 4. Valentine Interactions (Dodging NO, Flower Shower YES) ---
+        const btnNo = document.getElementById('btnNo');
+        const btnYes = document.getElementById('btnYes');
+        const qBlock = document.getElementById('question-block');
+        const mBlock = document.getElementById('message-block');
+
+        // The NO button runs away
+        function dodgeMouse() {
+            const maxMoveX = 140;
+            const maxMoveY = 120;
+            const x = (Math.random() * maxMoveX * 2) - maxMoveX;
+            const y = (Math.random() * maxMoveY * 2) - maxMoveY;
+            btnNo.style.transform = `translate(${x}px, ${y}px)`;
+        }
+        
+        btnNo.addEventListener('mouseenter', dodgeMouse);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents tapping it on mobile
+            dodgeMouse();
+        });
+
+        // The YES button triggers the letter and the TOP-DOWN flower shower
+        btnYes.addEventListener('click', () => {
+            // Swap UI
+            qBlock.style.display = 'none';
+            mBlock.style.display = 'block';
+
+            // Fire massive Top-Down Flower Shower
+            const duration = 4500;
+            const end = Date.now() + duration;
+            
+            const f1 = confetti.shapeFromText({ text: '🌸' });
+            const f2 = confetti.shapeFromText({ text: '🌷' });
+            const f3 = confetti.shapeFromText({ text: '🌺' });
+            const f4 = confetti.shapeFromText({ text: '🌼' });
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 270, // Points straight down
+                    spread: 120, // Wide spread across the screen
+                    origin: { x: Math.random(), y: -0.1 }, // Starts slightly above the top edge
+                    startVelocity: Math.random() * 10 + 15, // Falling speed
+                    gravity: 0.8, // Gentle float downwards
+                    shapes: [f1, f2, f3, f4], 
+                    scalar: 2.5, 
+                    zIndex: 9999,
+                    ticks: 300 // Lasts longer on screen
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO - Cultural Mosaic</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Syne:wght@800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --neon-green: #ccff00;
+        --deep-purple: #1a062d;
+        --electric-pink: #ff0055;
+        --glass: rgba(255, 255, 255, 0.05);
+      }
+
+      body,
+      html {
+        height: 100%;
+        overflow-x: hidden;
+        font-family: "Space Grotesk", sans-serif;
+        background: var(--deep-purple);
+        color: #fff;
+        scroll-behavior: smooth;
+      }
+
+      /* Animated Grainy Background */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+        opacity: 0.1;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .section {
+        width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        text-align: center;
+        position: relative;
+        perspective: 1000px;
+      }
+
+      /* Staggered Content Animation */
+      .reveal {
+        opacity: 0;
+        transform: translateY(50px) rotateX(-10deg);
+        transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+      }
+
+      /* Floating Blobs */
+      .blob {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: linear-gradient(45deg, var(--electric-pink), #7000ff);
+        filter: blur(120px);
+        border-radius: 50%;
+        z-index: -1;
+        animation: move 15s infinite alternate ease-in-out;
+        opacity: 0.5;
+      }
+
+      @keyframes move {
+        0% {
+          transform: translate(-10%, -10%) scale(1);
+        }
+        100% {
+          transform: translate(20%, 20%) scale(1.2);
+        }
+      }
+
+      /* Typography */
+      .fest-year {
+        font-size: 12px;
+        letter-spacing: 10px;
+        text-transform: uppercase;
+        color: var(--neon-green);
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+      }
+
+      .fest-title {
+        font-family: "Syne", sans-serif;
+        font-size: clamp(80px, 18vw, 200px);
+        line-height: 0.8;
+        margin-bottom: 30px;
+        background: linear-gradient(to bottom, #fff 40%, var(--neon-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .tagline {
+        font-size: clamp(18px, 3vw, 24px);
+        max-width: 700px;
+        opacity: 0.7;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      /* Bento Grid Effects */
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 600px;
+        width: 100%;
+        margin-top: 40px;
+      }
+
+      .bento-item {
+        background: var(--glass);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 30px;
+        backdrop-filter: blur(20px);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .bento-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-10px) scale(1.02);
+        border-color: var(--neon-green);
+      }
+
+      .date-big {
+        font-size: 60px;
+        font-weight: 700;
+        color: var(--neon-green);
+        font-family: "Syne";
+        letter-spacing: -2px;
+      }
+
+      /* Countdown Style */
+      .countdown {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+      }
+
+      .unit {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 20px;
+        border-radius: 20px;
+        min-width: 85px;
+        transition: transform 0.3s ease;
+      }
+
+      .unit:hover {
+        border-color: var(--electric-pink);
+        transform: translateY(-5px);
+      }
+      .unit span {
+        display: block;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--neon-green);
+      }
+      .unit label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0.5;
+      }
+
+      .btn {
+        margin-top: 50px;
+        padding: 22px 50px;
+        background: var(--neon-green);
+        color: #000;
+        border: none;
+        border-radius: 100px;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        letter-spacing: 2px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px var(--neon-green);
+        letter-spacing: 4px;
+      }
+
+      [contenteditable]:focus {
+        outline: none;
+        border-bottom: 2px solid var(--neon-green);
+      }
+
+      /* Scroll Bar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--deep-purple);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--glass);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="section">
+      <div class="blob"></div>
+      <div class="reveal">
+        <span
+          class="fest-year"
+          contenteditable="true"
+          data-edit="text"
+          data-id="festival-year"
+          >ANNUAL FEST 2026</span
+        >
+        <h1
+          class="fest-title"
+          contenteditable="true"
+          data-edit="text"
+          data-id="festival-title"
+        >
+          AURA
+        </h1>
+        <p
+          class="tagline"
+          contenteditable="true"
+          data-edit="text"
+          data-id="festival-tagline"
+        >
+          A digital-first cultural experience where tradition meets neon future.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" style="background: #0d0416">
+      <div class="reveal">
+        <h2 class="fest-year">The Logistics</h2>
+        <div class="bento-grid">
+          <div class="bento-item" style="grid-column: span 2">
+            <p class="fest-year" style="letter-spacing: 4px; font-size: 10px">
+              When
+            </p>
+            <div
+              class="date-big"
+              contenteditable="true"
+              data-edit="text"
+              data-id="event-dates"
+            >
+              MAY 15-17
+            </div>
+          </div>
+          <div class="bento-item">
+            <p class="fest-year" style="letter-spacing: 4px; font-size: 10px">
+              Where
+            </p>
+            <p
+              contenteditable="true"
+              style="font-weight: 700; font-size: 18px"
+              data-edit="text"
+              data-id="venue-location"
+            >
+              Main Stadium<br />RAK Campus
+            </p>
+          </div>
+          <div class="bento-item">
+            <p class="fest-year" style="letter-spacing: 4px; font-size: 10px">
+              Entry
+            </p>
+            <p
+              contenteditable="true"
+              style="font-weight: 700; font-size: 18px"
+              data-edit="text"
+              data-id="entry-requirement"
+            >
+              Student ID<br />Required
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="reveal">
+        <h2 class="fest-year">The Countdown</h2>
+        <div class="countdown">
+          <div class="unit"><span id="days">00</span><label>Days</label></div>
+          <div class="unit"><span id="hours">00</span><label>Hrs</label></div>
+          <div class="unit"><span id="mins">00</span><label>Min</label></div>
+          <div class="unit"><span id="secs">00</span><label>Sec</label></div>
+        </div>
+        <button class="btn">Register Now</button>
+        <p
+          style="
+            margin-top: 30px;
+            font-size: 12px;
+            opacity: 0.4;
+            letter-spacing: 2px;
+          "
+        >
+          Powered by INVIO Technology
+        </p>
+      </div>
+    </section>
+
+    <script>
+      // Intersection Observer for Reveal Animations
+      const observerOptions = { threshold: 0.2 };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+          }
+        });
+      }, observerOptions);
+
+      document
+        .querySelectorAll(".reveal")
+        .forEach((el) => observer.observe(el));
+
+      // DYNAMIC Countdown Timer
+      function updateCountdown() {
+        try {
+          // 1. Grab the text from your editable date div
+          const dateText = document.querySelector(".date-big").innerText.trim();
+
+          // 2. Extract the Month and the first Day (e.g., "MAY 15" from "MAY 15-17")
+          // This regex looks for the month name and the first number
+          const match = dateText.match(/([A-Z]+)\s*(\d+)/i);
+
+          if (!match) return;
+
+          const month = match[1];
+          const day = match[2];
+          const year = 2026; // You can also make a year div if needed
+
+          // 3. Construct the target date
+          const targetString = `${month} ${day}, ${year} 09:00:00`;
+          const target = new Date(targetString).getTime();
+
+          const now = new Date().getTime();
+          const diff = target - now;
+
+          if (isNaN(target) || diff <= 0) {
+            document.getElementById("days").innerText = "00";
+            document.getElementById("hours").innerText = "00";
+            document.getElementById("mins").innerText = "00";
+            document.getElementById("seconds").innerText = "00";
+            return;
+          }
+
+          // 4. Update the UI
+          document.getElementById("days").innerText = Math.floor(
+            diff / (1000 * 60 * 60 * 24),
+          )
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("hours").innerText = Math.floor(
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          )
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("mins").innerText = Math.floor(
+            (diff % (1000 * 60 * 60)) / (1000 * 60),
+          )
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("secs").innerText = Math.floor(
+            (diff % (1000 * 60)) / 1000,
+          )
+            .toString()
+            .padStart(2, "0");
+        } catch (err) {
+          // Silently wait for the user to finish typing a valid date
+        }
+      }
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+      // Prevent rich text on paste
+      document.querySelectorAll("[contenteditable]").forEach((el) => {
+        el.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const text = e.clipboardData.getData("text/plain");
+          document.execCommand("insertText", false, text);
+        });
+        // Update countdown immediately when user types
+        el.addEventListener("input", updateCountdown);
+      });
+    </script>
+  </body>
+</html>

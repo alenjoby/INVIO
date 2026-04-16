@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Luis & Bianca — Wedding — Madrid</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --clr-red: #8b1538;
+        --clr-beige: #fff5eb;
+        --clr-text-light: #fff8f5;
+        --clr-text-dark: #2a2a2a;
+      }
+
+      html {
+        box-sizing: border-box;
+        font-family: "Playfair Display", serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, var(--clr-beige) 0%, #fff 100%);
+        color: var(--clr-text-dark);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header {
+        padding: 1.6rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .nav-link {
+        color: var(--clr-text-dark);
+        text-decoration: none;
+        margin-left: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .texture-overlay {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(0, 0, 0, 0.02) 1px,
+          transparent 1px
+        );
+        background-size: 24px 24px;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      .sec-hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: clamp(2rem, 5vw, 4rem);
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: clamp(4rem, 8vw, 6rem);
+        min-height: 100vh;
+        justify-content: center;
+      }
+
+      .script-title {
+        font-family: var(--font-script, "Pinyon Script"), cursive;
+        font-weight: 400;
+        line-height: 1.05;
+      }
+
+      .script-title.xl {
+        font-size: clamp(3rem, 8vw, 5.2rem);
+      }
+      .script-title.lg {
+        font-size: clamp(2.45rem, 6.5vw, 4.2rem);
+      }
+      .script-title.md {
+        font-size: clamp(2rem, 4.7vw, 2.75rem);
+      }
+      .script-title.monogram-text {
+        font-size: clamp(4rem, 9vw, 6rem);
+      }
+
+      .overline {
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 0.86rem;
+        margin-bottom: -0.8rem;
+        position: relative;
+      }
+
+      p {
+        font-size: clamp(1rem, 1.65vw, 1.12rem);
+        line-height: 1.75;
+        margin-bottom: 1rem;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .uppercase {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .narrow {
+        max-width: 66ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .sec-hero {
+        text-align: center;
+      }
+
+      .hero-content {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .hero-content h1 {
+        font-size: clamp(3.5rem, 11vw, 8rem);
+        margin-bottom: 2rem;
+        transform: rotate(-2deg);
+      }
+
+      .hero-center-block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(1.4rem, 5vw, 4rem);
+        margin-bottom: 2.2rem;
+      }
+
+      .nav-link {
+        color: var(--clr-text-light);
+        text-decoration: none;
+        letter-spacing: 2px;
+        border-bottom: 1px solid var(--clr-text-light);
+        padding-bottom: 4px;
+        font-size: 0.82rem;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-link:hover {
+        opacity: 0.75;
+      }
+
+      .hero-image-wrapper {
+        background: #fff;
+        padding: 10px 10px 40px 10px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        transform: rotate(2deg);
+        border-radius: 2px;
+      }
+
+      .polaroid {
+        width: clamp(220px, 33vw, 320px);
+        height: clamp(300px, 44vw, 420px);
+        object-fit: cover;
+        display: block;
+      }
+
+      .collage-container {
+        position: relative;
+        width: 100%;
+        max-width: 1040px;
+        height: min(80vh, 720px);
+        margin: 0 auto;
+        padding: clamp(3rem, 5vw, 5rem) clamp(1rem, 3vw, 3rem);
+      }
+
+      .collage-item {
+        position: absolute;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .c-img-1 {
+        top: 10%;
+        left: 5%;
+        width: min(38vw, 400px);
+        padding: 10px 10px 30px 10px;
+        background: #fff;
+        transform: rotate(-3deg);
+      }
+
+      .c-envelope {
+        top: 40%;
+        left: 35%;
+        width: min(35vw, 350px);
+        z-index: 5;
+        box-shadow: none;
+      }
+
+      .c-card-red {
+        top: 15%;
+        right: 20%;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: clamp(1.9rem, 4.4vw, 3rem) clamp(1.3rem, 2.2vw, 2rem);
+        width: min(40vw, 290px);
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        z-index: 2;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .c-img-2 {
+        bottom: 5%;
+        right: 5%;
+        width: min(26vw, 250px);
+        padding: 8px 8px 25px 8px;
+        background: #fff;
+        transform: rotate(4deg);
+        z-index: 1;
+      }
+
+      .c-monogram {
+        bottom: 20%;
+        left: 10%;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: 1.6rem clamp(1.4rem, 2vw, 3rem);
+        transform: rotate(-5deg);
+        z-index: 6;
+      }
+
+      .divider {
+        width: 50px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.5);
+        margin: 1.2rem auto;
+      }
+
+      .flex-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: clamp(2rem, 5vw, 4rem);
+        width: 100%;
+        padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .flex-row.reverse {
+        flex-direction: row-reverse;
+      }
+
+      .text-col {
+        flex: 1;
+      }
+
+      .text-col p {
+        max-width: 62ch;
+      }
+
+      .img-col {
+        flex: 1;
+        position: relative;
+      }
+
+      .taped-photo {
+        background: #fff;
+        padding: 10px 10px 35px 10px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        width: clamp(250px, 28vw, 320px);
+        height: clamp(300px, 32vw, 360px);
+        object-fit: cover;
+      }
+
+      .img-tilt-left {
+        transform: rotate(-6deg);
+        z-index: 2;
+        position: relative;
+      }
+
+      .img-tilt-right {
+        transform: rotate(5deg);
+        margin-left: clamp(-80px, -7vw, -100px);
+        z-index: 1;
+        position: relative;
+      }
+
+      .offset-down {
+        top: 50px;
+      }
+
+      .grid-3-col {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.6rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        margin-top: 3rem;
+        text-align: center;
+        padding: 0 clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .info-block {
+        border: 1px solid rgba(74, 21, 21, 0.2);
+        background: rgba(255, 255, 255, 0.38);
+        padding: clamp(1.3rem, 2vw, 2rem);
+      }
+
+      .travel-block {
+        margin-bottom: 2.2rem;
+      }
+
+      .travel-block h3 {
+        margin-bottom: 0.5rem;
+      }
+
+      .overlay-text {
+        position: absolute;
+        bottom: -40px;
+        left: -20px;
+        transform: rotate(-5deg);
+        z-index: 3;
+      }
+
+      .flower-icon {
+        --size: 2.8rem;
+        width: var(--size);
+        aspect-ratio: 1;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        display: inline-grid;
+        place-items: center;
+        opacity: 0.8;
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .flower-icon::before,
+      .flower-icon::after {
+        content: "";
+        position: absolute;
+        width: 66%;
+        height: 66%;
+        border: 2px solid currentColor;
+        border-radius: 999px;
+        opacity: 0.8;
+      }
+
+      .flower-icon::before {
+        transform: rotate(45deg);
+      }
+
+      .flower-icon::after {
+        transform: rotate(-45deg);
+      }
+
+      .flower-icon.lg {
+        --size: 3rem;
+      }
+
+      .flower-icon.large {
+        --size: 3.5rem;
+      }
+
+      .faq-col {
+        flex: 1.5;
+        padding: 0 clamp(1.5rem, 3vw, 3rem);
+      }
+
+      .faq-item {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(244, 236, 225, 0.4);
+      }
+
+      .faq-trigger {
+        width: 100%;
+        background: transparent;
+        color: inherit;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        font-family: var(--font-serif, "Playfair Display");
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 1px;
+        padding: 0.4rem 0 0.9rem;
+        cursor: pointer;
+      }
+
+      .faq-trigger span {
+        font-size: 1.4rem;
+        line-height: 1;
+        transform: translateY(-2px);
+      }
+
+      .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+      }
+
+      .faq-answer p {
+        padding: 0 0 1rem;
+      }
+
+      .faq-item.is-open .faq-trigger span {
+        transform: rotate(45deg);
+      }
+
+      .sec-about bg-beige {
+        padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .sec-registry {
+        padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .sec-faqs {
+        padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .sec-rsvp {
+        padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+      }
+
+      .r-card-red {
+        top: 20%;
+        left: 10%;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: clamp(1.6rem, 3.3vw, 3rem);
+        transform: rotate(-4deg);
+        z-index: 3;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .r-envelope {
+        top: 40%;
+        left: 25%;
+        width: min(35vw, 350px);
+        box-shadow: none;
+        z-index: 2;
+      }
+
+      .r-img {
+        top: 10%;
+        right: 15%;
+        width: min(38vw, 400px);
+        padding: 10px 10px 30px 10px;
+        background: #fff;
+        z-index: 1;
+      }
+
+      .r-contact-card {
+        bottom: 5%;
+        right: 10%;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: clamp(1.4rem, 2vw, 3rem) clamp(1.2rem, 2vw, 2rem);
+        width: min(40vw, 280px);
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        z-index: 4;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .fade-up {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      .fade-in {
+        opacity: 0;
+      }
+
+      .reveal-image {
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+      }
+
+      @media (max-width: 900px) {
+        section {
+          min-height: auto;
+        }
+
+        .flex-row,
+        .flex-row.reverse {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .text-col p {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .grid-3-col {
+          grid-template-columns: 1fr;
+          max-width: 520px;
+        }
+
+        .hero-center-block {
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .collage-container {
+          height: auto;
+          min-height: 640px;
+        }
+
+        .collage-item {
+          position: relative;
+          top: auto !important;
+          left: auto !important;
+          right: auto !important;
+          bottom: auto !important;
+          margin: 1.35rem auto;
+          transform: none !important;
+          width: min(89vw, 430px) !important;
+        }
+
+        .c-card-red,
+        .r-card-red,
+        .r-contact-card {
+          width: min(89vw, 430px) !important;
+        }
+
+        .img-tilt-right {
+          margin-left: 0;
+        }
+
+        .offset-down {
+          top: 0;
+        }
+
+        .overlay-text {
+          position: static;
+          transform: none;
+          margin-top: 1rem;
+        }
+
+        .offset-flower {
+          transform: none;
+          margin-top: 1rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .fade-up,
+        .fade-in {
+          opacity: 1;
+          transform: none;
+        }
+
+        .reveal-image {
+          clip-path: none;
+        }
+
+        .faq-answer {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="texture-overlay"></div>
+
+    <main class="smooth-scroll-wrapper">
+      <section class="sec-hero bg-red">
+        <div class="hero-content">
+          <p class="overline fade-up">A SPECIAL NOTE FROM</p>
+          <h1 class="script-title fade-up">
+            <span data-edit="text" data-id="couple-names-hero"
+              >Luis and Bianca</span
+            >
+          </h1>
+
+          <div class="hero-center-block">
+            <a href="#itinerary" class="nav-link fade-in">ITINERARY</a>
+            <div class="hero-image-wrapper reveal-image">
+              <img
+                src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop"
+                alt="Luis and Bianca"
+                class="polaroid"
+                width="320"
+                height="420"
+              />
+            </div>
+            <a href="#details" class="nav-link fade-in">DETAILS</a>
+          </div>
+
+          <p class="footer-text fade-up">
+            WE ARE FINALLY GETTING MARRIED ...
+            <i data-edit="text" data-id="wedding-location">IN MADRID!</i>
+          </p>
+        </div>
+      </section>
+
+      <section class="sec-collage bg-beige">
+        <div class="collage-container">
+          <img
+            src="https://images.unsplash.com/photo-1549666014-b8923dc10b99?q=80&w=500"
+            class="collage-item c-img-1"
+            data-speed="0.05"
+            alt="Palacio de Cristal"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=300"
+            class="collage-item c-envelope"
+            data-speed="-0.02"
+            alt="Envelope"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="collage-item c-card-red" data-speed="0.08">
+            <p data-edit="text" data-id="wedding-date-card">December 7, 2030</p>
+            <div class="divider"></div>
+            <p data-edit="text" data-id="venue-address-card">
+              123 Calle Dondequeria<br />28015 Madrid, Spain
+            </p>
+            <div class="divider"></div>
+            <p data-edit="text" data-id="ceremony-time-card">
+              4:00 PM till late
+            </p>
+          </div>
+          <img
+            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
+            class="collage-item c-img-2"
+            data-speed="-0.06"
+            alt="Couple"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="collage-item c-monogram" data-speed="0.03">
+            <h2
+              class="script-title monogram-text"
+              data-edit="text"
+              data-id="initials-monogram"
+            >
+              LB
+            </h2>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-intro bg-red flex-row" id="details">
+        <div class="text-col fade-up">
+          <h2 class="script-title lg">
+            A dream wedding, far from home but close to the heart.
+          </h2>
+          <p class="body-text">
+            Share details about your ceremony, reception, or any other program
+            related thing here. Share details about your ceremony, reception, or
+            any other program related thing here. Share details about your
+            ceremony, reception, or any other program related thing here. Share
+            details about your ceremony, reception, or any other program related
+            thing here.
+          </p>
+        </div>
+        <div class="img-col flex-collage">
+          <img
+            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
+            class="taped-photo img-tilt-left reveal-image"
+            alt="Luis"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
+            class="taped-photo img-tilt-right reveal-image offset-down"
+            alt="Bianca"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </section>
+
+      <section class="sec-about bg-beige">
+        <h2 class="script-title xl text-center fade-up">About the Wedding</h2>
+        <div class="grid-3-col">
+          <div class="info-block fade-up" style="transition-delay: 0.1s">
+            <div class="flower-icon" aria-hidden="true"></div>
+            <h3 class="script-title md">The Ceremony</h3>
+            <p>
+              The wedding will take place at a charming garden venue just
+              outside central Madrid. Exact location and time will be shared
+              privately with confirmed guests.
+            </p>
+          </div>
+          <div class="info-block fade-up" style="transition-delay: 0.2s">
+            <div class="flower-icon" aria-hidden="true"></div>
+            <h3 class="script-title md">The Reception</h3>
+            <p>
+              Following the ceremony, we will gather for an intimate dinner with
+              tapas, music, and wine under the Spanish sky.
+            </p>
+          </div>
+          <div class="info-block fade-up" style="transition-delay: 0.3s">
+            <div class="flower-icon" aria-hidden="true"></div>
+            <h3 class="script-title md">Dress Code</h3>
+            <p>
+              Garden formal. Think soft fabrics, flowy dresses, and linen suits
+              comfortable enough for warm weather but elegant enough for photos.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-travel bg-red flex-row reverse" id="itinerary">
+        <div class="img-col fade-up">
+          <img
+            src="https://images.unsplash.com/photo-1549666014-b8923dc10b99"
+            class="taped-photo large tilt-slight reveal-image"
+            alt="Garden"
+            loading="lazy"
+            decoding="async"
+          />
+          <h2 class="script-title lg overlay-text">Travel Details</h2>
+        </div>
+        <div class="text-col">
+          <div class="travel-block fade-up">
+            <h3 class="script-title md">Airfare</h3>
+            <p>
+              Guests are kindly asked to book their own flights. We recommend
+              arriving in Madrid no later than December 5 to allow time for rest
+              and sightseeing before the wedding.
+            </p>
+          </div>
+          <div class="travel-block fade-up">
+            <h3 class="script-title md">Accommodations</h3>
+            <p>
+              We have reserved a block of rooms at Hotel Maravillosa and will
+              provide discount codes via email. You are also welcome to stay
+              anywhere nearby; central Madrid and Retiro are great areas.
+            </p>
+          </div>
+          <div class="travel-block fade-up">
+            <h3 class="script-title md">Itinerary</h3>
+            <p>
+              A full itinerary will be emailed to confirmed guests. Expect a
+              welcome dinner, optional city tour, and of course, the wedding day
+              celebration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-registry bg-beige text-center">
+        <div class="flower-icon large fade-up" aria-hidden="true"></div>
+        <h2 class="script-title xl fade-up">
+          Your presence in Madrid is<br />the greatest gift of all.
+        </h2>
+        <p class="body-text narrow fade-up">
+          However, if you would like to contribute to our new chapter together,
+          we welcome gifts through our Sining Spaces registry. Email
+          hello@reallygreatsite.com with Registry No. 12345 as the subject line
+          for our updated gift list.
+        </p>
+        <p class="body-text narrow fade-up">
+          If you prefer to support us as we begin our married life, a
+          contribution to our future would mean so much. Email us at
+          hello@reallygreatsite.com for our details.
+        </p>
+      </section>
+
+      <section class="sec-faqs bg-red flex-row align-start">
+        <div class="text-col fade-up">
+          <h2 class="script-title xl leading-tight">
+            Frequently<br />Asked Qs
+          </h2>
+          <div class="flower-icon lg offset-flower" aria-hidden="true"></div>
+        </div>
+        <div class="faq-col">
+          <article class="faq-item fade-up is-open">
+            <button class="faq-trigger" type="button" aria-expanded="true">
+              DO I NEED A VISA TO TRAVEL TO SPAIN?
+              <span aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes, Philippine passport holders will need a Schengen visa. We
+                recommend applying at least 3 months in advance. We will share a
+                guide to help with this.
+              </p>
+            </div>
+          </article>
+          <article class="faq-item fade-up">
+            <button class="faq-trigger" type="button" aria-expanded="false">
+              CAN I BRING A PLUS ONE?
+              <span aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>
+                This is an intimate destination wedding with limited seating.
+                Kindly note that only named guests in the invitation are
+                included.
+              </p>
+            </div>
+          </article>
+          <article class="faq-item fade-up">
+            <button class="faq-trigger" type="button" aria-expanded="false">
+              WILL TRANSPORTATION BE PROVIDED?
+              <span aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes, for the wedding day, shuttle service will be arranged to
+                and from the venue for all guests staying at the partner hotel.
+                PWD assistance is also available. Please do not hesitate to
+                reach out to us so we can make arrangements for you.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="sec-rsvp bg-beige">
+        <div class="collage-container rsvp-collage">
+          <div class="collage-item r-card-red" data-speed="0.04">
+            <h3 class="script-title md">RSVP by</h3>
+            <p class="uppercase">OCTOBER 15, 2030</p>
+          </div>
+          <img
+            src="https://images.unsplash.com/photo-1607344645866-009c320b63e0"
+            class="collage-item r-envelope"
+            data-speed="-0.03"
+            alt="Envelope"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
+            class="collage-item r-img"
+            data-speed="0.06"
+            alt="Couple"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="collage-item r-contact-card" data-speed="-0.02">
+            <p>Contact us for any<br />questions or concerns</p>
+            <div class="divider"></div>
+            <p>Mobile Number<br />(123) 456-7890</p>
+            <div class="divider"></div>
+            <p>Email Address<br />hello@reallygreatsite.com</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      if (!prefersReducedMotion) {
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          direction: "vertical",
+          gestureDirection: "vertical",
+          smooth: true,
+          mouseMultiplier: 1,
+          smoothTouch: false,
+          touchMultiplier: 2,
+          infinite: false,
+        });
+
+        lenis.on("scroll", ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const faqItems = document.querySelectorAll(".faq-item");
+
+        faqItems.forEach((item, index) => {
+          const trigger = item.querySelector(".faq-trigger");
+          const answer = item.querySelector(".faq-answer");
+
+          if (item.classList.contains("is-open")) {
+            answer.style.maxHeight = `${answer.scrollHeight}px`;
+          }
+
+          trigger.addEventListener("click", () => {
+            const isOpen = item.classList.contains("is-open");
+
+            faqItems.forEach((otherItem) => {
+              otherItem.classList.remove("is-open");
+              const otherTrigger = otherItem.querySelector(".faq-trigger");
+              const otherAnswer = otherItem.querySelector(".faq-answer");
+              otherTrigger.setAttribute("aria-expanded", "false");
+              otherAnswer.style.maxHeight = "0px";
+            });
+
+            if (!isOpen) {
+              item.classList.add("is-open");
+              trigger.setAttribute("aria-expanded", "true");
+              answer.style.maxHeight = `${answer.scrollHeight}px`;
+            }
+          });
+
+          trigger.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              const next =
+                faqItems[(index + 1) % faqItems.length].querySelector(
+                  ".faq-trigger",
+                );
+              next.focus();
+            }
+
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              const prev =
+                faqItems[
+                  (index - 1 + faqItems.length) % faqItems.length
+                ].querySelector(".faq-trigger");
+              prev.focus();
+            }
+          });
+        });
+
+        if (prefersReducedMotion) {
+          document
+            .querySelectorAll(".fade-up, .fade-in")
+            .forEach((el) => (el.style.opacity = "1"));
+          return;
+        }
+
+        const fadeUpElements = gsap.utils.toArray(".fade-up");
+        fadeUpElements.forEach((elem) => {
+          gsap.to(elem, {
+            scrollTrigger: {
+              trigger: elem,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+            y: 0,
+            opacity: 1,
+            duration: 0.95,
+            ease: "power3.out",
+          });
+        });
+
+        const revealImages = gsap.utils.toArray(".reveal-image");
+        revealImages.forEach((img) => {
+          gsap.to(img, {
+            scrollTrigger: {
+              trigger: img,
+              start: "top 80%",
+            },
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+            duration: 1.35,
+            ease: "power4.inOut",
+          });
+        });
+
+        gsap.to(".fade-in", {
+          opacity: 1,
+          duration: 1.2,
+          delay: 0.35,
+          stagger: 0.2,
+          ease: "power2.out",
+        });
+
+        const parallaxItems = gsap.utils.toArray("[data-speed]");
+        parallaxItems.forEach((item) => {
+          const speed = parseFloat(item.getAttribute("data-speed"));
+
+          gsap.to(item, {
+            y: () => ScrollTrigger.maxScroll(window) * speed,
+            ease: "none",
+            scrollTrigger: {
+              trigger: item.closest("section"),
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

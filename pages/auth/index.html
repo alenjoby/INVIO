@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO | Welcome</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons (Phosphor) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <link rel="stylesheet" href="auth.css" />
+  </head>
+  <body>
+    <div class="auth-container">
+      <!-- LEFT: Visual Showcase -->
+      <div class="auth-showcase">
+        <div class="showcase-content">
+          <h2 class="showcase-title">Your Digital Atelier</h2>
+          <p class="showcase-subtitle">
+            Create premium, interactive invitation experiences for life's most
+            important moments.
+          </p>
+        </div>
+        <!-- Placeholder images that will cycle via JS -->
+        <div class="showcase-gallery">
+          <img
+            src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Wedding Template"
+            class="gallery-img active"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1530103862676-de8892bc952f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Birthday Template"
+            class="gallery-img"
+          />
+          <img
+            src="https://images.unsplash.com/photo-1542475477-8ddfceccbed2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+            alt="Academic Template"
+            class="gallery-img"
+          />
+        </div>
+        <div class="showcase-overlay"></div>
+      </div>
+
+      <!-- RIGHT: Auth Forms -->
+      <div class="auth-panel">
+        <!-- Placeholder Logo -->
+        <a href="../../index.html" class="auth-brand">
+          <!-- Replace this with final SVG logo later -->
+          <div class="brand-logo-placeholder">INVIO</div>
+        </a>
+
+        <!-- Form Container Wrapper -->
+        <div class="form-wrapper">
+          <!-- LOGIN FORM -->
+          <div class="auth-box" id="login-box">
+            <div class="auth-header">
+              <h1>Welcome Back</h1>
+              <p>Enter your details to access your studio.</p>
+            </div>
+
+            <form id="login-form" class="auth-form">
+              <div class="input-group">
+                <label for="login-email">Email Address</label>
+                <input
+                  type="email"
+                  id="login-email"
+                  placeholder="name@example.com"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="login-password">Password</label>
+                <input
+                  type="password"
+                  id="login-password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+
+              <div class="form-options">
+                <label class="remember-me">
+                  <input type="checkbox" />
+                  <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+              </div>
+
+              <button type="submit" class="auth-btn auth-btn-primary">
+                Sign In <i class="ph ph-arrow-right"></i>
+              </button>
+            </form>
+
+            <div class="auth-footer">
+              <p>
+                Don't have an account?
+                <a href="#" id="go-to-signup">Create one</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- SIGNUP FORM (Hidden initially) -->
+          <div class="auth-box is-hidden" id="signup-box">
+            <div class="auth-header">
+              <h1>Create Account</h1>
+              <p>Start designing your premium invitations today.</p>
+            </div>
+
+            <form id="signup-form" class="auth-form">
+              <div class="input-row">
+                <div class="input-group">
+                  <label for="signup-first">First Name</label>
+                  <input
+                    type="text"
+                    id="signup-first"
+                    placeholder="Eleanor"
+                    required
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="signup-last">Last Name</label>
+                  <input
+                    type="text"
+                    id="signup-last"
+                    placeholder="Rigby"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="signup-email">Email Address</label>
+                <input
+                  type="email"
+                  id="signup-email"
+                  placeholder="name@example.com"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="signup-password">Password</label>
+                <input
+                  type="password"
+                  id="signup-password"
+                  placeholder="Create a strong password"
+                  required
+                />
+              </div>
+
+              <button type="submit" class="auth-btn auth-btn-primary">
+                Create Account <i class="ph ph-arrow-right"></i>
+              </button>
+            </form>
+
+            <div class="auth-footer">
+              <p>
+                Already have an account?
+                <a href="#" id="go-to-login">Sign in</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="auth.js"></script>
+  </body>
+</html>

@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Birthday Card [Scrapbook Style]</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- STARS -->
+      <div class="star s1">★</div>
+      <div class="star s2">★</div>
+      <div class="star s3">★</div>
+      <div class="star s4">★</div>
+      <div class="star s5">★</div>
+      <div class="star s6">★</div>
+      <div class="star s7">★</div>
+
+      <!-- LEFT TEXT -->
+      <div class="left-text">
+        <h1>
+          Happy Birthday<br /><span
+            data-edit="text"
+            data-id="birthday-person-name"
+            >Adams</span
+          >!
+        </h1>
+      </div>
+
+      <!-- RIGHT TEXT -->
+      <div class="right-text">
+        <p>
+          Best wishes<br />for you
+          <span data-edit="text" data-id="personalized-message">Adams</span>!
+        </p>
+      </div>
+
+      <!-- IMAGES -->
+      <img
+        src="../../assets/images/birthday/template_1/img.webp"
+        class="photo p1"
+      />
+      <img
+        src="../../assets/images/birthday/template_1/img2.webp"
+        class="photo p2"
+      />
+      <img
+        src="../../assets/images/birthday/template_1/img3.webp"
+        class="photo p3"
+      />
+      <img
+        src="../../assets/images/birthday/template_1/img4.webp"
+        class="photo p4"
+      />
+      <img
+        src="../../assets/images/birthday/template_1/img5.webp"
+        class="photo p5"
+      />
+
+      <!-- BOTTOM TEXT -->
+      <div class="bottom-text">
+        <p data-edit="text" data-id="party-invitation-text">
+          and you are invited to the birthday party
+        </p>
+      </div>
+
+      <!-- RSVP BUTTONS -->
+      <div class="rsvp-container">
+        <button id="acceptBtn" class="btn btn-accept">ᴀᴄᴄᴇᴘᴛ</button>
+        <button id="declineBtn" class="btn btn-decline">ᴅᴇᴄʟɪɴᴇ</button>
+        <p id="responseMessage" class="response-message"></p>
+      </div>
+    </div>
+
+    <!-- CONFETTI SCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        confetti({
+          particleCount: 250 /* Number of confetti pieces */,
+          spread: 150 /* How wide the burst goes */,
+          origin: { y: 0.2 } /* Starts near the top of the screen */,
+          startVelocity: 35 /* How fast it explodes out */,
+        });
+      });
+
+      // RSVP Button Logic
+      const acceptBtn = document.getElementById("acceptBtn");
+      const declineBtn = document.getElementById("declineBtn");
+      const responseMessage = document.getElementById("responseMessage");
+
+      acceptBtn.addEventListener("click", function () {
+        responseMessage.textContent = "Glad we look forward to see you";
+        responseMessage.style.opacity = "1";
+      });
+
+      declineBtn.addEventListener("click", function () {
+        responseMessage.textContent = "Sorry to see you leave";
+        responseMessage.style.opacity = "1";
+      });
+    </script>
+
+    <style>
+      @font-face {
+        font-family: hero;
+        src: url("../../assets/fonts/KaushanScript-Regular.ttf");
+      }
+
+      h1 {
+        font-family: hero;
+      }
+
+      p {
+        font-family: hero;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Brush Script MT", cursive;
+        background-color: #c9bdae;
+      }
+
+      /* MAIN CONTAINER */
+      .container {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden; /* Hide horizontal scroll but allow vertical scroll */
+        background-color: #e8dfd3;
+        background-image: url("../../assets/images/birthday/template_1/invitation1%20bg.png"); /* Replace with your actual background image filename */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* Keeps background fixed while scrolling */
+      }
+
+      /* STARS BACKGROUND */
+      .star {
+        position: absolute;
+        font-family:
+          Arial, sans-serif; /* Ensures the star symbol actually renders */
+        color: #000000;
+        z-index: 1; /* Keeps them behind the photos and text */
+        animation: twinkle 4s infinite ease-in-out;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      .s1 {
+        top: 15%;
+        left: 10%;
+        font-size: 28px;
+        animation-delay: 0s;
+      }
+      .s2 {
+        top: 25%;
+        right: 20%;
+        font-size: 18px;
+        animation-delay: 1s;
+      }
+      .s3 {
+        bottom: 20%;
+        left: 20%;
+        font-size: 30px;
+        animation-delay: 2s;
+      }
+      .s4 {
+        bottom: 30%;
+        right: 15%;
+        font-size: 22px;
+        animation-delay: 0.5s;
+      }
+      .s5 {
+        top: 10%;
+        left: 60%;
+        font-size: 15px;
+        animation-delay: 1.5s;
+      }
+      .s6 {
+        bottom: 15%;
+        right: 45%;
+        font-size: 26px;
+        animation-delay: 2.5s;
+      }
+      .s7 {
+        top: 45%;
+        right: 5%;
+        font-size: 20px;
+        animation-delay: 0.8s;
+      }
+
+      /* TEXT LEFT */
+      .left-text {
+        position: absolute;
+        top: 250px;
+        left: 150px;
+        color: #3b2b2b;
+        z-index: 100;
+        white-space: nowrap;
+        opacity: 0;
+        animation: slideUpFade 1s ease-out 0.2s forwards;
+      }
+
+      .left-text h1 {
+        font-size: 30px;
+        margin: 0;
+      }
+
+      /* TEXT RIGHT */
+      .right-text {
+        position: absolute;
+        top: 50vh; /* Changed from bottom so it stays near photos */
+        right: 200px;
+        text-align: right;
+        z-index: 100;
+        font-size: 24px;
+        color: #3b2b2b;
+        opacity: 0;
+        animation: slideUpFade 1s ease-out 0.4s forwards;
+      }
+
+      /* TEXT BOTTOM */
+      .bottom-text {
+        position: relative; /* Changed from absolute to flow naturally */
+        margin-top: calc(
+          45vh + 280px
+        ); /* Dynamically guarantees text stays below the images */
+        width: 100%;
+        text-align: center;
+        color: #3b2b2b;
+        z-index: 100;
+        font-size: 28px;
+        opacity: 0;
+        animation: slideUpFade 1s ease-out 1.5s forwards;
+      }
+
+      /* PHOTO STYLE */
+      .photo {
+        position: absolute;
+        top: 45vh; /* Use Viewport Height so they stay locked in the top section */
+        left: 50%;
+        width: 180px;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        transition:
+          transform 0.6s ease-out,
+          box-shadow 0.6s ease-out,
+          z-index 0s 0.6s;
+        transform: perspective(1000px) translate(-50%, -50%) scale(1)
+          rotateX(0deg) rotate(var(--rot, 0deg));
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      .photo:hover {
+        transform: perspective(1000px) translate(-50%, -60%) scale(1.2)
+          rotateX(360deg) rotate(var(--rot, 0deg));
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        transition:
+          transform 0.6s ease-out,
+          box-shadow 0.6s ease-out,
+          z-index 0s 0s;
+        z-index: 10;
+      }
+
+      /* INDIVIDUAL POSITIONS (like collage) */
+
+      .p1 {
+        margin-top: -50px;
+        margin-left: -150px;
+        --rot: -12deg;
+        z-index: 2;
+        animation-delay: 0.5s;
+      }
+
+      .p2 {
+        margin-top: 60px;
+        margin-left: 120px;
+        --rot: 8deg;
+        z-index: 3;
+        animation-delay: 0.7s;
+      }
+
+      .p3 {
+        margin-top: 10px;
+        margin-left: -10px;
+        width: 220px;
+        --rot: -5deg;
+        z-index: 1; /* Keeping the largest photo at the bottom of the stack */
+        animation-delay: 0.9s;
+      }
+
+      .p4 {
+        margin-top: 80px;
+        margin-left: -100px;
+        --rot: -10deg;
+        z-index: 4;
+        animation-delay: 1.1s;
+      }
+
+      .p5 {
+        margin-top: -70px;
+        margin-left: 140px;
+        --rot: 15deg;
+        z-index: 5;
+        animation-delay: 1.3s;
+      }
+
+      /* LOAD ANIMATIONS */
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* RSVP SECTION */
+      .rsvp-container {
+        position: relative; /* Follows naturally beneath the bottom text */
+        margin-top: 20px;
+        padding-bottom: 60px; /* Gives nice breathing room at the very bottom */
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        opacity: 0;
+        animation: slideUpFade 1s ease-out 1.8s forwards; /* Appears shortly after the bottom text */
+      }
+
+      /* PREMIUM BUTTON STYLES */
+      .btn {
+        font-family: "Times New Roman", Times, serif; /* Elegant serif font */
+        font-size: 14px;
+        letter-spacing: 3px; /* Premium tracking/spacing */
+        padding: 14px 36px;
+        margin: 0 15px;
+        border: 1px solid #3b2b2b; /* Matches your overall text color */
+        border-radius: 2px; /* Sharp, sophisticated corners */
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      .btn-accept {
+        background-color: #3b2b2b;
+        color: #f9f6f0; /* Soft cream text */
+        box-shadow: 0 8px 20px rgba(59, 43, 43, 0.2); /* Soft, luxurious shadow */
+      }
+      .btn-accept:hover {
+        background-color: #2a1f1f; /* Slightly darker on hover */
+        box-shadow: 0 10px 25px rgba(59, 43, 43, 0.3);
+        transform: translateY(-2px); /* Gentle float up effect */
+      }
+
+      .btn-accept:active,
+      .btn-decline:active {
+        transform: translateY(2px); /* Subtle press down */
+        box-shadow: 0 2px 10px rgba(59, 43, 43, 0.1);
+      }
+
+      .btn-decline {
+        background-color: transparent;
+        color: #3b2b2b;
+      }
+      .btn-decline:hover {
+        background-color: rgba(59, 43, 43, 0.05); /* Very subtle dark tint */
+        transform: translateY(-2px);
+      }
+
+      /* RESPONSE MESSAGE */
+      .response-message {
+        margin-top: 10px;
+        font-size: 24px;
+        color: #3b2b2b;
+        opacity: 0;
+        transition: opacity 0.5s ease; /* Fades in smoothly when clicked */
+      }
+    </style>
+  </body>
+</html>
