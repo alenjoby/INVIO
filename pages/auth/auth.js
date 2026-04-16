@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // If already authenticated, skip auth page
   if (authApi.isAuthenticated()) {
-    window.location.href = safeRedirect || "../dashboard/index.html";
+    window.location.href = safeRedirect || "/dashboard";
     return;
   }
 
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       setSubmitting(loginForm, true, "Signing in...");
       await authApi.login(email, password);
-      window.location.href = safeRedirect || "../dashboard/index.html";
+      window.location.href = safeRedirect || "/dashboard";
     } catch (err) {
       showMessage(err.message || "Login failed.", "error");
     } finally {
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await authApi.signup(email, password, username);
 
       if (result.session?.access_token) {
-        window.location.href = safeRedirect || "../dashboard/index.html";
+        window.location.href = safeRedirect || "/dashboard";
         return;
       }
 

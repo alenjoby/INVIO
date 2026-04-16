@@ -113,8 +113,17 @@ async function handleCheckout(e) {
   // In a real app, this would call a payment provider (Stripe/PayPal)
   // For INVIO, we simulate a quick processing delay and then succeed.
   setTimeout(async () => {
-    await handleSuccess();
-    setLoading(false);
+    try {
+      await handleSuccess();
+    } catch (error) {
+      console.error("Checkout completion failed:", error);
+      alert(
+        error?.message ||
+          "Payment completed, but publishing failed. Please retry from Studio.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }, 1500);
 }
 
@@ -128,29 +137,38 @@ async function handleSuccess() {
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(purchased));
   }
 
+  const query = new URLSearchParams(window.location.search);
+  const invitationId = query.get("invitationId");
+
+  // Call backend to mark as purchased/published before showing success
+  if (invitationId) {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      throw new Error("Session expired. Please sign in again.");
+    }
+
+    const response = await fetch(
+      `${CONFIG.API_BASE}/invitations/${invitationId}/purchase`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      throw new Error(
+        errorBody.error ||
+          "Could not publish invitation after checkout. Please retry.",
+      );
+    }
+  }
+
   // Show Success Overlay
   refs.successOverlay.classList.remove("hidden");
-
-  // Call backend to mark as purchased/published
-  try {
-    const query = new URLSearchParams(window.location.search);
-    const invitationId = query.get("invitationId");
-
-    if (invitationId) {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        await fetch(`${CONFIG.API_BASE}/invitations/${invitationId}/purchase`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-    }
-  } catch (error) {
-    console.error("Failed to update backend status:", error);
-  }
 
   // Redirect to Dashboard
   setTimeout(() => {

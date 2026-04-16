@@ -404,11 +404,16 @@ function injectInteractions(frameDoc, invitation) {
     .invio-success { background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 20px; border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.2); font-weight: 600; margin-top: 20px;}
   `;
 
+  const safeRsvpTitle = escapeHtml(inter.rsvp?.title || "RSVP");
+  const safeMapAddress = escapeHtml(
+    inter.maps?.address || "No address provided",
+  );
+
   let html = "";
   if (inter.rsvp?.enabled) {
     html += `
       <div class="invio-card invio-reveal" data-invio-anim="reveal">
-        <h2 class="invio-title">${inter.rsvp.title || "RSVP"}</h2>
+        <h2 class="invio-title">${safeRsvpTitle}</h2>
         <form id="invio-rsvp-form">
           <input type="text" id="rsvp-name" class="invio-input" placeholder="Your Full Name" required>
           <input type="email" id="rsvp-email" class="invio-input" placeholder="Your Email address" required>
@@ -426,7 +431,7 @@ function injectInteractions(frameDoc, invitation) {
   }
 
   if (inter.maps?.enabled) {
-    let mapQuery = inter.maps.address || "Main Street";
+    let mapQuery = String(inter.maps.address || "Main Street");
     if (mapQuery.includes("google.com/maps")) {
       const placeMatch = mapQuery.match(/\/place\/([^\/\?]+)/);
       const coordMatch = mapQuery.match(/@(-?\d+\.\d+,-?\d+\.\d+)/);
@@ -438,7 +443,7 @@ function injectInteractions(frameDoc, invitation) {
     html += `
       <div class="invio-card invio-reveal" data-invio-anim="reveal">
         <h2 class="invio-title">The Location</h2>
-        <p style="margin-bottom: 25px; opacity: 0.8; font-size: 1.2rem;">${inter.maps.address || "No address provided"}</p>
+        <p style="margin-bottom: 25px; opacity: 0.8; font-size: 1.2rem;">${safeMapAddress}</p>
         <div class="invio-map-wrap">
           <iframe class="invio-map-iframe" src="${gMapUrl}" allowfullscreen="" loading="lazy"></iframe>
         </div>
@@ -534,6 +539,15 @@ function injectBaseHref(html, templateUrl) {
 
 function stripTemplateScripts(html) {
   return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function showError(title, message) {

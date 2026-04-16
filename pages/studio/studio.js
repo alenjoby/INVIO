@@ -1196,22 +1196,13 @@ class StudioEditor {
       params.set("publishIntent", "1");
     }
 
-    // Ensure the path always includes index.html so Vercel doesn't 404
-    let pathname = window.location.pathname;
-    if (pathname.endsWith("/studio") || pathname.endsWith("/studio/")) {
-      pathname = "/pages/studio/index.html";
-    } else if (!pathname.endsWith(".html")) {
-      pathname = pathname.replace(/\/$/, "") + "/index.html";
-    }
-
-    return `${pathname}?${params.toString()}`;
+    return `/studio?${params.toString()}`;
   }
 
   redirectToAuth(includePublishIntent = false) {
     const redirect = this.buildStudioReturnPath(includePublishIntent);
     const authParams = new URLSearchParams({ redirect });
-    // Use absolute path so this works on both localhost and Vercel
-    window.location.href = `/pages/auth/index.html?${authParams.toString()}`;
+    window.location.href = `/auth?${authParams.toString()}`;
   }
 
   isTemplatePurchased(templateId) {
@@ -1229,8 +1220,7 @@ class StudioEditor {
       invitationId: invitationId,
     });
 
-    // Use an absolute file path so routing works regardless of current URL shape.
-    window.location.href = `/pages/checkout/index.html?${params.toString()}`;
+    window.location.href = `/checkout?${params.toString()}`;
   }
 
   // Bug #8 fix: execCommand("copy") is deprecated — use Clipboard API with fallback

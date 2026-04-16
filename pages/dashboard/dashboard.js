@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initDashboard() {
   if (!authApi.isAuthenticated()) {
-    window.location.href = "/pages/auth";
+    window.location.href = "/auth";
     return;
   }
 
@@ -37,7 +37,13 @@ async function initDashboard() {
   renderUser(me);
 
   const invitations = await invitationsApi.list();
-  const activeInvitation = invitations[0] || null;
+  const activeInvitation =
+    invitations.find(
+      (invitation) =>
+        invitation.status === "published" && Boolean(invitation.slug),
+    ) ||
+    invitations[0] ||
+    null;
 
   if (!activeInvitation) {
     renderEmptyState();
@@ -80,7 +86,9 @@ function renderInvitationHeader(invitation) {
   if (titleEl) titleEl.textContent = invitation.title || "Untitled Invitation";
   if (metaEl) {
     const created = new Date(invitation.created_at);
-    metaEl.textContent = `Template: ${invitation.template_id} • Created ${created.toLocaleDateString()}`;
+    const status = String(invitation.status || "draft");
+    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+    metaEl.textContent = `Template: ${invitation.template_id} • ${statusLabel} • Created ${created.toLocaleDateString()}`;
   }
 }
 
@@ -93,7 +101,7 @@ function configureStudioLink(invitation) {
       template: invitation.template_id,
       id: invitation.id,
     }).toString();
-    window.location.href = `/pages/studio?${query}`;
+    window.location.href = `/studio?${query}`;
   };
 }
 
