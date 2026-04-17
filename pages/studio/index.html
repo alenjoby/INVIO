@@ -264,6 +264,39 @@
                   </button>
                 </div>
               </section>
+
+              <!-- Style Controls (Backgrounds) -->
+              <section id="styleControls" class="control-panel hidden">
+                <h2 class="panel-title">Style Editor</h2>
+                <div class="control-group">
+                  <label for="styleBgColor">Background Color</label>
+                  <div class="color-picker-wrapper">
+                    <input type="color" id="styleBgColor" />
+                    <input
+                      type="text"
+                      id="styleBgHex"
+                      placeholder="transparent"
+                      maxlength="15"
+                    />
+                  </div>
+                </div>
+                <div class="control-group" style="margin-top: 15px">
+                  <label for="styleBgImage">Background Image URL</label>
+                  <input
+                    type="text"
+                    id="styleBgImage"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <small>Paste an image link or use our library</small>
+                </div>
+                <button id="resetStyleBtn" class="btn-small" type="button">
+                  <i
+                    class="ph ph-arrow-counter-clockwise"
+                    aria-hidden="true"
+                  ></i>
+                  Reset Style
+                </button>
+              </section>
             </div>
 
             <!-- LAYERS TAB CONTENT -->

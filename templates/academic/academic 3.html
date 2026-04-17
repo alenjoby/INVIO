@@ -34,7 +34,6 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        cursor: none !important;
       }
 
       body,
@@ -70,43 +69,7 @@
         z-index: 100;
       }
 
-      /* CUSTOM CURSOR SUITE */
-      #cursor {
-        position: fixed;
-        width: 8px;
-        height: 8px;
-        background: var(--gold);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 15px var(--gold);
-      }
-      #cursor-ring {
-        position: fixed;
-        width: 40px;
-        height: 40px;
-        border: 1px solid rgba(212, 175, 55, 0.5);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9998;
-        transform: translate(-50%, -50%);
-        transition:
-          width 0.2s ease,
-          height 0.2s ease,
-          background-color 0.2s ease,
-          border-color 0.2s ease;
-      }
-      /* Cursor Interactive State */
-      body.hovering-interactive #cursor-ring {
-        width: 65px;
-        height: 65px;
-        background-color: rgba(212, 175, 55, 0.1);
-        border-color: var(--gold);
-      }
-      body.hovering-interactive #cursor {
-        transform: translate(-50%, -50%) scale(1.5);
-      }
+
 
       /* Canvas */
       #network-canvas {
@@ -398,8 +361,7 @@
     </style>
   </head>
   <body>
-    <div id="cursor"></div>
-    <div id="cursor-ring"></div>
+
 
     <canvas id="network-canvas"></canvas>
 
@@ -529,37 +491,13 @@
         startCountdown();
       });
 
-      // --- FLUID CURSOR SYSTEM ---
-      const cursor = document.getElementById("cursor");
-      const cursorRing = document.getElementById("cursor-ring");
+      // --- FLUID MOUSE FOLLOW (OPTIONAL DECORATION - REMOVED CURSOR LOGIC) ---
       let mouseX = window.innerWidth / 2,
         mouseY = window.innerHeight / 2;
-      let ringX = mouseX,
-        ringY = mouseY;
 
       document.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        cursor.style.left = mouseX + "px";
-        cursor.style.top = mouseY + "px";
-      });
-
-      function renderCursor() {
-        ringX += (mouseX - ringX) * 0.15;
-        ringY += (mouseY - ringY) * 0.15;
-        cursorRing.style.left = ringX + "px";
-        cursorRing.style.top = ringY + "px";
-        requestAnimationFrame(renderCursor);
-      }
-      requestAnimationFrame(renderCursor);
-
-      document.querySelectorAll(".interactive-el, .rsvp-btn").forEach((el) => {
-        el.addEventListener("mouseenter", () =>
-          document.body.classList.add("hovering-interactive"),
-        );
-        el.addEventListener("mouseleave", () =>
-          document.body.classList.remove("hovering-interactive"),
-        );
       });
 
       // --- LIVE COUNTDOWN LOGIC ---

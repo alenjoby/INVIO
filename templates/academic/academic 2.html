@@ -27,19 +27,8 @@
         --border-light: rgba(255, 255, 255, 0.6);
       }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        cursor: none !important;
-      }
-
-      /* Touchscreen fallback */
+      /* Touchscreen fallback (Removed custom cursor) */
       @media (hover: none) and (pointer: coarse) {
-        #cursor,
-        #cursor-ring {
-          display: none !important;
-        }
         * {
           cursor: auto !important;
         }
@@ -78,43 +67,6 @@
         opacity: 0.15;
         pointer-events: none;
         z-index: 100;
-      }
-
-      /* CUSTOM CURSOR */
-      #cursor {
-        position: fixed;
-        width: 6px;
-        height: 6px;
-        background: #ffffff;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      }
-      #cursor-ring {
-        position: fixed;
-        width: 35px;
-        height: 35px;
-        border: 1px solid var(--accent);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9998;
-        transform: translate(-50%, -50%);
-        transition:
-          width 0.3s ease,
-          height 0.3s ease,
-          background-color 0.3s ease,
-          border-color 0.3s ease;
-      }
-      body.hovering-interactive #cursor-ring {
-        width: 60px;
-        height: 60px;
-        background-color: rgba(144, 12, 63, 0.1);
-        border-color: #ffffff;
-      }
-      body.hovering-interactive #cursor {
-        transform: translate(-50%, -50%) scale(1.5);
       }
 
       /* FULL-SCREEN CANVAS BACKGROUND */
@@ -463,8 +415,7 @@
     </style>
   </head>
   <body>
-    <div id="cursor"></div>
-    <div id="cursor-ring"></div>
+
 
     <canvas id="network-canvas"></canvas>
 
@@ -617,37 +568,13 @@
         }
       });
 
-      // --- 3. CURSOR LOGIC ---
-      const cursor = document.getElementById("cursor");
-      const cursorRing = document.getElementById("cursor-ring");
-      let mouseX = window.innerWidth / 2,
-        mouseY = window.innerHeight / 2;
-      let ringX = mouseX,
-        ringY = mouseY;
+      // --- 3. MOUSE FOLLOW (OPTIONAL DECORATION) ---
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
 
       document.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        if (cursor) cursor.style.left = mouseX + "px";
-        if (cursor) cursor.style.top = mouseY + "px";
-      });
-
-      function renderCursor() {
-        ringX += (mouseX - ringX) * 0.12;
-        ringY += (mouseY - ringY) * 0.12;
-        if (cursorRing) cursorRing.style.left = ringX + "px";
-        if (cursorRing) cursorRing.style.top = ringY + "px";
-        requestAnimationFrame(renderCursor);
-      }
-      requestAnimationFrame(renderCursor);
-
-      document.querySelectorAll(".interactive-el").forEach((el) => {
-        el.addEventListener("mouseenter", () =>
-          document.body.classList.add("hovering-interactive"),
-        );
-        el.addEventListener("mouseleave", () =>
-          document.body.classList.remove("hovering-interactive"),
-        );
       });
 
       // --- 4. LIVE COUNTDOWN ---

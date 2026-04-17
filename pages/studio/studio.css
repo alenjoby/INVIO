@@ -340,24 +340,25 @@
 
   /* Custom scrollbar */
   scrollbar-width: thin;
-  scrollbar-color: #d0d0cc transparent;
+  scrollbar-color: var(--accent) transparent;
 }
-
+ 
 .sidebar-sticky::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
-
+ 
 .sidebar-sticky::-webkit-scrollbar-track {
   background: transparent;
 }
-
+ 
 .sidebar-sticky::-webkit-scrollbar-thumb {
-  background: #d0d0cc;
-  border-radius: 3px;
+  background: var(--accent);
+  border-radius: 10px;
+  opacity: 0.3;
 }
-
+ 
 .sidebar-sticky::-webkit-scrollbar-thumb:hover {
-  background: #b0b0ac;
+  background: var(--text);
 }
 
 /* ========== CONTROL PANELS ========== */

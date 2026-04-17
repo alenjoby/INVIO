@@ -29,6 +29,9 @@ class StudioEditor {
 
   async init() {
     try {
+      // Fix: Initialize elements first so showToast() can function
+      this.initElements();
+
       // Get template ID from URL params
       const params = new URLSearchParams(window.location.search);
       const templateId = params.get("template");
@@ -42,9 +45,6 @@ class StudioEditor {
       // Initialize state
       this.state = new EditorState(templateId, inviteId);
       this.hasPersistentInviteId = Boolean(inviteId);
-
-      // Initialize DOM references
-      this.cacheElements();
 
       // Bind events
       this.bindEvents();
@@ -77,7 +77,10 @@ class StudioEditor {
     }
   }
 
-  cacheElements() {
+  initElements() {
+    if (this.isElementsInitialized) return;
+    this.isElementsInitialized = true;
+    
     this.els = {
       frame: document.getElementById("templateFrame"),
       canvas: document.querySelector(".editor-canvas"),
@@ -103,9 +106,16 @@ class StudioEditor {
       imagePreview: document.getElementById("imagePreview"),
       previewImg: document.getElementById("previewImg"),
       clearImageBtn: document.getElementById("clearImageBtn"),
+      // Color
       colorInput: document.getElementById("colorInput"),
       colorHex: document.getElementById("colorHex"),
       resetColorBtn: document.getElementById("resetColorBtn"),
+      // Style (Base Background)
+      styleControls: document.getElementById("styleControls"),
+      styleBgColor: document.getElementById("styleBgColor"),
+      styleBgHex: document.getElementById("styleBgHex"),
+      styleBgImage: document.getElementById("styleBgImage"),
+      resetStyleBtn: document.getElementById("resetStyleBtn"),
       // Modals
       publishSlug: document.getElementById("publishSlug"),
       slugPrefix: document.querySelector(".slug-prefix"),
@@ -128,6 +138,10 @@ class StudioEditor {
       rsvpSettings: document.getElementById("rsvpSettings"),
       mapsSettings: document.getElementById("mapsSettings"),
     };
+  }
+
+  cacheElements() {
+    this.initElements();
   }
 
   bindEvents() {
@@ -226,6 +240,20 @@ class StudioEditor {
     });
 
     this.els.resetColorBtn.addEventListener("click", () => this.resetColor());
+
+    // Style
+    this.els.styleBgColor.addEventListener("input", (e) => {
+      this.els.styleBgHex.value = e.target.value.toUpperCase();
+      this.updateStyle("backgroundColor", e.target.value);
+    });
+    this.els.styleBgHex.addEventListener("change", (e) => {
+      this.els.styleBgColor.value = e.target.value;
+      this.updateStyle("backgroundColor", e.target.value);
+    });
+    this.els.styleBgImage.addEventListener("change", (e) => {
+      this.updateStyle("backgroundImage", `url('${e.target.value}')`);
+    });
+    this.els.resetStyleBtn.addEventListener("click", () => this.resetStyle());
 
     // Publish confirmation
     this.els.confirmPublishBtn.addEventListener("click", () =>
@@ -517,8 +545,8 @@ class StudioEditor {
         /* Ensure editor can always interact and see cursor */
         "body, html { cursor: default !important; user-select: auto !important; }",
         "* { cursor: inherit; }",
-        "[data-edit] { cursor: pointer !important; transition: outline 0.12s ease; position: relative; }",
         "[data-edit]:hover { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
+        ".selected-edit-target { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
         /* Hide distracting template overlays like custom cursors */
         "#cursor, #cursor-ring, .cursor-dot, .cursor-circle { display: none !important; pointer-events: none !important; }",
       ].join("\n");
@@ -545,21 +573,16 @@ class StudioEditor {
         "  visibility: visible !important;",
         "  background-color: transparent !important;",
         "}",
-        /* We force visibility ONLY on specific classes that templates use to hide content
-           before animation (fade-ins, reveals, etc.). This ensures the content is editable
-           immediately without breaking opening animations like curtains or sliding doors
-           which DON'T usually have these specific utility classes. */
-        ".fade, .hidden, .invisible, .reveal, .reveal-item, .hero-img.fade, .gsap-reveal, [data-reveal] {",
-        "  opacity: 1 !important;",
-        "  visibility: visible !important;",
-        "  transform: none !important;",
-        "  transition: none !important;",
-        "}",
-        /* Still ensure [data-edit] elements are reachable regardless of their parent's state */
+        /* Visual Parity: We remove the aggressive .fade { opacity: 1 } overrides.
+           Templates will now animate exactly as they do on the live site. */
         "[data-edit] {",
+        "  pointer-events: auto !important;",
+        "}",
+        /* Forced visibility only on selection/hover to ensure they are reachable */
+        "[data-edit]:hover, .selected-edit-target {",
         "  opacity: 1 !important;",
         "  visibility: visible !important;",
-        "  z-index: 999 !important;",
+        "  z-index: 9999 !important;",
         "}",
       ].join("\n");
       frameDoc.head.appendChild(style);
@@ -668,16 +691,21 @@ class StudioEditor {
       this.editableElements = editableElements;
 
       // Capture original values for Undo/Redo reconciliation
-      this.originalValues = { text: {}, images: {}, colors: {} };
+      this.originalValues = { text: {}, images: {}, colors: {}, styles: {} };
       editableElements.forEach((el) => {
         const id = el.getAttribute("data-id");
         const type = el.getAttribute("data-edit");
         if (type === "text") this.originalValues.text[id] = el.textContent;
         if (type === "image") this.originalValues.images[id] = el.src;
         if (type === "color") {
-          // Color is trickier; store the computed color if style is empty
           this.originalValues.colors[id] =
             el.style.color || getComputedStyle(el).color;
+        }
+        if (type === "style") {
+          this.originalValues.styles[id] = {
+            backgroundColor: el.style.backgroundColor,
+            backgroundImage: el.style.backgroundImage
+          };
         }
       });
 
@@ -687,18 +715,6 @@ class StudioEditor {
           e.preventDefault();
           e.stopPropagation();
           this.selectElement(element);
-        });
-
-        // Add hover effect
-        element.addEventListener("mouseenter", () => {
-          element.style.outline = "2px solid #BFA77A"; // hardcoded — var(--accent) doesn't cross iframe boundary
-          element.style.outlineOffset = "2px";
-        });
-
-        element.addEventListener("mouseleave", () => {
-          if (element !== this.selectedElement) {
-            element.style.outline = "";
-          }
         });
       });
     } catch (error) {
@@ -715,18 +731,27 @@ class StudioEditor {
 
     let autoImageCount = 0;
     let autoTextCount = 0;
+    let autoStyleCount = 0;
 
     // Make every image editable unless already configured.
     frameDoc.querySelectorAll("img").forEach((img) => {
-      if (img.hasAttribute("data-edit")) {
-        return;
-      }
-
-      const seed = img.getAttribute("alt") || img.className || "image";
-      const dataId = this.generateUniqueDataId(seed, usedIds, "image");
+      if (img.hasAttribute("data-edit")) return;
+      const dataId = this.generateUniqueDataId("image", usedIds, "image");
       img.setAttribute("data-edit", "image");
       img.setAttribute("data-id", dataId);
       autoImageCount += 1;
+    });
+
+    // Universal Style Editing: Sections and large containers
+    frameDoc.querySelectorAll("section, main, footer, .section, .container, .hero, .envelope-system, .card, #stars-container, .curtains, .background").forEach((el) => {
+      if (el.hasAttribute("data-edit")) return;
+      
+      const tagId = el.id || el.className.split(" ")[0] || el.tagName.toLowerCase();
+      const dataId = this.generateUniqueDataId(tagId, usedIds, "style");
+      
+      el.setAttribute("data-edit", "style");
+      el.setAttribute("data-id", dataId);
+      autoStyleCount += 1;
     });
 
     // Make visible text nodes editable while avoiding large layout wrappers.
@@ -749,49 +774,23 @@ class StudioEditor {
       autoTextCount += 1;
     });
 
-    if (autoImageCount || autoTextCount) {
+    if (autoImageCount || autoTextCount || autoStyleCount) {
       console.log(
-        `✓ Auto-registered ${autoTextCount} text and ${autoImageCount} image elements`,
+        `✓ Auto-registered ${autoTextCount} text, ${autoImageCount} image, and ${autoStyleCount} style elements`,
       );
     }
   }
 
   isEditableTextCandidate(el) {
-    if (!el || !el.textContent) {
-      return false;
-    }
+    if (!el || !el.textContent) return false;
+    const text = el.textContent.trim();
+    if (!text) return false;
 
-    const text = el.textContent.replace(/\s+/g, " ").trim();
-    if (!text) {
-      return false;
-    }
+    // Reject structural or data elements
+    if (el.closest("script,style,noscript,head,svg,canvas,iframe")) return false;
 
-    // Skip hidden/non-content zones.
-    if (
-      el.closest(
-        "script,style,noscript,head,svg,canvas,iframe,.modal-backdrop,.canvas-overlay",
-      )
-    ) {
-      return false;
-    }
-
-    // Avoid annotating large structural wrappers; allow simple text-only nodes.
-    const nonBreakChildren = Array.from(el.children).filter(
-      (child) => child.tagName !== "BR",
-    );
-
-    if (el.tagName === "DIV" && nonBreakChildren.length > 0) {
-      return false;
-    }
-
-    if (el.children.length > 0 && nonBreakChildren.length > 1) {
-      return false;
-    }
-
-    // Avoid giant multi-paragraph blocks that are likely layout containers.
-    if (text.length > 220 && el.tagName === "DIV") {
-      return false;
-    }
+    // No tag checks — if it has text and isn't a known layout wrapper with many text nodes, allow it.
+    if (el.children.length > 5) return false; // Heuristic: likely a high-level container
 
     return true;
   }
@@ -826,6 +825,15 @@ class StudioEditor {
           this.deselectElement();
         }
       });
+
+      // MutationObserver for Universal Discovery (Handlings script-added content)
+      if (this.frameObserver) this.frameObserver.disconnect();
+      this.frameObserver = new MutationObserver(() => {
+        // Debounce scan
+        if (this._scanTimeout) clearTimeout(this._scanTimeout);
+        this._scanTimeout = setTimeout(() => this.scanFrameElements(), 500);
+      });
+      this.frameObserver.observe(frameDoc.body, { childList: true, subtree: true });
     } catch (error) {
       console.warn("Cannot attach frame events:", error);
     }
@@ -834,12 +842,12 @@ class StudioEditor {
   selectElement(element) {
     // Deselect previous
     if (this.selectedElement) {
-      this.selectedElement.style.outline = "";
+      this.selectedElement.classList.remove("selected-edit-target");
     }
 
     // Select new
     this.selectedElement = element;
-    this.selectedElement.style.outline = "2px solid #BFA77A"; // hardcoded — var(--accent) doesn't cross iframe boundary
+    this.selectedElement.classList.add("selected-edit-target");
 
     const editType = element.getAttribute("data-edit");
     const dataId = element.getAttribute("data-id");
@@ -854,12 +862,14 @@ class StudioEditor {
       this.showImageControls(element, dataId);
     } else if (editType === "color") {
       this.showColorControls(element, dataId);
+    } else if (editType === "style") {
+      this.showStyleControls(element, dataId);
     }
   }
 
   deselectElement() {
     if (this.selectedElement) {
-      this.selectedElement.style.outline = "";
+      this.selectedElement.classList.remove("selected-edit-target");
       this.selectedElement = null;
     }
     this.hideAllControls();
@@ -898,6 +908,7 @@ class StudioEditor {
     this.els.textControls.classList.add("hidden");
     this.els.imageControls.classList.add("hidden");
     this.els.colorControls.classList.add("hidden");
+    this.els.styleControls.classList.add("hidden");
     this.els.imagePreview.classList.add("hidden");
   }
 
@@ -979,6 +990,47 @@ class StudioEditor {
       this.state.deleteEdit("colors", dataId);
       this.markDirty();
       this.showToast("Color reset", "success");
+    }
+  }
+
+  showStyleControls(element, dataId) {
+    const frameWin = this.els.frame.contentDocument?.defaultView ?? window;
+    const computed = frameWin.getComputedStyle(element);
+
+    const bgColor = element.style.backgroundColor || computed.backgroundColor;
+    const hex = this.rgbToHex(bgColor);
+    this.els.styleBgColor.value = hex;
+    this.els.styleBgHex.value = hex;
+
+    // Extract URL from backgroundImage
+    const bgImg = element.style.backgroundImage || computed.backgroundImage;
+    const match = bgImg.match(/url\(["']?([^"']+)["']?\)/);
+    this.els.styleBgImage.value = match ? match[1] : "";
+
+    this.els.styleControls.classList.remove("hidden");
+  }
+
+  updateStyle(property, value) {
+    if (this.selectedElement) {
+      const dataId = this.selectedElement.getAttribute("data-id");
+      this.selectedElement.style[property] = value;
+
+      // Persistence for styles
+      this.state.updateEdit("styles", dataId, {
+        [property]: value
+      });
+      this.markDirty();
+    }
+  }
+
+  resetStyle() {
+    if (this.selectedElement) {
+      const dataId = this.selectedElement.getAttribute("data-id");
+      this.selectedElement.style.backgroundColor = "";
+      this.selectedElement.style.backgroundImage = "";
+      this.state.deleteEdit("styles", dataId);
+      this.markDirty();
+      this.showToast("Style reset", "info");
     }
   }
 
@@ -1449,6 +1501,15 @@ class StudioEditor {
             : this.originalValues.colors[id];
         el.style.setProperty("--" + id, val);
         if (el.style.color !== "") el.style.color = val;
+      } else if (type === "style") {
+        const val =
+          edits.styles[id] !== undefined
+            ? edits.styles[id]
+            : this.originalValues.styles[id];
+        if (val) {
+          if (val.backgroundColor !== undefined) el.style.backgroundColor = val.backgroundColor;
+          if (val.backgroundImage !== undefined) el.style.backgroundImage = val.backgroundImage;
+        }
       }
     });
 
@@ -1493,27 +1554,39 @@ class StudioEditor {
     this.editableElements.forEach((el, index) => {
       const type = el.getAttribute("data-edit");
       const dataId = el.getAttribute("data-id");
-      const content = type === "text" ? el.textContent : "Image element";
+      
+      let content = "";
+      let iconClass = "ph-square";
+      
+      if (type === "text") {
+        content = el.textContent.slice(0, 30) + (el.textContent.length > 30 ? "..." : "");
+        iconClass = "ph-text-t";
+      } else if (type === "image") {
+        content = "Image element";
+        iconClass = "ph-image";
+      } else if (type === "color") {
+        content = "Variable Color";
+        iconClass = "ph-palette";
+      } else if (type === "style") {
+        content = (el.tagName || "Section") + " Style";
+        iconClass = "ph-paint-brush-broad";
+      }
 
       const item = document.createElement("div");
       item.className = "layer-item";
       if (el === this.selectedElement) item.classList.add("active");
 
-      const iconClass = type === "text" ? "ph-text-t" : "ph-image";
-
       item.innerHTML = `
         <div class="layer-icon"><i class="ph ${iconClass}"></i></div>
         <div class="layer-info">
           <span class="layer-name">${dataId}</span>
-          <span class="layer-type">${type}</span>
+          <span class="layer-type">${content}</span>
         </div>
       `;
 
       item.addEventListener("click", () => {
         this.selectElement(el);
         this.switchTab("edit");
-
-        // Scroll element into view in iframe
         el.scrollIntoView({ behavior: "smooth", block: "center" });
       });
 
