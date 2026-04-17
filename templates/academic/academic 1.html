@@ -210,7 +210,10 @@
         letter-spacing: 4px;
       }
 
-
+      [contenteditable]:focus {
+        outline: none;
+        border-bottom: 2px solid var(--neon-green);
+      }
 
       /* Scroll Bar */
       ::-webkit-scrollbar {
@@ -231,12 +234,14 @@
       <div class="reveal">
         <span
           class="fest-year"
+          contenteditable="true"
           data-edit="text"
           data-id="festival-year"
           >CLASS OF 2026</span
         >
         <h1
           class="fest-title"
+          contenteditable="true"
           data-edit="text"
           data-id="festival-title"
         >
@@ -244,6 +249,7 @@
         </h1>
         <p
           class="tagline"
+          contenteditable="true"
           data-edit="text"
           data-id="festival-tagline"
         >
@@ -263,6 +269,7 @@
             </p>
             <div
               class="date-big"
+              contenteditable="true"
               data-edit="text"
               data-id="event-dates"
             >
@@ -274,6 +281,7 @@
               Where
             </p>
             <p
+              contenteditable="true"
               style="font-weight: 700; font-size: 18px"
               data-edit="text"
               data-id="venue-location"
@@ -286,6 +294,7 @@
               Entry
             </p>
             <p
+              contenteditable="true"
               style="font-weight: 700; font-size: 18px"
               data-edit="text"
               data-id="entry-requirement"
@@ -395,8 +404,16 @@
       setInterval(updateCountdown, 1000);
       updateCountdown();
 
-
+      // Prevent rich text on paste
+      document.querySelectorAll("[contenteditable]").forEach((el) => {
+        el.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const text = e.clipboardData.getData("text/plain");
+          document.execCommand("insertText", false, text);
+        });
+        // Update countdown immediately when user types
+        el.addEventListener("input", updateCountdown);
+      });
     </script>
   </body>
 </html>
-

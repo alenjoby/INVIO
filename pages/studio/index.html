@@ -122,16 +122,13 @@
             <span class="canvas-label" id="deviceLabel">Desktop</span>
           </div>
 
-          <div class="canvas-wrapper" id="canvasWrapper">
+          <div class="canvas-wrapper">
             <iframe
               id="templateFrame"
               class="template-iframe"
               title="Template preview"
               sandbox="allow-same-origin allow-scripts"
             ></iframe>
-            <div id="selectionHighlight" class="selection-highlight hidden">
-              <div class="selection-label">Editing</div>
-            </div>
             <div class="canvas-overlay" id="canvasOverlay"></div>
           </div>
         </section>
@@ -485,9 +482,8 @@
 
     <!-- Scripts -->
     <script type="module" src="/js/env-init.js"></script>
-    <script src="https://unpkg.com/@floating-ui/core@1.6.0"></script>
-    <script src="https://unpkg.com/@floating-ui/dom@1.6.3"></script>
     <script src="/pages/studio/EditorState.js" defer></script>
+    <script src="/pages/studio/elementScanner.js" defer></script>
     <script src="/pages/studio/studio.js" defer></script>
   </body>
 </html>

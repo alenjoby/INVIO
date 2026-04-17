@@ -22,9 +22,7 @@ class StudioEditor {
     this.isDirty = false;
     this.saveTimeout = null;
     this.autoSaveInterval = null;
-    this.originalValues = { text: {}, images: {}, colors: {}, styles: {} };
-    this.highlightEl = null;
-    this.syncLoopId = null;
+    this.originalValues = { text: {}, images: {}, colors: {} };
 
     this.init();
   }
@@ -48,12 +46,6 @@ class StudioEditor {
       this.state = new EditorState(templateId, inviteId);
       this.hasPersistentInviteId = Boolean(inviteId);
 
-      // Listen for state changes to relay to bridge
-      this.state.on("edit:text", (id, val) => this.relayEdit("text", id, val));
-      this.state.on("edit:images", (id, val) => this.relayEdit("images", id, val));
-      this.state.on("edit:colors", (id, val) => this.relayEdit("colors", id, val));
-      this.state.on("edit:styles", (id, val) => this.relayEdit("styles", id, val));
-
       // Bind events
       this.bindEvents();
 
@@ -65,15 +57,6 @@ class StudioEditor {
 
       // Load template
       await this.loadTemplate(templateId);
-
-      // Start highlight sync loop
-      this.startSyncLoop();
-
-      // Listen for state changes to apply directly
-      this.state.on("edit:text", (id, val) => this.applyDirectEdit("text", id, val));
-      this.state.on("edit:images", (id, val) => this.applyDirectEdit("images", id, val));
-      this.state.on("edit:colors", (id, val) => this.applyDirectEdit("colors", id, val));
-      this.state.on("edit:styles", (id, val) => this.applyDirectEdit("styles", id, val));
 
       // Start auto-save
       this.startAutoSave();
@@ -154,8 +137,6 @@ class StudioEditor {
       mapsAddress: document.getElementById("mapsAddress"),
       rsvpSettings: document.getElementById("rsvpSettings"),
       mapsSettings: document.getElementById("mapsSettings"),
-      selectionHighlight: document.getElementById("selectionHighlight"),
-      canvasWrapper: document.getElementById("canvasWrapper"),
     };
   }
 
@@ -360,118 +341,232 @@ class StudioEditor {
 
   async loadTemplate(templateId) {
     try {
+      // Construct template path based on template ID
       const templatePath = this.getTemplatePathById(templateId);
-      if (!templatePath) throw new Error(`Unknown template: ${templateId}`);
+      console.log(
+        `[loadTemplate] templateId=${templateId}, templatePath=${templatePath}`,
+      );
+
+      if (!templatePath) {
+        throw new Error(`Unknown template: ${templateId}`);
+      }
 
       const templateUrl = new URL(templatePath, window.location.href).href;
-      console.log(`[loadTemplate] Loading native src: ${templateUrl}`);
+      console.log(`[loadTemplate] Fetching from URL: ${templateUrl}`);
 
-      // Set src directly for 100% visual parity
-      this.els.frame.src = templateUrl;
+      const response = await fetch(templateUrl, { cache: "no-store" });
+      console.log(`[loadTemplate] Fetch response status: ${response.status}`);
 
-      // Wait for load event
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load template: ${templateUrl} (status ${response.status})`,
+        );
+      }
+
+      const templateHtml = await response.text();
+      console.log(
+        `[loadTemplate] Template HTML size: ${templateHtml.length} bytes`,
+      );
+
+      const previewHtml = this.sanitizeTemplateHtml(templateHtml);
+
+      const framedHtml = this.injectBaseHref(previewHtml, templateUrl);
+      console.log(
+        `[loadTemplate] Injected base href, framedHtml size: ${framedHtml.length} bytes`,
+      );
+
+      this.els.frame.removeAttribute("src");
+      this.els.frame.removeAttribute("srcdoc");
+      this.els.frame.onload = null;
+      this.els.frame.onerror = null;
+
+      // Use direct DOM manipulation for most reliable rendering
+      console.log("[loadTemplate] Using direct DOM manipulation approach...");
+
+      // First, load the iframe with about:blank and wait for it to be ready
+      this.els.frame.src = "about:blank";
+
       await new Promise((resolve) => {
-        this.els.frame.onload = () => {
-          console.log("[loadTemplate] Iframe loaded natively");
-          resolve();
+        const checkReady = () => {
+          try {
+            const frameDoc = this.els.frame.contentDocument;
+            if (frameDoc && frameDoc.readyState === "complete") {
+              resolve();
+            } else {
+              setTimeout(checkReady, 50);
+            }
+          } catch (e) {
+            setTimeout(checkReady, 50);
+          }
         };
+        checkReady();
       });
 
-      // Perform scan and event binding directly
-      this.scanFrameElements();
-      this.attachFrameEvents();
+      // Now inject the HTML directly
+      const frameDoc = this.els.frame.contentDocument;
+      console.log("[loadTemplate] Writing HTML to iframe document...");
+      frameDoc.open();
+      frameDoc.write(framedHtml);
+      frameDoc.close();
 
-      // Sync existing state if any
-      this.syncStateToFrame();
+      console.log("[loadTemplate] HTML written to iframe");      // Wait a bit for the document to parse and initialize heavy scripts (GSAP, Lenis)
+      // Bug fix: Complex templates like Wedding 5 need more time to 'settle'.
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          console.log("[loadTemplate] Waiting for iframe content to render...");
+          this.injectSecurityGuard();
+          resolve();
+        }, 800);
+      });
 
-      // Update UI title
+      // Verify iframe content exists (even if still loading)
+      try {
+        const frameDoc = this.els.frame.contentDocument;
+        if (!frameDoc) {
+          throw new Error("Iframe document inaccessible");
+        }
+
+        // If body is still empty, wait a bit longer (retry-style for Wedding 5)
+        if (!frameDoc.body || frameDoc.body.innerHTML.trim().length === 0) {
+          console.warn("[loadTemplate] Iframe body is empty, waiting 1s extra...");
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      } catch (e) {
+        console.error("[loadTemplate] Could not access iframe contentDocument:", e);
+        this.showToast("Problem accessing template preview: " + e.message, "error");
+        return;
+      }
+
+      this.injectEditorStyles(); // restore editor cursor and accent colors
+      this.injectPreviewVisibilityStyles();
+
+      console.log("[loadTemplate] Scanning frame elements...");
+      // Run scan multiple times to catch elements injected by JS late (GSAP SplitText, etc)
+      this.scanFrameElements(); 
+      setTimeout(() => this.scanFrameElements(), 1500); 
+      setTimeout(() => this.scanFrameElements(), 3000);
+
+      this.updateLayersPanel(); // Populate Layers tab
+      this.attachFrameEvents(); // safe to attach now — frame is loaded
+      this.refreshInteractionBlocks(); // Load RSVP/Maps if enabled
+
+      // Update title
       const templateName = this.getTemplateNameById(templateId);
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
+      console.log(`[loadTemplate] Template loading complete: ${templateName}`);
+
       this.showToast(`${templateName} loaded`, "success");
-      
     } catch (error) {
       console.error("✗ Template load failed:", error);
+      console.error("Error stack:", error.stack);
       this.showToast("Failed to load template: " + error.message, "error");
     }
   }
 
-  applyDirectEdit(category, id, value) {
-    const frameDoc = this.els.frame.contentDocument;
-    if (!frameDoc) return;
+  injectBaseHref(html, templateUrl) {
+    const baseTag = `<base href="${templateUrl}">`;
 
-    const el = frameDoc.querySelector(`[data-id="${id}"]`);
-    if (!el) return;
-
-    if (category === "text") {
-      el.textContent = value ?? "";
-    } else if (category === "images") {
-      el.src = value ?? "";
-    } else if (category === "colors") {
-      el.style.color = value ?? "";
-    } else if (category === "styles") {
-      if (value.backgroundColor) el.style.backgroundColor = value.backgroundColor;
-      if (value.backgroundImage) el.style.backgroundImage = value.backgroundImage;
-    }
-  }
-
-  syncStateToFrame() {
-    const state = this.state.getState();
-    Object.keys(state.edits.text).forEach(id => this.applyDirectEdit("text", id, state.edits.text[id]));
-    Object.keys(state.edits.images).forEach(id => this.applyDirectEdit("images", id, state.edits.images[id]));
-    Object.keys(state.edits.colors).forEach(id => this.applyDirectEdit("colors", id, state.edits.colors[id]));
-    Object.keys(state.edits.styles).forEach(id => this.applyDirectEdit("styles", id, state.edits.styles[id]));
-  }
-
-  startSyncLoop() {
-    const loop = () => {
-      this.syncHighlight();
-      this.syncLoopId = requestAnimationFrame(loop);
-    };
-    this.syncLoopId = requestAnimationFrame(loop);
-  }
-
-  syncHighlight() {
-    if (!this.selectedElement || !this.els.selectionHighlight) {
-      if (this.els.selectionHighlight) this.els.selectionHighlight.classList.add("hidden");
-      return;
+    if (/<base\s/i.test(html)) {
+      return html.replace(/<base\s[^>]*>/i, baseTag);
     }
 
-    const rect = this.selectedElement.getBoundingClientRect();
-    const frameRect = this.els.frame.getBoundingClientRect();
-    const wrapperRect = this.els.canvasWrapper.getBoundingClientRect();
-    
-    // Convert iframe-relative coordinates to canvas-wrapper relative coordinates
-    // rect is relative to iframe viewport
-    // frameRect is relative to parent window
-    // wrapperRect is relative to parent window
-    const top = (rect.top + frameRect.top) - wrapperRect.top + this.els.canvasWrapper.scrollTop;
-    const left = (rect.left + frameRect.left) - wrapperRect.left + this.els.canvasWrapper.scrollLeft;
-    const width = rect.width;
-    const height = rect.height;
+    if (/<head\b[^>]*>/i.test(html)) {
+      return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
+    }
 
-    // Only show if element is visible and has size
-    if (width > 0 && height > 0) {
-      this.els.selectionHighlight.classList.remove("hidden");
-      this.els.selectionHighlight.style.transform = `translate(${left}px, ${top}px)`;
-      this.els.selectionHighlight.style.width = `${width}px`;
-      this.els.selectionHighlight.style.height = `${height}px`;
-      
-      const label = this.els.selectionHighlight.querySelector(".selection-label");
-      if (label) {
-        label.textContent = this.selectedElement.getAttribute("data-id") || "Element";
+    return `${baseTag}${html}`;
+  }
+
+  /**
+   * Instead of stripping ALL scripts, we selectively keep visual/animation libs
+   * like GSAP and Lenis so the Studio preview matches the Live preview's "vibe".
+   */
+  sanitizeTemplateHtml(html) {
+    // Identify scripts
+    const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+
+    return html.replace(scriptRegex, (match, content) => {
+      // RELAXED RULE: Keep all scripts to preserve the "Original" look and animations
+      // UNLESS they contain dangerous redirects or forced top-level navigation.
+      const hasDangerousKeywords = /window\.location|top\.location|location\.href|location\.replace/i.test(
+        content,
+      );
+
+      if (hasDangerousKeywords) {
+        console.warn("[Studio] Stripping potentially dangerous script block");
+        return "<!-- Script stripped for security in editor -->";
       }
-    } else {
-      this.els.selectionHighlight.classList.add("hidden");
+
+      // Keep it!
+      return match;
+    });
+  }
+
+  /**
+   * Inject editor-specific styles into the iframe document so CSS custom
+   * properties like --accent and hover outlines work across the frame boundary.
+   * Bug #3 fix: CSS vars on the parent page don't bleed into sandboxed iframes.
+   */
+  injectEditorStyles() {
+    try {
+      const frameDoc = this.els.frame.contentDocument;
+      if (!frameDoc || !frameDoc.head) return;
+
+      const existing = frameDoc.getElementById("__invio-editor-styles");
+      if (existing) existing.remove();
+
+      const style = frameDoc.createElement("style");
+      style.id = "__invio-editor-styles";
+      style.textContent = [
+        ":root { --accent: #BFA77A; }",
+        /* Ensure editor can always interact and see cursor */
+        "body, html { cursor: default !important; user-select: auto !important; }",
+        "* { cursor: inherit; }",
+        "[data-edit]:hover { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
+        ".selected-edit-target { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
+        /* Hide distracting template overlays like custom cursors */
+        "#cursor, #cursor-ring, .cursor-dot, .cursor-circle { display: none !important; pointer-events: none !important; }",
+      ].join("\n");
+      frameDoc.head.appendChild(style);
+      console.log("[Studio] Injected enhanced editor styles into iframe");
+    } catch (err) {
+      console.warn("Could not inject editor styles:", err);
     }
   }
-  // Refactored for Pro Max architecture
-  injectBaseHref() {}
-  sanitizeTemplateHtml(html) { return html; }
-  injectSecurityGuard() {}
-  injectEditorStyles() {}
-  injectPreviewVisibilityStyles() {}
 
-  // Legacy visibility styles removed. Bridge handles highlight via Shadow DOM.
+  injectPreviewVisibilityStyles() {
+    try {
+      const frameDoc = this.els.frame.contentDocument;
+      if (!frameDoc || !frameDoc.head) return;
+
+      const existing = frameDoc.getElementById("__invio-preview-visibility");
+      if (existing) existing.remove();
+
+      const style = frameDoc.createElement("style");
+      style.id = "__invio-preview-visibility";
+      style.textContent = [
+        "html, body {",
+        "  opacity: 1 !important;",
+        "  visibility: visible !important;",
+        "  background-color: transparent !important;",
+        "}",
+        /* Visual Parity: We remove the aggressive .fade { opacity: 1 } overrides.
+           Templates will now animate exactly as they do on the live site. */
+        "[data-edit] {",
+        "  pointer-events: auto !important;",
+        "}",
+        /* Forced visibility only on selection/hover to ensure they are reachable */
+        "[data-edit]:hover, .selected-edit-target {",
+        "  opacity: 1 !important;",
+        "  visibility: visible !important;",
+        "  z-index: 9999 !important;",
+        "}",
+      ].join("\n");
+      frameDoc.head.appendChild(style);
+    } catch (err) {
+      console.warn("Could not inject preview visibility styles:", err);
+    }
+  }
 
   getTemplatePathById(templateId) {
     // Map template IDs to file paths
@@ -591,7 +686,14 @@ class StudioEditor {
         }
       });
 
-      // Restore direct target selection logic (Already moved)
+      // Add click handlers
+      editableElements.forEach((element) => {
+        element.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.selectElement(element);
+        });
+      });
     } catch (error) {
       console.error("✗ Element scan failed:", error);
     }
@@ -631,7 +733,7 @@ class StudioEditor {
 
     // Make visible text nodes editable while avoiding large layout wrappers.
     const textSelectors =
-      "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th";
+      "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
 
     frameDoc.querySelectorAll(textSelectors).forEach((el) => {
       if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) {
@@ -649,19 +751,6 @@ class StudioEditor {
       autoTextCount += 1;
     });
 
-    // Final Deep Pass: Capture text nodes that are directly inside DIVs (common in modern templates)
-    frameDoc.querySelectorAll("div").forEach((el) => {
-      if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
-      
-      // If div has direct text and few children, it's a candidate
-      if (this.isEditableTextCandidate(el) && el.children.length < 3) {
-        const dataId = this.generateUniqueDataId("text-div", usedIds, "text");
-        el.setAttribute("data-edit", "text");
-        el.setAttribute("data-id", dataId);
-        autoTextCount += 1;
-      }
-    });
-
     if (autoImageCount || autoTextCount || autoStyleCount) {
       console.log(
         `✓ Auto-registered ${autoTextCount} text, ${autoImageCount} image, and ${autoStyleCount} style elements`,
@@ -670,17 +759,15 @@ class StudioEditor {
   }
 
   isEditableTextCandidate(el) {
-    if (!el) return false;
-    
-    // Ignore hidden or structural elements
-    if (el.offsetParent === null && el.tagName !== "DIV") return false; // Basic visibility
-    if (el.closest("script,style,noscript,head,svg,canvas,iframe,footer,nav")) return false;
-
+    if (!el || !el.textContent) return false;
     const text = el.textContent.trim();
-    if (!text || text.length < 1) return false;
+    if (!text) return false;
 
-    // Reject if too many children (likely a layout wrapper)
-    if (el.children.length > 4) return false;
+    // Reject structural or data elements
+    if (el.closest("script,style,noscript,head,svg,canvas,iframe")) return false;
+
+    // No tag checks — if it has text and isn't a known layout wrapper with many text nodes, allow it.
+    if (el.children.length > 5) return false; // Heuristic: likely a high-level container
 
     return true;
   }
@@ -709,43 +796,19 @@ class StudioEditor {
       const frameDoc = this.els.frame.contentDocument;
       if (!frameDoc) return;
 
-      // Handle selection clicks
+      // Click anywhere to deselect
       frameDoc.addEventListener("click", (e) => {
-        // Find closest editable parent
-        const target = e.target.closest("[data-edit]");
-        
-        if (target) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.selectElement(target);
-        } else {
+        if (!e.target.closest("[data-edit]")) {
           this.deselectElement();
         }
-      }, true); // Use capture phase to intercept template events
-
-      // Hover effects
-      frameDoc.addEventListener("mouseover", (e) => {
-        const target = e.target.closest("[data-edit]");
-        if (target) {
-          target.style.cursor = "pointer";
-          // target.style.outline = "1px dashed #c5a059"; // Removed in favor of parent overlay but kept for feedback? 
-          // Re-adding subtle internal outline for "hover" feedback
-          target.setAttribute("data-hover", "true");
-        }
       });
 
-      frameDoc.addEventListener("mouseout", (e) => {
-        const target = e.target.closest("[data-edit]");
-        if (target) {
-          target.removeAttribute("data-hover");
-        }
-      });
-
-      // MutationObserver for Universal Discovery
+      // MutationObserver for Universal Discovery (Handlings script-added content)
       if (this.frameObserver) this.frameObserver.disconnect();
       this.frameObserver = new MutationObserver(() => {
+        // Debounce scan
         if (this._scanTimeout) clearTimeout(this._scanTimeout);
-        this._scanTimeout = setTimeout(() => this.scanFrameElements(), 1000);
+        this._scanTimeout = setTimeout(() => this.scanFrameElements(), 500);
       });
       this.frameObserver.observe(frameDoc.body, { childList: true, subtree: true });
     } catch (error) {
@@ -1019,12 +1082,10 @@ class StudioEditor {
       this.els.saveIcon.classList.add("visible");
     } catch (error) {
       console.error("✗ Save failed:", error);
-      this.els.saveIndicator.textContent = "Save failed";
-      
       if (error.message.includes("413") || error.message.toLowerCase().includes("too large")) {
         this.showToast("Save failed: Images are too large. Please use smaller files.", "error");
       } else {
-        this.showToast(`Save failed: ${error.message}. Please check your connection.`, "error");
+        this.showToast("Failed to save. Please check your connection.", "error");
       }
     }
   }
@@ -1157,10 +1218,6 @@ class StudioEditor {
         templateId: this.state.data.templateId,
       }),
     });
-
-    if (!created?.id) {
-      throw new Error("Failed to create invitation record on server");
-    }
 
     this.state.updateData("inviteId", created.id);
     this.state.updateData("slug", created.title || title);
@@ -1386,6 +1443,7 @@ class StudioEditor {
       this.markDirty();
     }
   }
+
   redo() {
     const newState = this.state.redo();
     if (newState) {
@@ -1409,14 +1467,14 @@ class StudioEditor {
         const val =
           edits.text[id] !== undefined
             ? edits.text[id]
-            : this.originalValues.text[id] || "";
-        if (val !== undefined && el.textContent !== val) el.textContent = val;
+            : this.originalValues.text[id];
+        if (el.textContent !== val) el.textContent = val;
       } else if (type === "image") {
         const val =
           edits.images[id] !== undefined
             ? edits.images[id]
-            : this.originalValues.images[id] || "";
-        if (val !== undefined && el.src !== val) el.src = val;
+            : this.originalValues.images[id];
+        if (el.src !== val) el.src = val;
       } else if (type === "color") {
         const val =
           edits.colors[id] !== undefined
