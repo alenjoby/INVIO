@@ -1082,7 +1082,11 @@ class StudioEditor {
       this.els.saveIcon.classList.add("visible");
     } catch (error) {
       console.error("✗ Save failed:", error);
-      this.showToast("Failed to save", "error");
+      if (error.message.includes("413") || error.message.toLowerCase().includes("too large")) {
+        this.showToast("Save failed: Images are too large. Please use smaller files.", "error");
+      } else {
+        this.showToast("Failed to save. Please check your connection.", "error");
+      }
     }
   }
 

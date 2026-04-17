@@ -170,7 +170,8 @@ async function handleSuccess() {
 async function postWithAuthRetry(url, options = {}) {
   let token = localStorage.getItem("authToken");
   if (!token) {
-    throw new Error("Session expired. Please sign in again.");
+    console.warn("[Checkout] No authToken found in localStorage.");
+    throw new Error("Missing authentication token. Please sign in again.");
   }
 
   let response = await fetch(url, {
