@@ -138,6 +138,14 @@ function applyEdits(frameDoc, edits) {
     ) {
       el.style.setProperty("--" + id, edits.colors[id]);
       if (el.style.color !== "") el.style.color = edits.colors[id];
+    } else if (
+      type === "style" &&
+      edits.styles &&
+      edits.styles[id] !== undefined
+    ) {
+      const styles = edits.styles[id];
+      if (styles.backgroundColor !== undefined) el.style.backgroundColor = styles.backgroundColor;
+      if (styles.backgroundImage !== undefined) el.style.backgroundImage = styles.backgroundImage;
     }
   });
 }
@@ -150,30 +158,38 @@ function autoRegisterEditableElements(frameDoc) {
       .filter(Boolean),
   );
 
+  // 1. Mirrored element tagging logic from studio.js
   frameDoc.querySelectorAll("img").forEach((img) => {
     if (img.hasAttribute("data-edit")) return;
-    const seed = img.getAttribute("alt") || img.className || "image";
-    const dataId = generateUniqueDataId(seed, usedIds, "image");
+    const dataId = generateUniqueDataId("image", usedIds, "image");
     img.setAttribute("data-edit", "image");
     img.setAttribute("data-id", dataId);
   });
 
+  // 2. Universal Style Editing: Sections and large containers
+  frameDoc.querySelectorAll("section, main, footer, .section, .container, .hero, .envelope-system, .card, #stars-container, .curtains, .background").forEach((el) => {
+    if (el.hasAttribute("data-edit")) return;
+    const tagId = el.id || el.className.split(" ")[0] || el.tagName.toLowerCase();
+    const dataId = generateUniqueDataId(tagId, usedIds, "style");
+    el.setAttribute("data-edit", "style");
+    el.setAttribute("data-id", dataId);
+  });
+
+  // 3. Text Nodes
   const textSelectors =
     "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
   frameDoc.querySelectorAll(textSelectors).forEach((el) => {
     if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
 
-    // Quick validation check
-    const text = el.textContent.replace(/\s+/g, " ").trim();
-    if (!text || el.closest("script,style,noscript,head,svg,canvas,iframe"))
-      return;
+    // Reject structural or data elements
+    if (el.closest("script,style,noscript,head,svg,canvas,iframe")) return false;
 
-    const nonBreakChildren = Array.from(el.children).filter(
-      (child) => child.tagName !== "BR",
-    );
-    if (el.tagName === "DIV" && nonBreakChildren.length > 0) return;
-    if (el.children.length > 0 && nonBreakChildren.length > 1) return;
-    if (text.length > 220 && el.tagName === "DIV") return;
+    // Quick validation check
+    const text = el.textContent.trim();
+    if (!text) return;
+
+    // Heuristic for layout containers vs text nodes
+    if (el.tagName === "DIV" && el.children.length > 5) return;
 
     const seed = el.className || el.tagName.toLowerCase() || "text";
     const dataId = generateUniqueDataId(seed, usedIds, "text");

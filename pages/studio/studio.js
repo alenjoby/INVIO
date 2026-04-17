@@ -409,15 +409,14 @@ class StudioEditor {
       frameDoc.write(framedHtml);
       frameDoc.close();
 
-      console.log("[loadTemplate] HTML written to iframe");
-
-      // Wait a bit for the document to parse
+      console.log("[loadTemplate] HTML written to iframe");      // Wait a bit for the document to parse and initialize heavy scripts (GSAP, Lenis)
+      // Bug fix: Complex templates like Wedding 5 need more time to 'settle'.
       await new Promise((resolve) => {
         setTimeout(() => {
           console.log("[loadTemplate] Waiting for iframe content to render...");
           this.injectSecurityGuard();
           resolve();
-        }, 200);
+        }, 800);
       });
 
       // Verify iframe content exists (even if still loading)
@@ -427,11 +426,10 @@ class StudioEditor {
           throw new Error("Iframe document inaccessible");
         }
 
-        // We used to return early here if body.innerHTML was empty, 
-        // but that caused race conditions. We now proceed to inject 
-        // editor styles regardless.
+        // If body is still empty, wait a bit longer (retry-style for Wedding 5)
         if (!frameDoc.body || frameDoc.body.innerHTML.trim().length === 0) {
-          console.warn("[loadTemplate] Iframe body is empty, continuing injection anyway...");
+          console.warn("[loadTemplate] Iframe body is empty, waiting 1s extra...");
+          await new Promise(r => setTimeout(r, 1000));
         }
       } catch (e) {
         console.error("[loadTemplate] Could not access iframe contentDocument:", e);
@@ -443,10 +441,13 @@ class StudioEditor {
       this.injectPreviewVisibilityStyles();
 
       console.log("[loadTemplate] Scanning frame elements...");
-      this.scanFrameElements();
+      // Run scan multiple times to catch elements injected by JS late (GSAP SplitText, etc)
+      this.scanFrameElements(); 
+      setTimeout(() => this.scanFrameElements(), 1500); 
+      setTimeout(() => this.scanFrameElements(), 3000);
 
       this.updateLayersPanel(); // Populate Layers tab
-      this.attachFrameEvents(); // safe to attach now — frame is loaded (Bug #6 fix)
+      this.attachFrameEvents(); // safe to attach now — frame is loaded
       this.refreshInteractionBlocks(); // Load RSVP/Maps if enabled
 
       // Update title
@@ -481,47 +482,23 @@ class StudioEditor {
    * like GSAP and Lenis so the Studio preview matches the Live preview's "vibe".
    */
   sanitizeTemplateHtml(html) {
-    // 1. Keep common visual libraries (whitelisted CDNs)
-    const whitelist = [
-      "gsap",
-      "ScrollTrigger",
-      "lenis",
-      "confetti",
-      "phosphor",
-      "font-awesome",
-    ];
-
     // Identify scripts
     const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
 
     return html.replace(scriptRegex, (match, content) => {
-      // If it's a library from a CDN on our whitelist, keep it
-      const isWhitelisted = whitelist.some((lib) =>
-        match.toLowerCase().includes(lib.toLowerCase()),
-      );
-
-      if (isWhitelisted) {
-        console.log(`[Studio] Keeping whitelisted library: ${match.slice(0, 50)}...`);
-        return match;
-      }
-
-      // 2. Keep inline visual logic (reveals, scroll effects, particles)
-      // but remove anything that tries to redirect or open popups
-      const hasVisualKeywords = /ScrollTrigger|gsap\.to|lenis|reveal|opacity|transform|particles|canvas|ctx\.|scroll|addEventListener|IntersectionObserver|setTimeout|anime|Splitting|Lottie|confetti|lucide|phosphor/i.test(
-        content,
-      );
-      const hasDangerousKeywords = /window\.location|top\.location|alert\(|confirm\(|prompt\(/i.test(
+      // RELAXED RULE: Keep all scripts to preserve the "Original" look and animations
+      // UNLESS they contain dangerous redirects or forced top-level navigation.
+      const hasDangerousKeywords = /window\.location|top\.location|location\.href|location\.replace/i.test(
         content,
       );
 
-      if (hasVisualKeywords && !hasDangerousKeywords) {
-        console.log("[Studio] Keeping inline visual script block");
-        return match;
+      if (hasDangerousKeywords) {
+        console.warn("[Studio] Stripping potentially dangerous script block");
+        return "<!-- Script stripped for security in editor -->";
       }
 
-      // Default: Strip the script to prevent editor breakage
-      console.log(`[Studio] Stripping script: ${match.slice(0, 50)}...`);
-      return "";
+      // Keep it!
+      return match;
     });
   }
 

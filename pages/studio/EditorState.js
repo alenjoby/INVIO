@@ -13,6 +13,7 @@ class EditorState {
         text: {},
         images: {},
         colors: {},
+        styles: {},
       },
       interactions: {
         rsvp: { enabled: false, title: "Are you coming?", fields: ["name", "status", "guests"] },
@@ -152,7 +153,17 @@ class EditorState {
   updateEdit(category, fieldId, value) {
     // Note: studio.js should call takeSnapshot() before significant edits 
     // to avoid flooding history with every character stroke.
-    this.data.edits[category][fieldId] = value;
+    
+    // Deep merge for styles to prevent overwriting other properties of the same element
+    if (category === "styles" && typeof value === "object") {
+      this.data.edits.styles[fieldId] = {
+        ...(this.data.edits.styles[fieldId] || {}),
+        ...value
+      };
+    } else {
+      this.data.edits[category][fieldId] = value;
+    }
+
     this.emit(`edit:${category}:${fieldId}`, value);
   }
 
@@ -190,6 +201,7 @@ class EditorState {
       text: {},
       images: {},
       colors: {},
+      styles: {},
     };
     this.data.interactions = {
       rsvp: { enabled: false, title: "Are you coming?", fields: ["name", "status"] },
