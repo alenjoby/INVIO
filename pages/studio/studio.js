@@ -137,6 +137,9 @@ class StudioEditor {
       mapsAddress: document.getElementById("mapsAddress"),
       rsvpSettings: document.getElementById("rsvpSettings"),
       mapsSettings: document.getElementById("mapsSettings"),
+      // NEW: Floating Tools
+      floatingTools: document.getElementById("floatingTools"),
+      floatingImageBtn: document.getElementById("floatingImageBtn")
     };
   }
 
@@ -221,6 +224,11 @@ class StudioEditor {
     });
 
     this.els.clearImageBtn.addEventListener("click", () => this.clearImage());
+
+    // NEW: Floating Image Tool
+    this.els.floatingImageBtn.addEventListener("click", () => {
+      this.els.imageUpload.click();
+    });
 
     // Color controls
     this.els.colorInput.addEventListener("input", (e) => {
@@ -337,6 +345,13 @@ class StudioEditor {
     this.state.on("stateRestored", () => {
       this.syncUItoState();
     });
+
+    // NEW: Sync Loop for Floating UI
+    const syncLoop = () => {
+      this.updateFloatingToolsPosition();
+      requestAnimationFrame(syncLoop);
+    };
+    requestAnimationFrame(syncLoop);
   }
 
   async loadTemplate(templateId) {
@@ -829,14 +844,50 @@ class StudioEditor {
     const editType = element.getAttribute("data-edit");
     const dataId = element.getAttribute("data-id");
 
+    // NEW: Inline Editing Support
+    if (editType === "text") {
+      element.setAttribute("contenteditable", "true");
+      element.focus();
+      
+      // Select all text on first click for better UX
+      const selection = this.els.frame.contentWindow.getSelection();
+      const range = this.els.frame.contentDocument.createRange();
+      range.selectNodeContents(element);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Bind inline events
+      if (!element._hasInlineEvents) {
+        element.addEventListener("input", (e) => {
+          this.updateText(e.target.textContent, true);
+        });
+
+        element.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            element.blur();
+          }
+        });
+
+        element.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const text = e.clipboardData.getData("text/plain");
+          this.els.frame.contentDocument.execCommand("insertText", false, text);
+        });
+        element._hasInlineEvents = true;
+      }
+    }
+
     // Hide all controls
     this.hideAllControls();
+    this.els.floatingTools.classList.add("hidden");
 
     // Show relevant controls
     if (editType === "text") {
       this.showTextControls(element, dataId);
     } else if (editType === "image") {
       this.showImageControls(element, dataId);
+      this.els.floatingTools.classList.remove("hidden");
     } else if (editType === "color") {
       this.showColorControls(element, dataId);
     } else if (editType === "style") {
@@ -846,10 +897,14 @@ class StudioEditor {
 
   deselectElement() {
     if (this.selectedElement) {
+      if (this.selectedElement.getAttribute("data-edit") === "text") {
+        this.selectedElement.setAttribute("contenteditable", "false");
+      }
       this.selectedElement.classList.remove("selected-edit-target");
       this.selectedElement = null;
     }
     this.hideAllControls();
+    this.els.floatingTools.classList.add("hidden");
   }
 
   showTextControls(element, dataId) {
@@ -889,9 +944,19 @@ class StudioEditor {
     this.els.imagePreview.classList.add("hidden");
   }
 
-  updateText(value) {
+  updateText(value, fromCanvas = false) {
     if (this.selectedElement) {
-      this.selectedElement.textContent = value;
+      // Avoid re-setting text if it came from the canvas to prevent cursor jumping
+      if (!fromCanvas) {
+        this.selectedElement.textContent = value;
+      }
+      
+      // Always update sidebar if it's not the source
+      if (fromCanvas) {
+        this.els.textInput.value = value;
+        this.els.charCount.textContent = `${value.length} / 200`;
+      }
+
       const dataId = this.selectedElement.getAttribute("data-id");
       this.state.updateEdit("text", dataId, value);
       this.markDirty();
@@ -1884,6 +1949,29 @@ class StudioEditor {
     );
 
     frameDoc.querySelectorAll(".invio-reveal").forEach((el) => obs.observe(el));
+  }
+
+  // --- NEW: Floating Tools Position Logic ---
+  updateFloatingToolsPosition() {
+    if (!this.selectedElement || !this.els.floatingTools) return;
+    if (this.els.floatingTools.classList.contains("hidden")) return;
+
+    try {
+      const rect = this.selectedElement.getBoundingClientRect();
+      if (!rect || rect.width === 0) return;
+
+      // Position tools centered ABOVE the element
+      const x = rect.left + rect.width / 2;
+      const y = rect.top;
+
+      this.els.floatingTools.style.left = `${x}px`;
+      this.els.floatingTools.style.top = `${y}px`;
+      
+      // Use transform to center exactly and offset up
+      this.els.floatingTools.style.transform = `translate(-50%, -100%) translateY(-10px)`;
+    } catch (err) {
+      // Ignore if element is gone
+    }
   }
 }
 
