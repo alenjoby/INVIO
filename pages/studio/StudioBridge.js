@@ -40,7 +40,7 @@
     style.textContent = `
       .selection-box, .hover-box {
         position: absolute;
-        border: 2px solid #3b82f6;
+        border: 2px solid #c5a059;
         pointer-events: none;
         transition: all 0.1s ease-out;
         box-sizing: border-box;
@@ -48,7 +48,7 @@
         display: none;
       }
       .hover-box {
-        border-color: rgba(59, 130, 246, 0.4);
+        border-color: rgba(197, 160, 89, 0.4);
         border-style: dashed;
       }
       .selection-box {
@@ -58,7 +58,7 @@
         position: absolute;
         top: -24px;
         left: -2px;
-        background: #3b82f6;
+        background: #c5a059;
         color: white;
         font-family: sans-serif;
         font-size: 10px;
@@ -66,6 +66,7 @@
         padding: 2px 6px;
         border-radius: 2px 2px 0 0;
         white-space: nowrap;
+        pointer-events: auto;
       }
     `;
     BridgeState.shadowRoot.appendChild(style);
@@ -94,8 +95,9 @@
     box.style.display = "block";
     box.style.width = `${rect.width}px`;
     box.style.height = `${rect.height}px`;
-    box.style.top = `${rect.top + window.scrollY}px`;
-    box.style.left = `${rect.left + window.scrollX}px`;
+    // FIXED: Container is fixed at 0,0, so we use rect directly without scroll offset
+    box.style.top = `${rect.top}px`;
+    box.style.left = `${rect.left}px`;
   }
 
   /**
@@ -138,7 +140,7 @@
         id: el.getAttribute('data-id') || el.id || generateGhostId(el),
         tagName: el.tagName,
         content: el.tagName === 'IMG' ? el.src : el.innerText,
-        category: getCategory(el)
+        category: el.getAttribute('data-edit') || getCategory(el)
       }
     }, '*');
   }

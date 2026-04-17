@@ -425,13 +425,12 @@ class StudioEditor {
 
   onElementSelected(payload) {
     console.log("[Studio] Element selected from bridge:", payload);
-    // Find the actual element in the frame (if needed for parent-side logic)
     const frameDoc = this.els.frame.contentDocument;
     const el = frameDoc?.querySelector(`[data-id="${payload.id}"]`);
     
     if (el) {
-      this.selectedElement = el;
-      this.showControls(payload.category, el);
+      // Use the existing selectElement logic to route to the correct controls
+      this.selectElement(el);
     }
   }
 
@@ -570,14 +569,7 @@ class StudioEditor {
         }
       });
 
-      // Add click handlers
-      editableElements.forEach((element) => {
-        element.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.selectElement(element);
-        });
-      });
+      // Click handlers are now handled via StudioBridge.js relay
     } catch (error) {
       console.error("✗ Element scan failed:", error);
     }
