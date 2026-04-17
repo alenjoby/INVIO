@@ -219,13 +219,13 @@
       if (!el) return;
 
       if (payload.category === 'text') {
-        el.innerText = payload.value;
+        el.innerText = payload.value ?? "";
       } else if (payload.category === 'images') {
-        el.src = payload.value;
+        el.src = payload.value ?? "";
       } else if (payload.category === 'colors') {
-        el.style.color = payload.value;
+        el.style.color = payload.value ?? "";
       } else if (payload.category === 'styles') {
-        Object.assign(el.style, payload.value);
+        Object.assign(el.style, payload.value ?? {});
       }
       // Re-sync selection box in case size changed
       updateFocusBox(BridgeState.selectionBox, BridgeState.selectedElement);

@@ -46,6 +46,12 @@ class StudioEditor {
       this.state = new EditorState(templateId, inviteId);
       this.hasPersistentInviteId = Boolean(inviteId);
 
+      // Listen for state changes to relay to bridge
+      this.state.on("edit:text", (id, val) => this.relayEdit("text", id, val));
+      this.state.on("edit:images", (id, val) => this.relayEdit("images", id, val));
+      this.state.on("edit:colors", (id, val) => this.relayEdit("colors", id, val));
+      this.state.on("edit:styles", (id, val) => this.relayEdit("styles", id, val));
+
       // Bind events
       this.bindEvents();
 
@@ -958,10 +964,12 @@ class StudioEditor {
       this.els.saveIcon.classList.add("visible");
     } catch (error) {
       console.error("✗ Save failed:", error);
+      this.els.saveIndicator.textContent = "Save failed";
+      
       if (error.message.includes("413") || error.message.toLowerCase().includes("too large")) {
         this.showToast("Save failed: Images are too large. Please use smaller files.", "error");
       } else {
-        this.showToast("Failed to save. Please check your connection.", "error");
+        this.showToast(`Save failed: ${error.message}. Please check your connection.`, "error");
       }
     }
   }
@@ -1094,6 +1102,10 @@ class StudioEditor {
         templateId: this.state.data.templateId,
       }),
     });
+
+    if (!created?.id) {
+      throw new Error("Failed to create invitation record on server");
+    }
 
     this.state.updateData("inviteId", created.id);
     this.state.updateData("slug", created.title || title);
@@ -1319,7 +1331,6 @@ class StudioEditor {
       this.markDirty();
     }
   }
-
   redo() {
     const newState = this.state.redo();
     if (newState) {
@@ -1343,14 +1354,14 @@ class StudioEditor {
         const val =
           edits.text[id] !== undefined
             ? edits.text[id]
-            : this.originalValues.text[id];
-        if (el.textContent !== val) el.textContent = val;
+            : this.originalValues.text[id] || "";
+        if (val !== undefined && el.textContent !== val) el.textContent = val;
       } else if (type === "image") {
         const val =
           edits.images[id] !== undefined
             ? edits.images[id]
-            : this.originalValues.images[id];
-        if (el.src !== val) el.src = val;
+            : this.originalValues.images[id] || "";
+        if (val !== undefined && el.src !== val) el.src = val;
       } else if (type === "color") {
         const val =
           edits.colors[id] !== undefined
