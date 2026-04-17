@@ -19,6 +19,7 @@
     shadowRoot: null,
     selectionBox: null,
     hoverBox: null,
+    registry: new Set(),
   };
 
   /**
@@ -101,11 +102,48 @@
   }
 
   /**
+   * Universal Element Scanner
+   * Makes everything editable by default
+   */
+  function scanAndRegister() {
+    const textSelectors = 'h1, h2, h3, h4, h5, h6, p, span, a, button, li, td, figcaption, label, strong, em, b, i, div';
+    const elements = document.querySelectorAll(`${textSelectors}, img`);
+    
+    elements.forEach(el => {
+      // Skip internal overlay
+      if (el.closest('#invio-studio-overlay')) return;
+
+      // Skip elements that are purely containers with no direct text (for divs/sections)
+      if (el.tagName === 'DIV' || el.tagName === 'SECTION') {
+        const hasDirectText = Array.from(el.childNodes).some(node => 
+          node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0
+        );
+        if (!hasDirectText) return;
+      }
+
+      // Assign ID if missing
+      if (!el.hasAttribute('data-id')) {
+        generateGhostId(el);
+      }
+
+      // Assign Category if missing
+      if (!el.hasAttribute('data-edit')) {
+        const cat = el.tagName === 'IMG' ? 'image' : 'text';
+        el.setAttribute('data-edit', cat);
+      }
+
+      BridgeState.registry.add(el);
+    });
+
+    console.log(`[StudioBridge] Registered ${BridgeState.registry.size} editable elements`);
+  }
+
+  /**
    * Global Event Listeners
    */
   document.addEventListener('mouseover', (e) => {
     if (!BridgeState.isEditMode) return;
-    const target = e.target.closest('[data-edit], p, h1, h2, h3, h4, img, button, .editable');
+    const target = e.target.closest('[data-edit]');
     if (target && target !== BridgeState.selectedElement) {
       BridgeState.hoveredElement = target;
       updateFocusBox(BridgeState.hoverBox, target);
@@ -117,7 +155,7 @@
   document.addEventListener('click', (e) => {
     if (!BridgeState.isEditMode) return;
     
-    const target = e.target.closest('[data-edit], p, h1, h2, h3, h4, img, button, .editable');
+    const target = e.target.closest('[data-edit]');
     if (target) {
       e.preventDefault();
       e.stopPropagation();
@@ -219,8 +257,18 @@
     }
   }
 
+  // Sync loop to keep highlight boxes aligned with animations/GSAP
+  function syncLoop() {
+    if (BridgeState.selectedElement) {
+      updateFocusBox(BridgeState.selectionBox, BridgeState.selectedElement);
+    }
+    requestAnimationFrame(syncLoop);
+  }
+
   // Initial Boot
   initOverlay();
+  scanAndRegister();
+  syncLoop();
 
   // Signal to parent that we are alive
   window.parent.postMessage({ type: 'bridgeReady' }, '*');
