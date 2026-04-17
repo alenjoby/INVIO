@@ -22,7 +22,9 @@ class StudioEditor {
     this.isDirty = false;
     this.saveTimeout = null;
     this.autoSaveInterval = null;
-    this.originalValues = { text: {}, images: {}, colors: {} };
+    this.originalValues = { text: {}, images: {}, colors: {}, styles: {} };
+    this.highlightEl = null;
+    this.syncLoopId = null;
 
     this.init();
   }
@@ -64,13 +66,14 @@ class StudioEditor {
       // Load template
       await this.loadTemplate(templateId);
 
-      // Bind Bridge Events (After template load)
-      window.addEventListener('message', this.handleBridgeMessage.bind(this));
-      
-      this.state.on('edit:text', (id, val) => this.relayEdit('text', id, val));
-      this.state.on('edit:images', (id, val) => this.relayEdit('images', id, val));
-      this.state.on('edit:colors', (id, val) => this.relayEdit('colors', id, val));
-      this.state.on('edit:styles', (id, val) => this.relayEdit('styles', id, val));
+      // Start highlight sync loop
+      this.startSyncLoop();
+
+      // Listen for state changes to apply directly
+      this.state.on("edit:text", (id, val) => this.applyDirectEdit("text", id, val));
+      this.state.on("edit:images", (id, val) => this.applyDirectEdit("images", id, val));
+      this.state.on("edit:colors", (id, val) => this.applyDirectEdit("colors", id, val));
+      this.state.on("edit:styles", (id, val) => this.applyDirectEdit("styles", id, val));
 
       // Start auto-save
       this.startAutoSave();
@@ -151,6 +154,8 @@ class StudioEditor {
       mapsAddress: document.getElementById("mapsAddress"),
       rsvpSettings: document.getElementById("rsvpSettings"),
       mapsSettings: document.getElementById("mapsSettings"),
+      selectionHighlight: document.getElementById("selectionHighlight"),
+      canvasWrapper: document.getElementById("canvasWrapper"),
     };
   }
 
@@ -372,16 +377,17 @@ class StudioEditor {
         };
       });
 
-      // Inject the Bridge
-      await this.injectBridge();
+      // Perform scan and event binding directly
+      this.scanFrameElements();
+      this.attachFrameEvents();
 
       // Sync existing state if any
-      this.syncStateToBridge();
+      this.syncStateToFrame();
 
       // Update UI title
       const templateName = this.getTemplateNameById(templateId);
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
-      this.showToast(`${templateName} loaded in Pro Mode`, "success");
+      this.showToast(`${templateName} loaded`, "success");
       
     } catch (error) {
       console.error("✗ Template load failed:", error);
@@ -389,63 +395,73 @@ class StudioEditor {
     }
   }
 
-  async injectBridge() {
-    return new Promise((resolve) => {
-      const frameDoc = this.els.frame.contentDocument;
-      if (!frameDoc) return resolve();
-
-      const script = frameDoc.createElement('script');
-      script.src = "/pages/studio/StudioBridge.js";
-      script.onload = () => {
-        console.log("[Studio] Bridge script injected and running");
-        resolve();
-      };
-      frameDoc.body.appendChild(script);
-    });
-  }
-
-  relayEdit(category, id, value) {
-    if (this.els.frame.contentWindow) {
-      this.els.frame.contentWindow.postMessage({
-        type: 'applyEdit',
-        payload: { category, id, value }
-      }, '*');
-    }
-  }
-
-  handleBridgeMessage(e) {
-    const { type, payload } = e.data;
-    switch (type) {
-      case 'elementSelected':
-        this.onElementSelected(payload);
-        break;
-      case 'selectionCleared':
-        this.deselectElement();
-        break;
-      case 'bridgeReady':
-        console.log("[Studio] Bridge is active.");
-        this.syncStateToBridge();
-        break;
-    }
-  }
-
-  onElementSelected(payload) {
-    console.log("[Studio] Element selected from bridge:", payload);
+  applyDirectEdit(category, id, value) {
     const frameDoc = this.els.frame.contentDocument;
-    const el = frameDoc?.querySelector(`[data-id="${payload.id}"]`);
-    
-    if (el) {
-      // Use the existing selectElement logic to route to the correct controls
-      this.selectElement(el);
+    if (!frameDoc) return;
+
+    const el = frameDoc.querySelector(`[data-id="${id}"]`);
+    if (!el) return;
+
+    if (category === "text") {
+      el.textContent = value ?? "";
+    } else if (category === "images") {
+      el.src = value ?? "";
+    } else if (category === "colors") {
+      el.style.color = value ?? "";
+    } else if (category === "styles") {
+      if (value.backgroundColor) el.style.backgroundColor = value.backgroundColor;
+      if (value.backgroundImage) el.style.backgroundImage = value.backgroundImage;
     }
   }
 
-  syncStateToBridge() {
-    if (this.els.frame.contentWindow) {
-      this.els.frame.contentWindow.postMessage({
-        type: 'syncState',
-        payload: this.state.getState()
-      }, '*');
+  syncStateToFrame() {
+    const state = this.state.getState();
+    Object.keys(state.edits.text).forEach(id => this.applyDirectEdit("text", id, state.edits.text[id]));
+    Object.keys(state.edits.images).forEach(id => this.applyDirectEdit("images", id, state.edits.images[id]));
+    Object.keys(state.edits.colors).forEach(id => this.applyDirectEdit("colors", id, state.edits.colors[id]));
+    Object.keys(state.edits.styles).forEach(id => this.applyDirectEdit("styles", id, state.edits.styles[id]));
+  }
+
+  startSyncLoop() {
+    const loop = () => {
+      this.syncHighlight();
+      this.syncLoopId = requestAnimationFrame(loop);
+    };
+    this.syncLoopId = requestAnimationFrame(loop);
+  }
+
+  syncHighlight() {
+    if (!this.selectedElement || !this.els.selectionHighlight) {
+      if (this.els.selectionHighlight) this.els.selectionHighlight.classList.add("hidden");
+      return;
+    }
+
+    const rect = this.selectedElement.getBoundingClientRect();
+    const frameRect = this.els.frame.getBoundingClientRect();
+    const wrapperRect = this.els.canvasWrapper.getBoundingClientRect();
+    
+    // Convert iframe-relative coordinates to canvas-wrapper relative coordinates
+    // rect is relative to iframe viewport
+    // frameRect is relative to parent window
+    // wrapperRect is relative to parent window
+    const top = (rect.top + frameRect.top) - wrapperRect.top + this.els.canvasWrapper.scrollTop;
+    const left = (rect.left + frameRect.left) - wrapperRect.left + this.els.canvasWrapper.scrollLeft;
+    const width = rect.width;
+    const height = rect.height;
+
+    // Only show if element is visible and has size
+    if (width > 0 && height > 0) {
+      this.els.selectionHighlight.classList.remove("hidden");
+      this.els.selectionHighlight.style.transform = `translate(${left}px, ${top}px)`;
+      this.els.selectionHighlight.style.width = `${width}px`;
+      this.els.selectionHighlight.style.height = `${height}px`;
+      
+      const label = this.els.selectionHighlight.querySelector(".selection-label");
+      if (label) {
+        label.textContent = this.selectedElement.getAttribute("data-id") || "Element";
+      }
+    } else {
+      this.els.selectionHighlight.classList.add("hidden");
     }
   }
   // Refactored for Pro Max architecture
@@ -575,7 +591,7 @@ class StudioEditor {
         }
       });
 
-      // Click handlers are now handled via StudioBridge.js relay
+      // Restore direct target selection logic (Already moved)
     } catch (error) {
       console.error("✗ Element scan failed:", error);
     }
@@ -615,7 +631,7 @@ class StudioEditor {
 
     // Make visible text nodes editable while avoiding large layout wrappers.
     const textSelectors =
-      "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
+      "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th";
 
     frameDoc.querySelectorAll(textSelectors).forEach((el) => {
       if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) {
@@ -633,6 +649,19 @@ class StudioEditor {
       autoTextCount += 1;
     });
 
+    // Final Deep Pass: Capture text nodes that are directly inside DIVs (common in modern templates)
+    frameDoc.querySelectorAll("div").forEach((el) => {
+      if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
+      
+      // If div has direct text and few children, it's a candidate
+      if (this.isEditableTextCandidate(el) && el.children.length < 3) {
+        const dataId = this.generateUniqueDataId("text-div", usedIds, "text");
+        el.setAttribute("data-edit", "text");
+        el.setAttribute("data-id", dataId);
+        autoTextCount += 1;
+      }
+    });
+
     if (autoImageCount || autoTextCount || autoStyleCount) {
       console.log(
         `✓ Auto-registered ${autoTextCount} text, ${autoImageCount} image, and ${autoStyleCount} style elements`,
@@ -641,15 +670,17 @@ class StudioEditor {
   }
 
   isEditableTextCandidate(el) {
-    if (!el || !el.textContent) return false;
+    if (!el) return false;
+    
+    // Ignore hidden or structural elements
+    if (el.offsetParent === null && el.tagName !== "DIV") return false; // Basic visibility
+    if (el.closest("script,style,noscript,head,svg,canvas,iframe,footer,nav")) return false;
+
     const text = el.textContent.trim();
-    if (!text) return false;
+    if (!text || text.length < 1) return false;
 
-    // Reject structural or data elements
-    if (el.closest("script,style,noscript,head,svg,canvas,iframe")) return false;
-
-    // No tag checks — if it has text and isn't a known layout wrapper with many text nodes, allow it.
-    if (el.children.length > 5) return false; // Heuristic: likely a high-level container
+    // Reject if too many children (likely a layout wrapper)
+    if (el.children.length > 4) return false;
 
     return true;
   }
@@ -678,19 +709,43 @@ class StudioEditor {
       const frameDoc = this.els.frame.contentDocument;
       if (!frameDoc) return;
 
-      // Click anywhere to deselect
+      // Handle selection clicks
       frameDoc.addEventListener("click", (e) => {
-        if (!e.target.closest("[data-edit]")) {
+        // Find closest editable parent
+        const target = e.target.closest("[data-edit]");
+        
+        if (target) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.selectElement(target);
+        } else {
           this.deselectElement();
+        }
+      }, true); // Use capture phase to intercept template events
+
+      // Hover effects
+      frameDoc.addEventListener("mouseover", (e) => {
+        const target = e.target.closest("[data-edit]");
+        if (target) {
+          target.style.cursor = "pointer";
+          // target.style.outline = "1px dashed #c5a059"; // Removed in favor of parent overlay but kept for feedback? 
+          // Re-adding subtle internal outline for "hover" feedback
+          target.setAttribute("data-hover", "true");
         }
       });
 
-      // MutationObserver for Universal Discovery (Handlings script-added content)
+      frameDoc.addEventListener("mouseout", (e) => {
+        const target = e.target.closest("[data-edit]");
+        if (target) {
+          target.removeAttribute("data-hover");
+        }
+      });
+
+      // MutationObserver for Universal Discovery
       if (this.frameObserver) this.frameObserver.disconnect();
       this.frameObserver = new MutationObserver(() => {
-        // Debounce scan
         if (this._scanTimeout) clearTimeout(this._scanTimeout);
-        this._scanTimeout = setTimeout(() => this.scanFrameElements(), 500);
+        this._scanTimeout = setTimeout(() => this.scanFrameElements(), 1000);
       });
       this.frameObserver.observe(frameDoc.body, { childList: true, subtree: true });
     } catch (error) {
