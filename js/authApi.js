@@ -176,7 +176,30 @@ class AuthAPI {
   isAuthenticated() {
     return !!this.token && !!this.user;
   }
+
+  /**
+   * Verify session with server and clear local state if invalid.
+   * Prevents "ghost logins" from deleted or expired accounts.
+   */
+  async syncSession() {
+    if (!this.token) {
+      this.clearAuth();
+      return null;
+    }
+
+    try {
+      const data = await this.getCurrentUser();
+      return data;
+    } catch (err) {
+      console.warn("Session sync failed:", err.message);
+      this.clearAuth();
+      return null;
+    }
+  }
 }
 
 export const authApi = new AuthAPI();
+if (typeof window !== "undefined") {
+  window.authApi = authApi;
+}
 export default authApi;

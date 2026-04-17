@@ -253,10 +253,16 @@ if (typeof window !== "undefined") {
 }
 
 if (refs.templateGrid && refs.templateSearch && refs.categoryFilter) {
-  initialize();
+  // Use .then() because initialize is async but called from top-level in a non-module script
+  initialize().catch(err => console.error("Initialization failed:", err));
 }
 
-function initialize() {
+async function initialize() {
+  // Sync session with server if authApi is available
+  if (window.authApi) {
+    await window.authApi.syncSession();
+  }
+
   forceResetModals();
   initializeAOS();
 
@@ -737,6 +743,11 @@ function closeAuthPrompt() {
 }
 
 function isUserAuthenticated() {
+  if (window.authApi) {
+    return window.authApi.isAuthenticated();
+  }
+
+  // Fallback if authApi is not yet loaded
   const token = localStorage.getItem("authToken");
   const userRaw = localStorage.getItem("authUser");
 

@@ -31,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initDashboard() {
+  // Verify session with server to avoid "ghost" logins from deleted accounts
+  await authApi.syncSession();
+
   if (!authApi.isAuthenticated()) {
     window.location.href = "/pages/auth/index.html";
     return;

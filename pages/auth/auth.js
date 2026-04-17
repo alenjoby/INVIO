@@ -2,10 +2,13 @@ import { authApi } from "../../js/authApi.js";
 
 // INVIO Authentication Logic
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const query = new URLSearchParams(window.location.search);
   const safeRedirect = getSafeRedirect(query.get("redirect"));
   const startMode = query.get("mode");
+
+  // Verify session with server to avoid "ghost" redirects
+  await authApi.syncSession();
 
   // If already authenticated, skip auth page
   if (authApi.isAuthenticated()) {
