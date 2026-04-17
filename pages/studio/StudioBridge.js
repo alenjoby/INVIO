@@ -10,6 +10,7 @@
   window.__INVIO_BRIDGE_INITIALIZED__ = true;
 
   console.log("[StudioBridge] Initializing...");
+  document.body.classList.add('invio-studio-mode');
 
   const BridgeState = {
     selectedElement: null,

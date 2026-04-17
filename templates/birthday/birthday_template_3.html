@@ -25,8 +25,10 @@
       <img
         src="../../assets/images/birthday/template_3/girl.webp"
         class="hero-img fade"
+        data-edit="image"
+        data-id="birthday-hero-image"
       />
-      <p class="fade caption">and it's all about her ✨</p>
+      <p class="fade caption" data-edit="text" data-id="birthday-hero-caption">and it's all about her ✨</p>
     </section>
 
     <!-- SECTION 3 -->
@@ -34,6 +36,8 @@
       <img
         src="../../assets/images/birthday/template_3/disco.png"
         class="disco fade"
+        data-edit="image"
+        data-id="decoration-disco"
       />
 
       <h1 class="title fade">
@@ -47,7 +51,7 @@
 
     <!-- SECTION 4 -->
     <section class="section">
-      <p class="fade">Join me to celebrate one more year!</p>
+      <p class="fade" data-edit="text" data-id="birthday-invite-message">Join me to celebrate one more year!</p>
 
       <!-- Set your target date and time here (Format: YYYY-MM-DDTHH:MM:SS) -->
       <div
@@ -92,11 +96,11 @@
 
     <!-- SECTION 5 RSVP -->
     <section class="section rsvp-section">
-      <h2 class="fade">Will you be part of this moment?</h2>
+      <h2 class="fade" data-edit="text" data-id="birthday-rsvp-title">Will you be part of this moment?</h2>
 
       <div class="buttons fade">
-        <button class="accept">Accept</button>
-        <button class="decline">Decline</button>
+        <button class="accept" data-edit="text" data-id="birthday-cta-accept">Accept</button>
+        <button class="decline" data-edit="text" data-id="birthday-cta-decline">Decline</button>
       </div>
 
       <p id="rsvp-message" class="rsvp-message"></p>
@@ -386,6 +390,9 @@
         display: flex;
         pointer-events: none;
       }
+      .invio-studio-mode .curtains {
+        display: none !important;
+      }
 
       .curtain-panel {
         width: 50%;
@@ -625,3 +632,4 @@
     </script>
   </body>
 </html>
+
