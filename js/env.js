@@ -9,8 +9,9 @@
 
 const CONFIG = {
   LOCAL_URL: "http://localhost:4000",
-  // TODO: Update this after your first Render deployment
-  PRODUCTION_URL: "https://invio-backend-znac.onrender.com", 
+  // In production, we use Vercel's rewrite proxy (defined in vercel.json)
+  // This avoids CORS issues by routing /api through the same origin.
+  PRODUCTION_URL: window.location.origin, 
 };
 
 // Auto-detect environment based on hostname
