@@ -165,6 +165,7 @@ class EditorState {
     }
 
     this.emit(`edit:${category}:${fieldId}`, value);
+    this.emit(`edit:${category}`, fieldId, value);
   }
 
   /**

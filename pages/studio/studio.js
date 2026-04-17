@@ -58,6 +58,14 @@ class StudioEditor {
       // Load template
       await this.loadTemplate(templateId);
 
+      // Bind Bridge Events (After template load)
+      window.addEventListener('message', this.handleBridgeMessage.bind(this));
+      
+      this.state.on('edit:text', (id, val) => this.relayEdit('text', id, val));
+      this.state.on('edit:images', (id, val) => this.relayEdit('images', id, val));
+      this.state.on('edit:colors', (id, val) => this.relayEdit('colors', id, val));
+      this.state.on('edit:styles', (id, val) => this.relayEdit('styles', id, val));
+
       // Start auto-save
       this.startAutoSave();
 
@@ -341,232 +349,108 @@ class StudioEditor {
 
   async loadTemplate(templateId) {
     try {
-      // Construct template path based on template ID
       const templatePath = this.getTemplatePathById(templateId);
-      console.log(
-        `[loadTemplate] templateId=${templateId}, templatePath=${templatePath}`,
-      );
-
-      if (!templatePath) {
-        throw new Error(`Unknown template: ${templateId}`);
-      }
+      if (!templatePath) throw new Error(`Unknown template: ${templateId}`);
 
       const templateUrl = new URL(templatePath, window.location.href).href;
-      console.log(`[loadTemplate] Fetching from URL: ${templateUrl}`);
+      console.log(`[loadTemplate] Loading native src: ${templateUrl}`);
 
-      const response = await fetch(templateUrl, { cache: "no-store" });
-      console.log(`[loadTemplate] Fetch response status: ${response.status}`);
+      // Set src directly for 100% visual parity
+      this.els.frame.src = templateUrl;
 
-      if (!response.ok) {
-        throw new Error(
-          `Failed to load template: ${templateUrl} (status ${response.status})`,
-        );
-      }
-
-      const templateHtml = await response.text();
-      console.log(
-        `[loadTemplate] Template HTML size: ${templateHtml.length} bytes`,
-      );
-
-      const previewHtml = this.sanitizeTemplateHtml(templateHtml);
-
-      const framedHtml = this.injectBaseHref(previewHtml, templateUrl);
-      console.log(
-        `[loadTemplate] Injected base href, framedHtml size: ${framedHtml.length} bytes`,
-      );
-
-      this.els.frame.removeAttribute("src");
-      this.els.frame.removeAttribute("srcdoc");
-      this.els.frame.onload = null;
-      this.els.frame.onerror = null;
-
-      // Use direct DOM manipulation for most reliable rendering
-      console.log("[loadTemplate] Using direct DOM manipulation approach...");
-
-      // First, load the iframe with about:blank and wait for it to be ready
-      this.els.frame.src = "about:blank";
-
+      // Wait for load event
       await new Promise((resolve) => {
-        const checkReady = () => {
-          try {
-            const frameDoc = this.els.frame.contentDocument;
-            if (frameDoc && frameDoc.readyState === "complete") {
-              resolve();
-            } else {
-              setTimeout(checkReady, 50);
-            }
-          } catch (e) {
-            setTimeout(checkReady, 50);
-          }
-        };
-        checkReady();
-      });
-
-      // Now inject the HTML directly
-      const frameDoc = this.els.frame.contentDocument;
-      console.log("[loadTemplate] Writing HTML to iframe document...");
-      frameDoc.open();
-      frameDoc.write(framedHtml);
-      frameDoc.close();
-
-      console.log("[loadTemplate] HTML written to iframe");      // Wait a bit for the document to parse and initialize heavy scripts (GSAP, Lenis)
-      // Bug fix: Complex templates like Wedding 5 need more time to 'settle'.
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          console.log("[loadTemplate] Waiting for iframe content to render...");
-          this.injectSecurityGuard();
+        this.els.frame.onload = () => {
+          console.log("[loadTemplate] Iframe loaded natively");
           resolve();
-        }, 800);
+        };
       });
 
-      // Verify iframe content exists (even if still loading)
-      try {
-        const frameDoc = this.els.frame.contentDocument;
-        if (!frameDoc) {
-          throw new Error("Iframe document inaccessible");
-        }
+      // Inject the Bridge
+      await this.injectBridge();
 
-        // If body is still empty, wait a bit longer (retry-style for Wedding 5)
-        if (!frameDoc.body || frameDoc.body.innerHTML.trim().length === 0) {
-          console.warn("[loadTemplate] Iframe body is empty, waiting 1s extra...");
-          await new Promise(r => setTimeout(r, 1000));
-        }
-      } catch (e) {
-        console.error("[loadTemplate] Could not access iframe contentDocument:", e);
-        this.showToast("Problem accessing template preview: " + e.message, "error");
-        return;
-      }
+      // Sync existing state if any
+      this.syncStateToBridge();
 
-      this.injectEditorStyles(); // restore editor cursor and accent colors
-      this.injectPreviewVisibilityStyles();
-
-      console.log("[loadTemplate] Scanning frame elements...");
-      // Run scan multiple times to catch elements injected by JS late (GSAP SplitText, etc)
-      this.scanFrameElements(); 
-      setTimeout(() => this.scanFrameElements(), 1500); 
-      setTimeout(() => this.scanFrameElements(), 3000);
-
-      this.updateLayersPanel(); // Populate Layers tab
-      this.attachFrameEvents(); // safe to attach now — frame is loaded
-      this.refreshInteractionBlocks(); // Load RSVP/Maps if enabled
-
-      // Update title
+      // Update UI title
       const templateName = this.getTemplateNameById(templateId);
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
-      console.log(`[loadTemplate] Template loading complete: ${templateName}`);
-
-      this.showToast(`${templateName} loaded`, "success");
+      this.showToast(`${templateName} loaded in Pro Mode`, "success");
+      
     } catch (error) {
       console.error("✗ Template load failed:", error);
-      console.error("Error stack:", error.stack);
       this.showToast("Failed to load template: " + error.message, "error");
     }
   }
 
-  injectBaseHref(html, templateUrl) {
-    const baseTag = `<base href="${templateUrl}">`;
+  async injectBridge() {
+    return new Promise((resolve) => {
+      const frameDoc = this.els.frame.contentDocument;
+      if (!frameDoc) return resolve();
 
-    if (/<base\s/i.test(html)) {
-      return html.replace(/<base\s[^>]*>/i, baseTag);
-    }
-
-    if (/<head\b[^>]*>/i.test(html)) {
-      return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
-    }
-
-    return `${baseTag}${html}`;
-  }
-
-  /**
-   * Instead of stripping ALL scripts, we selectively keep visual/animation libs
-   * like GSAP and Lenis so the Studio preview matches the Live preview's "vibe".
-   */
-  sanitizeTemplateHtml(html) {
-    // Identify scripts
-    const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
-
-    return html.replace(scriptRegex, (match, content) => {
-      // RELAXED RULE: Keep all scripts to preserve the "Original" look and animations
-      // UNLESS they contain dangerous redirects or forced top-level navigation.
-      const hasDangerousKeywords = /window\.location|top\.location|location\.href|location\.replace/i.test(
-        content,
-      );
-
-      if (hasDangerousKeywords) {
-        console.warn("[Studio] Stripping potentially dangerous script block");
-        return "<!-- Script stripped for security in editor -->";
-      }
-
-      // Keep it!
-      return match;
+      const script = frameDoc.createElement('script');
+      script.src = "/pages/studio/StudioBridge.js";
+      script.onload = () => {
+        console.log("[Studio] Bridge script injected and running");
+        resolve();
+      };
+      frameDoc.body.appendChild(script);
     });
   }
 
-  /**
-   * Inject editor-specific styles into the iframe document so CSS custom
-   * properties like --accent and hover outlines work across the frame boundary.
-   * Bug #3 fix: CSS vars on the parent page don't bleed into sandboxed iframes.
-   */
-  injectEditorStyles() {
-    try {
-      const frameDoc = this.els.frame.contentDocument;
-      if (!frameDoc || !frameDoc.head) return;
-
-      const existing = frameDoc.getElementById("__invio-editor-styles");
-      if (existing) existing.remove();
-
-      const style = frameDoc.createElement("style");
-      style.id = "__invio-editor-styles";
-      style.textContent = [
-        ":root { --accent: #BFA77A; }",
-        /* Ensure editor can always interact and see cursor */
-        "body, html { cursor: default !important; user-select: auto !important; }",
-        "* { cursor: inherit; }",
-        "[data-edit]:hover { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
-        ".selected-edit-target { outline: 2px solid var(--accent) !important; outline-offset: 4px; z-index: 1000; }",
-        /* Hide distracting template overlays like custom cursors */
-        "#cursor, #cursor-ring, .cursor-dot, .cursor-circle { display: none !important; pointer-events: none !important; }",
-      ].join("\n");
-      frameDoc.head.appendChild(style);
-      console.log("[Studio] Injected enhanced editor styles into iframe");
-    } catch (err) {
-      console.warn("Could not inject editor styles:", err);
+  relayEdit(category, id, value) {
+    if (this.els.frame.contentWindow) {
+      this.els.frame.contentWindow.postMessage({
+        type: 'applyEdit',
+        payload: { category, id, value }
+      }, '*');
     }
   }
 
-  injectPreviewVisibilityStyles() {
-    try {
-      const frameDoc = this.els.frame.contentDocument;
-      if (!frameDoc || !frameDoc.head) return;
-
-      const existing = frameDoc.getElementById("__invio-preview-visibility");
-      if (existing) existing.remove();
-
-      const style = frameDoc.createElement("style");
-      style.id = "__invio-preview-visibility";
-      style.textContent = [
-        "html, body {",
-        "  opacity: 1 !important;",
-        "  visibility: visible !important;",
-        "  background-color: transparent !important;",
-        "}",
-        /* Visual Parity: We remove the aggressive .fade { opacity: 1 } overrides.
-           Templates will now animate exactly as they do on the live site. */
-        "[data-edit] {",
-        "  pointer-events: auto !important;",
-        "}",
-        /* Forced visibility only on selection/hover to ensure they are reachable */
-        "[data-edit]:hover, .selected-edit-target {",
-        "  opacity: 1 !important;",
-        "  visibility: visible !important;",
-        "  z-index: 9999 !important;",
-        "}",
-      ].join("\n");
-      frameDoc.head.appendChild(style);
-    } catch (err) {
-      console.warn("Could not inject preview visibility styles:", err);
+  handleBridgeMessage(e) {
+    const { type, payload } = e.data;
+    switch (type) {
+      case 'elementSelected':
+        this.onElementSelected(payload);
+        break;
+      case 'selectionCleared':
+        this.deselectElement();
+        break;
+      case 'bridgeReady':
+        console.log("[Studio] Bridge is active.");
+        this.syncStateToBridge();
+        break;
     }
   }
+
+  onElementSelected(payload) {
+    console.log("[Studio] Element selected from bridge:", payload);
+    // Find the actual element in the frame (if needed for parent-side logic)
+    const frameDoc = this.els.frame.contentDocument;
+    const el = frameDoc?.querySelector(`[data-id="${payload.id}"]`);
+    
+    if (el) {
+      this.selectedElement = el;
+      this.showControls(payload.category, el);
+    }
+  }
+
+  syncStateToBridge() {
+    if (this.els.frame.contentWindow) {
+      this.els.frame.contentWindow.postMessage({
+        type: 'syncState',
+        payload: this.state.getState()
+      }, '*');
+    }
+  }
+  // Refactored for Pro Max architecture
+  injectBaseHref() {}
+  sanitizeTemplateHtml(html) { return html; }
+  injectSecurityGuard() {}
+  injectEditorStyles() {}
+  injectPreviewVisibilityStyles() {}
+
+  // Legacy visibility styles removed. Bridge handles highlight via Shadow DOM.
 
   getTemplatePathById(templateId) {
     // Map template IDs to file paths
