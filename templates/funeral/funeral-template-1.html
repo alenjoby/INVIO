@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Cinematic Legacy - Memorial</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;1,400&family=Inter:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #000000;
+        --white: #ffffff;
+        --gray: #888888;
+        /* Glass Variables */
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-hover: rgba(255, 255, 255, 0.12);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--primary);
+        font-family: "Inter", sans-serif;
+        color: var(--white);
+        overflow-x: hidden;
+      }
+
+      /* --- Global Reveal Animation --- */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* --- Section 1: Splash --- */
+      .splash-section {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 20px; /* Responsive padding */
+        box-sizing: border-box;
+      }
+
+      .pre-title {
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        font-size: clamp(0.8rem, 2vw, 1.2rem);
+        color: var(--gray);
+        margin-bottom: 25px;
+        opacity: 0;
+        transition: opacity 1.5s ease;
+      }
+
+      .main-photo-wrapper {
+        width: min(300px, 80vw); /* Shrinks on mobile */
+        height: clamp(350px, 50vh, 450px);
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(255, 255, 255, 0.05);
+        margin-bottom: 30px;
+      }
+
+      .main-photo-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(20%);
+      }
+
+      .bottom-content-area {
+        position: relative;
+        width: 100%;
+        min-height: 150px; /* Increased to prevent overlap on mobile */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .intro-quote {
+        position: absolute;
+        font-family: "Bodoni Moda", serif;
+        font-size: clamp(1.1rem, 4vw, 1.6rem);
+        font-style: italic;
+        width: 90%;
+        max-width: 600px;
+        opacity: 0;
+        transition: opacity 1.5s ease;
+      }
+
+      .name-info {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 1.5s ease;
+      }
+
+      .name-info h1 {
+        font-family: "Bodoni Moda", serif;
+        font-size: clamp(2rem, 7vw, 3.5rem);
+        margin: 0;
+        font-weight: 400;
+      }
+
+      /* --- Section 2: Memories --- */
+      .memory-section {
+        padding: 80px 5%; /* Fluid padding */
+        background: var(--white);
+        color: var(--primary);
+      }
+
+      .image-row {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(250px, 1fr)
+        ); /* Responsive Grid */
+        gap: 20px;
+        margin-bottom: 60px;
+      }
+
+      .image-row img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: 2px;
+      }
+
+      .family-message {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        line-height: 1.8;
+        color: #333;
+      }
+
+      /* --- Section 3: Glass Logistics --- */
+      .logistics {
+        padding: 100px 20px;
+        background: radial-gradient(circle at top, #111, #000);
+        text-align: center;
+      }
+
+      .logistics h2 {
+        font-family: "Bodoni Moda", serif;
+        margin-bottom: 60px;
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
+      }
+
+      .grid-info {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* The Glass Card */
+      .info-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        padding: clamp(20px, 5vw, 40px);
+        border-radius: 4px;
+        width: 100%;
+        max-width: 300px; /* Fluid widths */
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-sizing: border-box;
+      }
+
+      /* Desktop Hover Slide */
+      @media (min-width: 768px) {
+        .info-card:hover {
+          transform: translateY(-15px);
+          background: var(--glass-hover);
+          border-color: rgba(255, 255, 255, 0.25);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      .info-card h4 {
+        color: var(--gray);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-size: 0.75rem;
+        margin-bottom: 20px;
+      }
+
+      .info-card p {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        line-height: 1.6;
+        margin: 0;
+        font-weight: 300;
+      }
+
+      /* Helper Classes */
+      .visible {
+        opacity: 1 !important;
+      }
+      .hidden {
+        opacity: 0 !important;
+      }
+      .slide-up {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+
+      /* Fix for Landscape Phones */
+      @media (max-height: 500px) {
+        .splash-section {
+          min-height: auto;
+          padding: 100px 20px;
+        }
+        .bottom-content-area {
+          min-height: 100px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="splash-section">
+      <p id="pre-title" class="pre-title">In Loving Memory Of</p>
+      <div class="main-photo-wrapper reveal">
+        <img
+          src="/assets/images/funeral/hero-portrait.jpg"
+          alt="Portrait"
+          data-editable
+          data-key="main_photo"
+        />
+      </div>
+      <div class="bottom-content-area">
+        <div id="quote" class="intro-quote">
+          "The song is ended, but the melody lingers on..."
+        </div>
+        <div id="details" class="name-info">
+          <h1>Arthur W. Sterling</h1>
+          <p>1948 — 2026</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="memory-section">
+      <div class="image-row">
+        <img
+          src="/assets/images/funeral/hero-portrait.jpg"
+          class="reveal"
+          data-editable
+          data-key="memory_1"
+        />
+        <img
+          src="/assets/images/funeral/hero-portrait-2.jpg"
+          class="reveal"
+          data-editable
+          data-key="memory_2"
+        />
+        <img
+          src="/assets/images/funeral/portrait-gp.jpg"
+          class="reveal"
+          data-editable
+          data-key="memory_3"
+        />
+      </div>
+      <div
+        class="family-message reveal"
+        data-editable
+        data-key="family_message"
+      >
+        <p>
+          A beloved father, a dedicated teacher, and a friend to many. Arthur's
+          life was a testament to the power of kindness. We gather to celebrate
+          a journey that inspired us all.
+        </p>
+      </div>
+    </section>
+
+    <section class="logistics">
+      <h2 class="reveal">Service Information</h2>
+
+      <div class="grid-info">
+        <div class="info-card reveal">
+          <h4 data-editable data-key="label_location">Location</h4>
+          <p data-editable data-key="location">
+            Greenwood Chapel<br />Dubai, UAE
+          </p>
+        </div>
+
+        <div class="info-card reveal">
+          <h4>Date</h4>
+          <p>May 20th, 2026</p>
+        </div>
+
+        <div class="info-card reveal">
+          <h4>Time</h4>
+          <p>2:00 PM</p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // 1. Splash Page Sequence
+      window.addEventListener("DOMContentLoaded", () => {
+        const quote = document.getElementById("quote");
+        const details = document.getElementById("details");
+        const preTitle = document.getElementById("pre-title");
+        const firstImg = document.querySelector(".main-photo-wrapper");
+
+        setTimeout(() => firstImg.classList.add("active"), 300);
+        setTimeout(() => quote.classList.add("visible"), 1200);
+        setTimeout(() => quote.classList.add("hidden"), 3800);
+        setTimeout(() => {
+          preTitle.classList.add("visible");
+          details.classList.add("slide-up");
+        }, 5000);
+      });
+
+      // 2. Reveal Logic
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+            } else {
+              entry.target.classList.remove("active");
+            }
+          });
+        },
+        {
+          threshold: 0.1,
+          rootMargin: "0px 0px -50px 0px",
+        },
+      );
+
+      document
+        .querySelectorAll(".reveal")
+        .forEach((el) => observer.observe(el));
+    </script>
+    <script src="/assets/js/editor.js"></script>
+  </body>
+</html>

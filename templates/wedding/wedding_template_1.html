@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riaan &amp; Pragya | Wedding Invitation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Cinzel:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Moon Time";
+        src: url("../../assets/fonts/moon-time-regular.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "Kaushan";
+        src: url("../../assets/fonts/KaushanScript-Regular.ttf")
+          format("truetype");
+      }
+
+      :root {
+        --bg-pattern: url("../../assets/images/wedding/wedding_template_1/bacground.png");
+        --arch-asset: url("../../assets/images/wedding/wedding_template_1/arc-bg.png");
+        --top-border: url("../../assets/images/wedding/wedding_template_1/topborder.png");
+        --lamp-asset: url("../../assets/images/wedding/wedding_template_1/lamp.png");
+        --floral-base: url("../../assets/images/wedding/wedding_template_1/flowers border.png");
+        --couple-asset: url("../../assets/images/wedding/wedding_template_1/bride_groom.png");
+        --paper: #f8ecd9;
+        --paper-edge: #e8cfae;
+        --accent: #cb4a72;
+        --accent-deep: #b83f63;
+        --text: #5b5b37;
+        --text-soft: #7d7c57;
+        --surface: rgba(255, 248, 238, 0.84);
+        --surface-deep: rgba(255, 241, 223, 0.9);
+        --shadow: 0 28px 70px rgba(105, 74, 45, 0.16);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-family: "Cormorant Garamond", serif;
+        color: var(--text);
+        background: var(--bg-pattern) center/cover no-repeat;
+        background-attachment: fixed;
+      }
+
+      .invitation-shell {
+        width: min(94vw, 82rem);
+        margin: 0 auto;
+        padding: 1.4rem 0 4.5rem;
+        display: grid;
+        gap: 2rem;
+      }
+
+      .hero-scene {
+        position: relative;
+        min-height: 100vh;
+        border-radius: 2.2rem;
+        border: 1px solid rgba(232, 207, 174, 0.72);
+        background:
+          linear-gradient(rgba(255, 248, 238, 0.82), rgba(255, 244, 229, 0.86)),
+          var(--bg-pattern) center / 24rem repeat;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        padding: clamp(5.2rem, 8vw, 7rem) clamp(1rem, 4vw, 3rem) 2.4rem;
+      }
+
+      .hero-scene::before {
+        content: "";
+        position: absolute;
+        inset: 0.85rem;
+        border: 1px solid rgba(232, 207, 174, 0.65);
+        border-radius: 1.75rem;
+        pointer-events: none;
+      }
+
+      .hero-top-floral {
+        position: absolute;
+        top: -0.2rem;
+        left: 50%;
+        width: min(86%, 58rem);
+        aspect-ratio: 335 / 147;
+        transform: translateX(-50%);
+        background: var(--top-border) center top / contain no-repeat;
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      .hero-lamps {
+        position: absolute;
+        top: 0.95rem;
+        left: 50%;
+        width: min(80%, 52rem);
+        aspect-ratio: 335 / 121;
+        transform: translateX(-50%);
+        background: var(--lamp-asset) center top / contain no-repeat;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .hero-grid {
+        position: relative;
+        z-index: 4;
+        height: 100%;
+        display: grid;
+        grid-template-columns: minmax(16rem, 1fr) minmax(14rem, 0.9fr);
+        align-items: end;
+        gap: clamp(1rem, 4vw, 3.5rem);
+      }
+
+      .hero-copy {
+        max-width: 38rem;
+        padding-left: clamp(0.2rem, 1.1vw, 1.1rem);
+      }
+
+      .kicker {
+        font-family: "Cinzel", serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(91, 91, 55, 0.72);
+      }
+
+      .hero-title {
+        margin-top: 0.7rem;
+        font-family: "Moon Time", "Kaushan", cursive;
+        font-size: clamp(4rem, 9vw, 7.4rem);
+        line-height: 0.9;
+        color: var(--accent-deep);
+        font-weight: 400;
+      }
+
+      .hero-title span {
+        color: var(--accent);
+      }
+
+      [data-edit] {
+        position: relative;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      [data-edit]:hover {
+        opacity: 0.8;
+      }
+
+      .hero-lead {
+        margin-top: 1.15rem;
+        max-width: 30rem;
+        font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+        line-height: 1.45;
+        color: rgba(91, 91, 55, 0.9);
+      }
+
+      .hero-date-box {
+        margin-top: 1.65rem;
+        max-width: 26rem;
+        display: grid;
+        gap: 0.55rem;
+        padding: 1.05rem 1.2rem;
+        border-radius: 0.9rem;
+        border: 1px solid rgba(184, 63, 99, 0.24);
+        background: rgba(255, 246, 235, 0.8);
+      }
+
+      .hero-date-box .month {
+        font-family: "Cinzel", serif;
+        font-size: 0.84rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .date-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .date-chip {
+        display: grid;
+        gap: 0.24rem;
+      }
+
+      .date-label,
+      .time-label {
+        font-family: "Cinzel", serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        color: var(--text-soft);
+      }
+
+      .date-line {
+        display: block;
+        width: 100%;
+        height: 0.15rem;
+        border-radius: 999px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+      }
+
+      .date-number {
+        font-family: "Cinzel", serif;
+        font-size: clamp(2.2rem, 4vw, 2.85rem);
+        line-height: 0.9;
+      }
+
+      .year {
+        font-family: "Cinzel", serif;
+        font-size: 1.05rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .hero-visual {
+        align-self: end;
+        justify-self: center;
+        width: min(100%, 19rem);
+      }
+
+      .hero-couple {
+        width: 100%;
+        aspect-ratio: 481 / 959;
+        background: var(--couple-asset) center bottom / contain no-repeat;
+        filter: drop-shadow(0 18px 30px rgba(104, 73, 43, 0.25));
+      }
+
+      .scroll-note {
+        position: absolute;
+        left: 50%;
+        bottom: 1.2rem;
+        transform: translateX(-50%);
+        font-family: "Cinzel", serif;
+        font-size: 0.68rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(91, 91, 55, 0.68);
+        z-index: 5;
+      }
+
+      .floral-divider {
+        width: 50vw;
+        height: clamp(8rem, 14vw, 13rem);
+        background: var(--floral-base) center / 100% auto no-repeat;
+        opacity: 0.95;
+
+        margin: 0 auto;
+      }
+
+      .info-ribbon {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .ribbon-item {
+        background: rgba(255, 247, 235, 0.78);
+        border: 1px solid rgba(232, 207, 174, 0.75);
+        border-radius: 1rem;
+        padding: 1rem 1rem 1.1rem;
+        text-align: center;
+      }
+
+      .ribbon-item .label {
+        font-family: "Cinzel", serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(91, 91, 55, 0.7);
+      }
+
+      .ribbon-item .value {
+        margin-top: 0.35rem;
+        font-size: clamp(1rem, 1.7vw, 1.35rem);
+        font-weight: 600;
+      }
+
+      .story-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 1.2rem;
+      }
+
+      .story-panel {
+        position: relative;
+        border-radius: 1.5rem;
+        border: 1px solid rgba(232, 207, 174, 0.78);
+        background:
+          linear-gradient(rgba(255, 248, 238, 0.74), rgba(255, 244, 228, 0.84)),
+          var(--arch-asset) center / cover no-repeat;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        padding: clamp(1.4rem, 2.5vw, 2rem);
+        text-align: center;
+      }
+
+      .story-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0.7rem;
+        border: 1px solid rgba(232, 207, 174, 0.54);
+        border-radius: 1.05rem;
+        pointer-events: none;
+      }
+
+      .panel-title {
+        font-family: "Moon Time", "Kaushan", cursive;
+        font-size: clamp(2.2rem, 4vw, 3.1rem);
+        color: var(--accent);
+        line-height: 0.95;
+        font-weight: 400;
+        text-align: center;
+      }
+
+      .panel-body {
+        margin-top: 0.9rem;
+        font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+        line-height: 1.45;
+        max-width: 34rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .family-parents {
+        margin-top: 0.7rem;
+        font-family: "Cinzel", serif;
+        font-size: clamp(1rem, 1.6vw, 1.26rem);
+        line-height: 1.45;
+        max-width: 34rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .big-names {
+        margin-top: 1.1rem;
+        font-family: "Moon Time", "Kaushan", cursive;
+        line-height: 0.9;
+        width: 100%;
+        display: grid;
+        justify-items: center;
+      }
+
+      .big-names .name {
+        font-size: clamp(2.2rem, 4vw, 3.1rem);
+        color: var(--accent-deep);
+        text-align: center;
+      }
+
+      .big-names .ampersand {
+        margin: 0.15rem 0 0.25rem;
+        font-size: 1.5rem;
+        text-align: center;
+      }
+
+      .venue-block {
+        margin-top: 0.95rem;
+        display: grid;
+        gap: 0.35rem;
+        justify-items: center;
+      }
+
+      .venue-block .mini {
+        font-family: "Moon Time", "Kaushan", cursive;
+        font-size: 1.5rem;
+      }
+
+      .venue-name {
+        font-family: "Cinzel", serif;
+        font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+        letter-spacing: 0.04em;
+        text-align: center;
+      }
+
+      .address {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        color: rgba(91, 91, 55, 0.78);
+        max-width: 22rem;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .timeline-shell {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.9rem;
+        align-items: center;
+        padding: 0.9rem 1rem;
+        border-radius: 0.85rem;
+        background: rgba(255, 246, 235, 0.78);
+        border: 1px solid rgba(184, 63, 99, 0.18);
+        text-align: center;
+      }
+
+      .timeline-time {
+        font-family: "Cinzel", serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        justify-self: center;
+      }
+
+      .timeline-event {
+        font-size: 1.08rem;
+        line-height: 1.2;
+        justify-self: center;
+      }
+
+      .rsvp-panel {
+        text-align: center;
+        padding-top: 2rem;
+        padding-bottom: 2.1rem;
+      }
+
+      .rsvp-note {
+        margin-top: 0.8rem;
+        font-family: "Cinzel", serif;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        letter-spacing: 0.04em;
+        max-width: 32rem;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+
+      .signature {
+        margin-top: 1rem;
+        font-family: "Moon Time", "Kaushan", cursive;
+        font-size: clamp(2.1rem, 4vw, 3rem);
+        color: var(--accent-deep);
+      }
+
+      .closing-date {
+        margin-top: 0.25rem;
+        font-family: "Cinzel", serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: rgba(91, 91, 55, 0.72);
+      }
+
+      @media (max-width: 1040px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+          text-align: center;
+          align-items: center;
+        }
+
+        .hero-copy {
+          max-width: 100%;
+          margin-top: 1.1rem;
+          padding-left: 0;
+        }
+
+        .hero-date-box {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .hero-visual {
+          width: min(58%, 17rem);
+          margin-top: 0.35rem;
+        }
+
+        .story-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .invitation-shell {
+          width: min(95vw, 34rem);
+          gap: 1.35rem;
+          padding-bottom: 3rem;
+        }
+
+        .hero-scene {
+          border-radius: 1.5rem;
+          min-height: 90vh;
+          padding: 4.4rem 0.75rem 1.4rem;
+        }
+
+        .hero-scene::before {
+          inset: 0.55rem;
+          border-radius: 1.05rem;
+        }
+
+        .hero-top-floral {
+          width: 92%;
+        }
+
+        .hero-lamps {
+          width: 88%;
+          top: 0.8rem;
+        }
+
+        .kicker {
+          font-size: 0.68rem;
+          letter-spacing: 0.2em;
+        }
+
+        .hero-title {
+          font-size: clamp(3.1rem, 14vw, 4.8rem);
+        }
+
+        .hero-lead {
+          font-size: 1.03rem;
+        }
+
+        .hero-visual {
+          width: min(68%, 14.5rem);
+        }
+
+        .scroll-note {
+          font-size: 0.62rem;
+          letter-spacing: 0.16em;
+          bottom: 0.8rem;
+        }
+
+        .info-ribbon {
+          grid-template-columns: 1fr;
+          gap: 0.7rem;
+        }
+
+        .story-panel {
+          border-radius: 1.15rem;
+          padding: 1.1rem 0.9rem;
+        }
+
+        .story-panel::before {
+          inset: 0.5rem;
+          border-radius: 0.82rem;
+        }
+
+        .panel-title {
+          font-size: clamp(1.9rem, 10vw, 2.5rem);
+        }
+
+        .panel-body,
+        .family-parents,
+        .address,
+        .rsvp-note {
+          max-width: 100%;
+        }
+
+        .timeline-item {
+          gap: 0.7rem;
+          padding: 0.7rem 0.8rem;
+        }
+
+        .timeline-event {
+          font-size: 0.98rem;
+        }
+
+        .floral-divider {
+          height: clamp(6.8rem, 22vw, 9.5rem);
+          background-size: 135% auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="invitation-shell">
+      <section
+        class="hero-scene"
+        id="heroScene"
+        aria-label="Wedding invitation hero"
+      >
+        <div class="hero-top-floral" aria-hidden="true"></div>
+        <div class="hero-lamps" aria-hidden="true"></div>
+
+        <div class="hero-grid">
+          <div class="hero-copy" data-reveal>
+            <p class="kicker">Together with their families</p>
+            <h1 class="hero-title">
+              <span data-edit="text" data-id="groom-first-name">Riaan</span>
+              <span>&amp;</span>
+              <span data-edit="text" data-id="bride-first-name">Pragya</span>
+            </h1>
+            <p class="hero-lead">
+              invite you to witness the beginning of their forever and to share
+              an afternoon of joy, blessings, and celebration.
+            </p>
+
+            <div class="hero-date-box">
+              <p class="month" data-edit="text" data-id="month">December</p>
+              <div class="date-row">
+                <div class="date-chip">
+                  <span class="date-line"></span>
+                  <span class="date-label">Sunday</span>
+                  <span class="date-line"></span>
+                </div>
+                <div class="date-number" data-edit="text" data-id="day">19</div>
+                <div class="date-chip">
+                  <span class="date-line"></span>
+                  <span
+                    class="time-label"
+                    data-edit="text"
+                    data-id="ceremony-time"
+                    >At 11:30AM</span
+                  >
+                  <span class="date-line"></span>
+                </div>
+              </div>
+              <p class="year" data-edit="text" data-id="year">2030</p>
+            </div>
+          </div>
+
+          <div class="hero-visual" data-reveal>
+            <div class="hero-couple" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <p class="scroll-note">Scroll to unfold the celebration story</p>
+      </section>
+
+      <div class="floral-divider" aria-hidden="true"></div>
+
+      <section class="info-ribbon">
+        <article class="ribbon-item" data-reveal>
+          <p class="label">Ceremony</p>
+          <p class="value" data-edit="text" data-id="ceremony-time-ribbon">
+            11:30 AM
+          </p>
+        </article>
+        <article class="ribbon-item" data-reveal>
+          <p class="label">Venue</p>
+          <p class="value" data-edit="text" data-id="venue-name-ribbon">
+            Rimberio Hotel
+          </p>
+        </article>
+        <article class="ribbon-item" data-reveal>
+          <p class="label">RSVP By</p>
+          <p class="value" data-edit="text" data-id="rsvp-by-date">
+            5th December
+          </p>
+        </article>
+      </section>
+
+      <section class="story-grid">
+        <article class="story-panel" data-reveal>
+          <h2 class="panel-title">With Blessings</h2>
+          <p class="panel-body">
+            We joyfully request your esteemed presence at the wedding of
+          </p>
+
+          <div class="big-names">
+            <div class="name" data-edit="text" data-id="groom-full-name">
+              Riaan Sharma
+            </div>
+            <div class="ampersand">&amp;</div>
+            <div class="name" data-edit="text" data-id="bride-full-name">
+              Pragya Bora
+            </div>
+          </div>
+
+          <p class="panel-body">Son of</p>
+          <p class="family-parents" data-edit="text" data-id="groom-parents">
+            MR DEEPAL SHARMA<br />
+            &amp; MRS JYOTI SHARMA
+          </p>
+
+          <p class="panel-body">Daughter of</p>
+          <p class="family-parents" data-edit="text" data-id="bride-parents">
+            MR SANJAYA BORA<br />
+            &amp; MRS SEEMA BORA
+          </p>
+        </article>
+
+        <article class="story-panel" data-reveal>
+          <h2 class="panel-title">Where It Happens</h2>
+          <div class="venue-block">
+            <p class="mini">which will be held at</p>
+            <p class="venue-name" data-edit="text" data-id="venue-name-full">
+              RIMBERIO HOTEL
+            </p>
+            <p class="address" data-edit="text" data-id="venue-address">
+              123 ANYWHERE ST, ANY CITY, ST 12345
+            </p>
+          </div>
+
+          <h2 class="panel-title" style="margin-top: 1.1rem">The Day Plan</h2>
+          <div class="timeline-shell">
+            <div class="timeline-item">
+              <p
+                class="timeline-time"
+                data-edit="text"
+                data-id="timeline-1-time"
+              >
+                11:30 AM
+              </p>
+              <p
+                class="timeline-event"
+                data-edit="text"
+                data-id="timeline-1-event"
+              >
+                Wedding Ceremony
+              </p>
+            </div>
+            <div class="timeline-item">
+              <p
+                class="timeline-time"
+                data-edit="text"
+                data-id="timeline-2-time"
+              >
+                01:00 PM
+              </p>
+              <p
+                class="timeline-event"
+                data-edit="text"
+                data-id="timeline-2-event"
+              >
+                Blessings &amp; Lunch
+              </p>
+            </div>
+            <div class="timeline-item">
+              <p
+                class="timeline-time"
+                data-edit="text"
+                data-id="timeline-3-time"
+              >
+                03:00 PM
+              </p>
+              <p
+                class="timeline-event"
+                data-edit="text"
+                data-id="timeline-3-event"
+              >
+                Family Celebration
+              </p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="story-panel rsvp-panel" data-reveal>
+        <h2 class="panel-title">R.S.V.P.</h2>
+        <p class="rsvp-note">
+          KINDLY RSVP BEFORE
+          <span data-edit="text" data-id="rsvp-deadline-date">5TH DECEMBER</span
+          ><br />
+          ON <span data-edit="text" data-id="rsvp-phone">+123-456-7890</span>
+        </p>
+        <p class="signature">
+          <span data-edit="text" data-id="couple-names"
+            >Riaan &amp; Pragya</span
+          >
+        </p>
+        <p class="closing-date">
+          <span data-edit="text" data-id="wedding-date-display"
+            >19 . 12 . 2030</span
+          >
+        </p>
+      </section>
+
+      <div class="floral-divider" aria-hidden="true"></div>
+    </main>
+
+    <script>
+      gsap.registerPlugin(ScrollTrigger);
+
+      const revealItems = gsap.utils.toArray("[data-reveal]");
+      const timelineItems = gsap.utils.toArray(".timeline-item");
+      const heroScene = document.getElementById("heroScene");
+
+      gsap.from(".hero-copy", {
+        opacity: 0,
+        y: 42,
+        duration: 1.1,
+        ease: "power3.out",
+      });
+
+      gsap.from(".hero-visual", {
+        opacity: 0,
+        y: 56,
+        duration: 1.2,
+        delay: 0.15,
+        ease: "power3.out",
+      });
+
+      gsap.to(".hero-couple", {
+        yPercent: -9,
+        ease: "none",
+        scrollTrigger: {
+          trigger: heroScene,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".hero-lamps", {
+        rotation: 1.8,
+        transformOrigin: "center top",
+        duration: 2.8,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+      });
+
+      gsap.to(".hero-top-floral", {
+        yPercent: 1.5,
+        duration: 3.8,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+      });
+
+      gsap.to(".floral-divider", {
+        yPercent: -2,
+        duration: 4.2,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+      });
+
+      revealItems.forEach((item, index) => {
+        gsap.from(item, {
+          opacity: 0,
+          y: 34,
+          duration: 0.85,
+          ease: "power2.out",
+          delay: Math.min(index * 0.02, 0.14),
+          scrollTrigger: {
+            trigger: item,
+            start: "top 84%",
+            toggleActions: "play none none none",
+          },
+        });
+      });
+
+      gsap.from(timelineItems, {
+        opacity: 0,
+        x: 18,
+        duration: 0.7,
+        stagger: 0.14,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".timeline-shell",
+          start: "top 82%",
+          toggleActions: "play none none none",
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2078 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luis & Bianca — A Special Note</title>
+    <meta
+      name="description"
+      content="You're invited to the wedding of Luis and Bianca in Madrid, Spain."
+    />
+
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Josefin+Sans:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ============================================
+           DESIGN TOKENS — Scrapbook Wedding
+           ============================================ */
+      :root {
+        --maroon: #5c0000;
+        --maroon-dark: #640606;
+        --linen: #e8dfd0;
+        --linen-light: #f0e8da;
+        --cream: #e8d5b7;
+        --cream-light: #f2e6d0;
+        --gold-text: #d4b896;
+        --white: #fefcf8;
+        --polaroid-border: #f5f0e8;
+        --text-dark: #3a2a1e;
+
+        --font-script: "Mrs Saint Delafield", cursive;
+        --font-serif: "Cormorant Garamond", serif;
+        --font-sans: "Josefin Sans", sans-serif;
+
+        --img-base: "../../assets/images/wedding/wedding_template_5/";
+
+        /* Torn Edge SVG (used as masking or background) */
+        --torn-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 24' preserveAspectRatio='none'%3E%3Cpath d='M0,12 L15,8 L30,15 L45,6 L60,18 L75,10 L90,14 L105,5 L120,16 L135,9 L150,13 L165,7 L180,15 L195,6 L210,18 L225,11 L240,14 L255,5 L270,16 L285,10 L300,14 L315,6 L330,17 L345,9 L360,13 L375,6 L390,16 L405,10 L420,14 L435,5 L450,17 L465,8 L480,15 L495,6 L510,18 L525,11 L540,14 L555,5 L570,16 L585,10 L600,14 L615,6 L630,17 L645,9 L660,13 L675,6 L690,16 L705,10 L720,14 L735,5 L750,17 L765,8 L780,15 L795,6 L810,18 L825,11 L840,14 L855,5 L870,16 L885,10 L900,14 L915,6 L930,17 L945,9 L960,13 L975,6 L990,16 L1005,10 L1020,14 L1035,5 L1050,17 L1065,8 L1080,15 L1095,6 L1110,18 L1125,11 L1140,14 L1155,5 L1170,16 L1185,10 L1200,14 V24 H0 Z' fill='%235c0000'/%3E%3C/svg%3E");
+      }
+
+      /* ============================================
+           RESET & BASE
+           ============================================ */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background-color: var(--maroon);
+        color: var(--cream);
+        font-family: var(--font-serif);
+        overflow-x: hidden;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      /* ============================================
+           LINEN TEXTURE OVERLAY (subtle canvas feel)
+           ============================================ */
+      .bg-maroon {
+        background-color: var(--maroon);
+        position: relative;
+      }
+
+      .bg-maroon::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 2px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 2px
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .bg-linen {
+        background-color: var(--linen);
+        background-image:
+          repeating-linear-gradient(
+            45deg,
+            rgba(0, 0, 0, 0.01) 0px,
+            rgba(0, 0, 0, 0.01) 1px,
+            transparent 1px,
+            transparent 3px
+          ),
+          linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+        background-size:
+          auto,
+          20px 20px,
+          20px 20px;
+      }
+
+      /* Torn Edge Utility */
+      .torn-top::before {
+        content: "";
+        position: absolute;
+        top: -23px;
+        left: 0;
+        width: 100%;
+        height: 24px;
+        background-image: var(--torn-edge);
+        background-size: 100% 100%;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .torn-bottom::after {
+        content: "";
+        position: absolute;
+        bottom: -23px;
+        left: 0;
+        width: 100%;
+        height: 24px;
+        background-image: var(--torn-edge);
+        background-size: 100% 100%;
+        transform: scaleY(-1);
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .bg-linen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(0, 0, 0, 0.015) 3px,
+            rgba(0, 0, 0, 0.015) 6px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 3px,
+            rgba(0, 0, 0, 0.015) 3px,
+            rgba(0, 0, 0, 0.015) 6px
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ============================================
+           TYPOGRAPHY
+           ============================================ */
+      .t-script {
+        font-family: var(--font-script);
+        font-weight: 400;
+      }
+
+      .t-serif {
+        font-family: var(--font-serif);
+      }
+
+      .t-sans {
+        font-family: var(--font-sans);
+      }
+
+      .t-label {
+        font-family: var(--font-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.35em;
+        font-size: 0.7rem;
+        font-weight: 300;
+      }
+
+      /* ============================================
+           POLAROID FRAME
+           ============================================ */
+      .polaroid {
+        background: var(--polaroid-border);
+        padding: 10px 10px 40px 10px;
+        box-shadow:
+          0 4px 20px rgba(0, 0, 0, 0.15),
+          0 1px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .polaroid img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* ============================================
+           SECTION 1: HERO
+           ============================================ */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 4rem 2rem;
+        overflow: hidden;
+      }
+
+      .hero__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 100%;
+        max-width: 900px;
+      }
+
+      .hero__subtitle {
+        font-family: var(--font-serif);
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
+        text-transform: uppercase;
+        letter-spacing: 0.4em;
+        color: var(--cream);
+        opacity: 0.85;
+        font-weight: 300;
+        font-style: italic;
+        margin-bottom: 0.25rem;
+      }
+
+      .hero__title {
+        font-family: var(--font-script);
+        font-size: clamp(3.5rem, 10vw, 7rem);
+        color: var(--cream-light);
+        font-weight: 400;
+        line-height: 0.9;
+        margin-bottom: 2rem;
+      }
+
+      .hero__polaroid-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 1.5rem 0 2.5rem;
+      }
+
+      .hero__polaroid {
+        width: clamp(280px, 40vw, 420px);
+        transform: rotate(2deg);
+      }
+
+      .hero__polaroid .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+      }
+
+      .hero__nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero__nav-link {
+        font-family: var(--font-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.35em;
+        font-size: 0.7rem;
+        font-weight: 300;
+        color: var(--cream);
+        opacity: 0.7;
+        text-decoration: none;
+        transition: opacity 0.4s ease;
+        cursor: pointer;
+      }
+
+      .hero__nav-link:hover {
+        opacity: 1;
+      }
+
+      .hero__tagline {
+        font-family: var(--font-serif);
+        font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+        color: var(--cream);
+        opacity: 0.9;
+        font-weight: 300;
+        letter-spacing: 0.08em;
+        margin-top: 2.5rem;
+      }
+
+      .hero__tagline em {
+        font-style: italic;
+        font-weight: 500;
+      }
+
+      /* ============================================
+           SECTION 2: DETAILS COLLAGE
+           ============================================ */
+      .details-collage {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem;
+        overflow: hidden;
+      }
+
+      .collage-canvas {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1000px;
+        height: 600px;
+        margin: 0 auto;
+      }
+
+      /* --- Venue Polaroid (top-left, tilted) --- */
+      .collage__venue-polaroid {
+        position: absolute;
+        top: 0;
+        left: 2%;
+        width: 280px;
+        transform: rotate(-8deg);
+        z-index: 3;
+      }
+      .collage__venue-polaroid .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+      }
+
+      /* --- Details Card (maroon, right side) --- */
+      .collage__details-card {
+        position: absolute;
+        top: 3%;
+        right: 12%;
+        width: 260px;
+        background: var(--maroon);
+        color: var(--cream-light);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        z-index: 3;
+      }
+      .collage__details-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+          );
+        pointer-events: none;
+      }
+      .collage__details-card .card-date {
+        font-family: var(--font-script);
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--cream-light);
+        position: relative;
+      }
+      .collage__details-card .card-divider {
+        width: 60px;
+        height: 1px;
+        background: var(--cream);
+        opacity: 0.3;
+        margin: 0.75rem auto;
+      }
+      .collage__details-card .card-address {
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        font-weight: 300;
+        margin: 0.75rem 0;
+        position: relative;
+      }
+      .collage__details-card .card-time {
+        font-family: var(--font-script);
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+        position: relative;
+      }
+
+      /* --- Envelope (center) --- */
+      .collage__envelope {
+        position: absolute;
+        bottom: 12%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        z-index: 2;
+      }
+      .envelope-body {
+        width: 100%;
+        height: 140px;
+        background: linear-gradient(180deg, #e8e2d8 0%, #ddd6ca 100%);
+        border-radius: 2px;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .envelope-flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(180deg, #f0ebe3 0%, #e5dfd5 100%);
+        clip-path: polygon(0 0, 50% 70%, 100% 0);
+        z-index: 1;
+      }
+      .envelope-lace {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 12px;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 4px,
+          rgba(255, 255, 255, 0.6) 4px,
+          rgba(255, 255, 255, 0.6) 6px
+        );
+        border-radius: 0 0 2px 2px;
+      }
+
+      /* --- Monogram Card (bottom-left) --- */
+      .collage__monogram-card {
+        position: absolute;
+        bottom: 18%;
+        left: 8%;
+        width: 160px;
+        height: 90px;
+        background: var(--maroon);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 4;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+      }
+      .collage__monogram-card::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid rgba(232, 213, 183, 0.2);
+      }
+      .collage__monogram-card .monogram-text {
+        font-family: var(--font-script);
+        font-size: 2.2rem;
+        color: var(--cream-light);
+      }
+
+      /* --- Couple Polaroid (right, slight tilt) --- */
+      .collage__couple-polaroid {
+        position: absolute;
+        top: 18%;
+        right: 0;
+        width: 200px;
+        transform: rotate(4deg);
+        z-index: 2;
+      }
+      .collage__couple-polaroid .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+      }
+
+      /* --- Dried Flowers & Decorative elements --- */
+      .collage__flower {
+        position: absolute;
+        z-index: 5;
+        pointer-events: none;
+      }
+      .collage__flower img {
+        width: 100%;
+        height: auto;
+      }
+      .collage__flower--branch {
+        top: 5%;
+        left: 42%;
+        width: 60px;
+        transform: rotate(15deg);
+      }
+      .collage__flower--yellow {
+        bottom: 22%;
+        left: 22%;
+        width: 50px;
+        transform: rotate(-10deg);
+      }
+
+      /* --- Stamps & Butterfly decorations --- */
+      .collage__stamp {
+        position: absolute;
+        width: 35px;
+        height: 40px;
+        background: linear-gradient(135deg, #c4a882 0%, #b8976e 100%);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        z-index: 5;
+        opacity: 0.85;
+      }
+      .collage__stamp--1 {
+        bottom: 32%;
+        right: 22%;
+        transform: rotate(-5deg);
+      }
+      .collage__stamp--2 {
+        bottom: 26%;
+        right: 18%;
+        transform: rotate(8deg);
+        background: linear-gradient(135deg, #9b7553 0%, #8a6545 100%);
+      }
+
+      .collage__butterfly {
+        position: absolute;
+        bottom: 20%;
+        right: 16%;
+        width: 40px;
+        height: 35px;
+        z-index: 5;
+        opacity: 0.7;
+      }
+      .collage__butterfly::before,
+      .collage__butterfly::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 24px;
+        background: linear-gradient(
+          135deg,
+          #c4956a 0%,
+          #a87d58 50%,
+          #8b6544 100%
+        );
+        border-radius: 50% 50% 50% 0;
+        top: 0;
+      }
+      .collage__butterfly::before {
+        left: 1px;
+        transform: rotate(-15deg);
+      }
+      .collage__butterfly::after {
+        right: 1px;
+        transform: rotate(15deg) scaleX(-1);
+      }
+
+      /* ============================================
+           RESPONSIVE
+           ============================================ */
+      @media (max-width: 768px) {
+        .hero {
+          padding: 3rem 1.5rem;
+        }
+        .hero__polaroid {
+          width: 75vw;
+        }
+        .hero__nav {
+          max-width: 100%;
+          padding: 0 1rem;
+        }
+        .collage-canvas {
+          height: auto;
+          min-height: 700px;
+        }
+        .collage__venue-polaroid {
+          width: 200px;
+          top: 0;
+          left: 5%;
+        }
+        .collage__details-card {
+          width: 200px;
+          right: 5%;
+          top: 5%;
+          padding: 1.5rem 1rem;
+        }
+        .collage__couple-polaroid {
+          width: 150px;
+          right: 5%;
+        }
+        .collage__envelope {
+          width: 180px;
+        }
+        .collage__monogram-card {
+          width: 120px;
+          height: 70px;
+          left: 5%;
+        }
+
+        /* Section 3 Responsive */
+        .story-section {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 3rem;
+          padding: 5rem 5%;
+        }
+        .story__left {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .story__quote {
+          text-align: center;
+        }
+        .story__quote::after {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .story__body {
+          text-align: center;
+          margin: 0 auto;
+        }
+        .story__right {
+          justify-content: center;
+          min-height: 400px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero__title {
+          font-size: 3rem;
+        }
+        .hero__nav-link {
+          font-size: 0.6rem;
+          letter-spacing: 0.2em;
+        }
+        .collage-canvas {
+          min-height: 550px;
+        }
+        .collage__venue-polaroid {
+          width: 160px;
+        }
+        .collage__details-card {
+          width: 170px;
+          font-size: 0.85rem;
+        }
+        .collage__couple-polaroid {
+          width: 120px;
+        }
+        .collage__envelope {
+          width: 150px;
+        }
+      }
+      /* ============================================
+           SECTION 3: STORY / QUOTE
+           ============================================ */
+      .story-section {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        padding: 6rem 5%;
+        gap: 4rem;
+        overflow: hidden;
+      }
+
+      .story__left {
+        position: relative;
+        z-index: 1;
+      }
+
+      .story__quote {
+        font-family: var(--font-script);
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        color: var(--cream-light);
+        line-height: 1.25;
+        letter-spacing: 0.02em;
+        margin-bottom: 2.5rem;
+        position: relative;
+      }
+      .story__quote::after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 120px;
+        height: 2px;
+        background: var(--gold-text);
+        opacity: 0.4;
+      }
+
+      .story__body {
+        font-family: var(--font-serif);
+        font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+        font-weight: 300;
+        line-height: 1.95;
+        color: var(--cream);
+        opacity: 0.85;
+        text-align: left;
+        max-width: 480px;
+      }
+
+      .story__right {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 500px;
+      }
+
+      .story__polaroid-1 {
+        position: absolute;
+        width: clamp(180px, 24vw, 280px);
+        transform: rotate(6deg);
+        top: 10%;
+        right: 25%;
+        z-index: 2;
+      }
+      .story__polaroid-1 .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+      }
+
+      .story__polaroid-2 {
+        position: absolute;
+        width: clamp(160px, 22vw, 240px);
+        transform: rotate(-8deg);
+        bottom: 5%;
+        right: 5%;
+        z-index: 3;
+      }
+      .story__polaroid-2 .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+      }
+
+      .story__annotation {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-family: var(--font-script);
+        font-size: 1.4rem;
+        color: var(--gold-text);
+        opacity: 0.8;
+        transform: rotate(-5deg);
+      }
+
+      /* Washi tape effect */
+      .tape {
+        position: absolute;
+        width: 60px;
+        height: 18px;
+        background: rgba(210, 190, 160, 0.45);
+        z-index: 10;
+      }
+      .tape--tl {
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-8deg);
+      }
+      .tape--tr {
+        top: -8px;
+        right: 10%;
+        transform: rotate(10deg);
+      }
+
+      /* ============================================
+           SECTION 4: ABOUT THE WEDDING
+           ============================================ */
+      .about-section {
+        padding: 7rem 5%;
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .about__heading {
+        font-family: var(--font-script);
+        font-size: clamp(2.8rem, 6vw, 5rem);
+        color: var(--maroon);
+        text-align: center;
+        margin-bottom: 5rem;
+      }
+
+      .about__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
+        width: 100%;
+        max-width: 960px;
+        text-align: center;
+      }
+
+      .about__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .about__flower {
+        width: clamp(60px, 8vw, 90px);
+        height: clamp(60px, 8vw, 90px);
+        object-fit: contain;
+      }
+
+      .about__item-title {
+        font-family: var(--font-script);
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        color: var(--maroon);
+        line-height: 1;
+      }
+
+      .about__item-text {
+        font-family: var(--font-serif);
+        font-size: clamp(0.85rem, 1.2vw, 1rem);
+        font-weight: 300;
+        color: var(--text-dark);
+        line-height: 1.75;
+        opacity: 0.85;
+        max-width: 260px;
+      }
+
+      /* ============================================
+           RESPONSIVE — Sections 3 & 4
+           ============================================ */
+      @media (max-width: 768px) {
+        .story-section {
+          grid-template-columns: 1fr;
+          padding: 5rem 5%;
+          gap: 3rem;
+          text-align: center;
+        }
+        .story__body {
+          margin: 0 auto;
+        }
+        .story__right {
+          min-height: 340px;
+        }
+        .story__polaroid-1 {
+          top: 0;
+          right: 15%;
+        }
+        .story__polaroid-2 {
+          bottom: 0;
+          right: 35%;
+        }
+        .about__grid {
+          grid-template-columns: 1fr;
+          gap: 3.5rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .story__quote {
+          font-size: 2rem;
+        }
+        .about__heading {
+          font-size: 2.5rem;
+          margin-bottom: 3rem;
+        }
+      }
+
+      /* ============================================
+           SECTION 5: TRAVEL DETAILS
+           ============================================ */
+      .travel-section {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+        padding: 6rem 5%;
+        gap: 4rem;
+        overflow: hidden;
+      }
+
+      .travel__left {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+      }
+
+      .travel__polaroid {
+        width: clamp(240px, 30vw, 340px);
+        transform: rotate(-4deg);
+      }
+      .travel__polaroid .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+      }
+      .travel__polaroid .tape {
+        position: absolute;
+        top: -8px;
+        left: 30%;
+        width: 70px;
+        height: 18px;
+        background: rgba(210, 190, 160, 0.45);
+        transform: rotate(5deg);
+        z-index: 10;
+      }
+
+      .travel__heading {
+        font-family: var(--font-script);
+        font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+        color: var(--cream-light);
+        line-height: 1.1;
+      }
+
+      .travel__right {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 3.5rem;
+        padding-top: 2rem;
+      }
+
+      .travel__item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .travel__item-title {
+        font-family: var(--font-script);
+        font-size: clamp(2rem, 3.5vw, 2.8rem);
+        color: var(--cream-light);
+        line-height: 1;
+      }
+
+      .travel__item-text {
+        font-family: var(--font-serif);
+        font-size: clamp(0.85rem, 1.2vw, 1rem);
+        font-weight: 300;
+        color: var(--cream);
+        opacity: 0.85;
+        line-height: 1.8;
+        max-width: 440px;
+      }
+
+      /* ============================================
+           SECTION 6: GIFT / REGISTRY
+           ============================================ */
+      .gift-section {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 7rem 5%;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .gift__flower {
+        width: clamp(50px, 8vw, 80px);
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+      }
+
+      .gift__quote {
+        font-family: var(--font-script);
+        font-size: clamp(2rem, 4.5vw, 3.5rem);
+        color: var(--maroon);
+        line-height: 1.2;
+        max-width: 650px;
+        margin-bottom: 3rem;
+      }
+
+      .gift__body {
+        font-family: var(--font-serif);
+        font-size: clamp(0.85rem, 1.2vw, 1rem);
+        font-weight: 300;
+        color: var(--text-dark);
+        opacity: 0.8;
+        line-height: 1.85;
+        max-width: 600px;
+      }
+      .gift__body + .gift__body {
+        margin-top: 1.5rem;
+      }
+
+      /* ============================================
+           RESPONSIVE — Sections 5 & 6
+           ============================================ */
+      @media (max-width: 768px) {
+        .travel-section {
+          grid-template-columns: 1fr;
+          padding: 5rem 5%;
+          gap: 3rem;
+        }
+        .travel__left {
+          align-items: center;
+          text-align: center;
+        }
+        .travel__right {
+          text-align: center;
+        }
+        .travel__item-text {
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .travel__heading {
+          font-size: 2.5rem;
+        }
+        .gift__quote {
+          font-size: 1.8rem;
+        }
+      }
+
+      /* ============================================
+           SECTION 7: FAQ
+           ============================================ */
+      .faq-section {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        align-items: center;
+        padding: 6rem 5%;
+        gap: 4rem;
+        overflow: hidden;
+      }
+
+      .faq__left {
+        position: relative;
+        z-index: 1;
+      }
+
+      .faq__heading {
+        font-family: var(--font-script);
+        font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+        color: var(--cream-light);
+        line-height: 1.1;
+        margin-bottom: 2.5rem;
+      }
+
+      .faq__flower-deco {
+        width: clamp(100px, 14vw, 160px);
+        opacity: 0.85;
+        transform: rotate(-15deg);
+        margin-top: 1rem;
+      }
+
+      .faq__right {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+      }
+
+      .faq__item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .faq__question {
+        font-family: var(--font-sans);
+        font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cream-light);
+        position: relative;
+        padding-left: 1.5rem;
+      }
+      .faq__question::before {
+        content: "Q.";
+        position: absolute;
+        left: 0;
+        color: var(--gold-text);
+        opacity: 0.6;
+      }
+
+      .faq__answer {
+        font-family: var(--font-serif);
+        font-size: clamp(0.85rem, 1.2vw, 1rem);
+        font-weight: 300;
+        color: var(--cream);
+        opacity: 0.85;
+        line-height: 1.8;
+        max-width: 520px;
+      }
+
+      /* ============================================
+           SECTION 8: RSVP / CONTACT COLLAGE
+           ============================================ */
+      .rsvp-section {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6rem 2rem;
+        overflow: hidden;
+      }
+
+      .rsvp-canvas {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1000px;
+        height: 550px;
+        margin: 0 auto;
+      }
+
+      /* RSVP Card (top-left) */
+      .rsvp__card {
+        position: absolute;
+        top: 5%;
+        left: 3%;
+        width: 260px;
+        background: var(--maroon);
+        color: var(--cream-light);
+        padding: 1.8rem 2rem;
+        z-index: 3;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+      }
+      .rsvp__card::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid rgba(232, 213, 183, 0.2);
+        pointer-events: none;
+      }
+      .rsvp__card-script {
+        font-family: var(--font-script);
+        font-size: 1.6rem;
+        margin-bottom: 0.3rem;
+        position: relative;
+      }
+      .rsvp__card-date {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        position: relative;
+      }
+      .rsvp__card-stamp {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 38px;
+        height: 44px;
+        background: linear-gradient(135deg, #d4b896, #b88b4a);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(5deg);
+      }
+      .rsvp__card-stamp::before {
+        content: "L&B";
+        font-family: var(--font-serif);
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 0.1em;
+      }
+
+      /* Contact Card (bottom-right) */
+      .rsvp__contact {
+        position: absolute;
+        bottom: 0;
+        right: 8%;
+        width: 260px;
+        background: var(--maroon);
+        color: var(--cream-light);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        z-index: 3;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+      }
+      .rsvp__contact::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid rgba(232, 213, 183, 0.2);
+        pointer-events: none;
+      }
+      .rsvp__contact-heading {
+        font-family: var(--font-script);
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+        position: relative;
+      }
+      .rsvp__contact-divider {
+        width: 50px;
+        height: 1px;
+        background: var(--cream);
+        opacity: 0.3;
+        margin: 1rem auto;
+      }
+      .rsvp__contact-label {
+        font-family: var(--font-serif);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+        position: relative;
+      }
+      .rsvp__contact-value {
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+        font-weight: 300;
+        opacity: 0.85;
+        position: relative;
+      }
+
+      /* Couple Polaroid (top-right) */
+      .rsvp__polaroid {
+        position: absolute;
+        top: 0;
+        right: 15%;
+        width: 220px;
+        transform: rotate(5deg);
+        z-index: 2;
+      }
+      .rsvp__polaroid .polaroid-inner {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+      }
+
+      /* Envelope (center-bottom) */
+      .rsvp__envelope {
+        position: absolute;
+        bottom: 12%;
+        left: 22%;
+        width: 220px;
+        z-index: 2;
+        transform: rotate(-5deg);
+      }
+      .rsvp__envelope .envelope-body {
+        height: 130px;
+      }
+      .rsvp__envelope .envelope-flap {
+        height: 75px;
+      }
+
+      /* Yellow flowers near envelope */
+      .rsvp__yellow-flower {
+        position: absolute;
+        bottom: 22%;
+        left: 22%;
+        width: 80px;
+        z-index: 4;
+        transform: rotate(-20deg);
+        opacity: 0.9;
+      }
+
+      /* Golden dried flowers (right) */
+      .rsvp__dried-flower {
+        position: absolute;
+        bottom: 15%;
+        right: 0;
+        width: 100px;
+        z-index: 4;
+        transform: rotate(10deg);
+        opacity: 0.85;
+      }
+
+      /* ============================================
+           RESPONSIVE — Sections 7 & 8
+           ============================================ */
+      @media (max-width: 768px) {
+        .faq-section {
+          grid-template-columns: 1fr;
+          padding: 5rem 5%;
+          gap: 2.5rem;
+          text-align: center;
+        }
+        .faq__left {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .faq__right {
+          text-align: left;
+        }
+        .rsvp-canvas {
+          height: auto;
+          min-height: 700px;
+        }
+        .rsvp__card {
+          width: 200px;
+          left: 2%;
+        }
+        .rsvp__polaroid {
+          width: 170px;
+          right: 5%;
+        }
+        .rsvp__contact {
+          width: 210px;
+          right: 3%;
+        }
+        .rsvp__envelope {
+          width: 160px;
+          left: 20%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .faq__heading {
+          font-size: 2.5rem;
+        }
+        .rsvp-canvas {
+          min-height: 580px;
+        }
+        .rsvp__card {
+          width: 170px;
+          padding: 1.2rem 1rem;
+        }
+        .rsvp__polaroid {
+          width: 140px;
+        }
+        .rsvp__contact {
+          width: 180px;
+          padding: 1.5rem 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ==========================================
+         SECTION 1: HERO
+         ========================================== -->
+    <section class="hero bg-maroon" id="hero">
+      <div class="hero__content">
+        <p class="hero__subtitle">A Special Note From</p>
+        <h1 class="hero__title">
+          <span data-edit="text" data-id="couple-names-hero"
+            >Luis and Bianca</span
+          >
+        </h1>
+
+        <div class="hero__nav">
+          <a href="#itinerary" class="hero__nav-link">Itinerary</a>
+
+          <div class="hero__polaroid-wrap">
+            <div class="hero__polaroid polaroid">
+              <div class="polaroid-inner">
+                <img
+                  src="../../assets/images/wedding/wedding_template_5/couple-hero.png"
+                  alt="Luis and Bianca"
+                />
+              </div>
+            </div>
+          </div>
+
+          <a href="#details" class="hero__nav-link">Details</a>
+        </div>
+
+        <p class="hero__tagline">
+          We're finally getting married …
+          <em data-edit="text" data-id="wedding-location">in Madrid!</em>
+        </p>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 2: DETAILS COLLAGE
+         ========================================== -->
+    <section class="details-collage bg-linen" id="details">
+      <div class="collage-canvas">
+        <!-- Venue Polaroid -->
+        <div class="collage__venue-polaroid polaroid">
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/venue-palace.png"
+              alt="Crystal Palace, Retiro Park"
+            />
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="collage__details-card">
+          <p class="card-date" data-edit="text" data-id="wedding-date-card">
+            December 7, 2030
+          </p>
+          <div class="card-divider"></div>
+          <p class="card-address" data-edit="text" data-id="venue-address-card">
+            123 Calle Dondequeria<br />
+            28015 Madrid, Spain
+          </p>
+          <div class="card-divider"></div>
+          <p class="card-time" data-edit="text" data-id="ceremony-time-card">
+            4:00 PM 'til late
+          </p>
+        </div>
+
+        <!-- Envelope -->
+        <div class="collage__envelope">
+          <div class="envelope-body">
+            <div class="envelope-flap"></div>
+            <div class="envelope-lace"></div>
+          </div>
+        </div>
+
+        <!-- Monogram Card -->
+        <div class="collage__monogram-card">
+          <span
+            class="monogram-text"
+            data-edit="text"
+            data-id="initials-monogram"
+            >L B</span
+          >
+        </div>
+
+        <!-- Couple Polaroid -->
+        <div class="collage__couple-polaroid polaroid">
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/couple-laughing.png"
+              alt="Luis and Bianca laughing"
+            />
+          </div>
+        </div>
+
+        <!-- Dried Flower Branch -->
+        <div class="collage__flower collage__flower--branch">
+          <img
+            src="../../assets/images/wedding/wedding_template_5/dried-flowers.png"
+            alt=""
+            style="width: 60px; opacity: 0.85"
+          />
+        </div>
+
+        <!-- Yellow Flower -->
+        <div class="collage__flower collage__flower--yellow">
+          <img
+            src="../../assets/images/wedding/wedding_template_5/dried-flowers.png"
+            alt=""
+            style="width: 45px; opacity: 0.75; filter: hue-rotate(30deg)"
+          />
+        </div>
+
+        <!-- Stamps -->
+        <div class="collage__stamp collage__stamp--1"></div>
+        <div class="collage__stamp collage__stamp--2"></div>
+
+        <!-- Butterfly -->
+        <div class="collage__butterfly"></div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 3: STORY / QUOTE
+         ========================================== -->
+    <section class="story-section bg-maroon torn-top" id="story">
+      <!-- Left: Text -->
+      <div class="story__left">
+        <h2 class="story__quote">
+          A dream wedding,<br />far from home<br />but close to the heart.
+        </h2>
+        <p class="story__body">
+          Our journey began with a shared love for adventure, taking us from
+          quiet city cafes to the vibrant streets of Madrid. Now, we're starting
+          our greatest chapter yet, and we couldn't imagine doing it without you
+          by our side.
+        </p>
+      </div>
+
+      <!-- Right: Stacked Polaroids -->
+      <div class="story__right">
+        <!-- Top polaroid -->
+        <div class="story__polaroid-1 polaroid">
+          <div class="tape tape--tl"></div>
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/couple-hero.png"
+              alt="Luis and Bianca"
+            />
+          </div>
+        </div>
+        <!-- Bottom polaroid -->
+        <div class="story__polaroid-2 polaroid">
+          <div class="tape tape--tr"></div>
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/couple-bench.png"
+              alt="The Proposal"
+            />
+          </div>
+          <div class="story__annotation">The Proposal</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 4: ABOUT THE WEDDING
+         ========================================== -->
+    <section class="about-section bg-linen" id="itinerary">
+      <h2 class="about__heading">About the Wedding</h2>
+
+      <div class="about__grid">
+        <!-- The Ceremony -->
+        <div class="about__item">
+          <img
+            class="about__flower"
+            src="../../assets/images/wedding/wedding_template_5/flower-red.png"
+            alt=""
+          />
+          <h3 class="about__item-title">The Ceremony</h3>
+          <p class="about__item-text">
+            The wedding will take place at a charming garden venue just outside
+            central Madrid. Exact location and time will be shared privately
+            with confirmed guests.
+          </p>
+        </div>
+
+        <!-- The Reception -->
+        <div class="about__item">
+          <img
+            class="about__flower"
+            src="../../assets/images/wedding/wedding_template_5/flower-golden.png"
+            alt=""
+          />
+          <h3 class="about__item-title">The Reception</h3>
+          <p class="about__item-text">
+            Following the ceremony, we'll gather for an intimate dinner with
+            tapas, music, and wine under the Spanish sky.
+          </p>
+        </div>
+
+        <!-- Dress Code -->
+        <div class="about__item">
+          <img
+            class="about__flower"
+            src="../../assets/images/wedding/wedding_template_5/flower-cream.png"
+            alt=""
+          />
+          <h3 class="about__item-title">Dress Code</h3>
+          <p class="about__item-text">
+            Garden formal. Think soft fabrics, flowy dresses, and linen suits —
+            comfortable enough for warm weather but elegant enough for photos!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 5: TRAVEL DETAILS
+         ========================================== -->
+    <section class="travel-section bg-maroon" id="travel">
+      <!-- Left: Polaroid + Heading -->
+      <div class="travel__left">
+        <div class="travel__polaroid polaroid">
+          <div class="tape"></div>
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/venue-garden.png"
+              alt="Venue garden"
+            />
+          </div>
+        </div>
+        <h2 class="travel__heading">Travel Details</h2>
+      </div>
+
+      <!-- Right: Info blocks -->
+      <div class="travel__right">
+        <div class="travel__item">
+          <h3 class="travel__item-title">Airfare</h3>
+          <p class="travel__item-text">
+            Guests are kindly asked to book their own flights. We recommend
+            arriving in Madrid no later than December 5 to allow time for rest
+            and sightseeing before the wedding.
+          </p>
+        </div>
+
+        <div class="travel__item">
+          <h3 class="travel__item-title">Accommodations</h3>
+          <p class="travel__item-text">
+            We've reserved a block of rooms at Hotel Maravillosa and will
+            provide discount codes via email. You're also welcome to stay
+            anywhere nearby — central Madrid and Retiro are great areas.
+          </p>
+        </div>
+
+        <div class="travel__item">
+          <h3 class="travel__item-title">Itinerary</h3>
+          <p class="travel__item-text">
+            A full itinerary will be emailed to confirmed guests. Expect a
+            welcome dinner, optional city tour, and of course, the wedding day
+            celebration.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 6: GIFT / REGISTRY
+         ========================================== -->
+    <section class="gift-section bg-linen" id="gifts">
+      <img
+        class="gift__flower"
+        src="../../assets/images/wedding/wedding_template_5/flower-pink-stem.png"
+        alt=""
+      />
+
+      <h2 class="gift__quote">
+        Your presence in Madrid is<br />the greatest gift of all.
+      </h2>
+
+      <p class="gift__body">
+        However, if you'd like to contribute to our new chapter together, we
+        welcome gifts through our Sining Spaces registry. Email
+        hello@reallygreatsite.com with the Registry No. 12345 as the subject
+        line for our updated gift list.
+      </p>
+
+      <p class="gift__body">
+        If you prefer to support us as we begin our married life, a contribution
+        to our future would mean so much. Email us at hello@reallygreatsite.com
+        for our details.
+      </p>
+    </section>
+
+    <!-- ==========================================
+         SECTION 7: FAQ
+         ========================================== -->
+    <section class="faq-section bg-maroon torn-top torn-bottom" id="faq">
+      <!-- Left: Heading + Flower -->
+      <div class="faq__left">
+        <h2 class="faq__heading">Frequently<br />Asked Q's</h2>
+        <img
+          class="faq__flower-deco"
+          src="../../assets/images/wedding/wedding_template_5/dried-flowers.png"
+          alt=""
+        />
+      </div>
+
+      <!-- Right: Q&A -->
+      <div class="faq__right">
+        <div class="faq__item">
+          <h3 class="faq__question">Do I need a visa to travel to Spain?</h3>
+          <p class="faq__answer">
+            Yes, Philippine passport holders will need a Schengen visa. We
+            recommend applying at least 3 months in advance. We'll share a guide
+            to help with this!
+          </p>
+        </div>
+
+        <div class="faq__item">
+          <h3 class="faq__question">Can I bring a plus one?</h3>
+          <p class="faq__answer">
+            This is an intimate destination wedding with limited seating. Kindly
+            note that only named guests in the invitation are included.
+          </p>
+        </div>
+
+        <div class="faq__item">
+          <h3 class="faq__question">Will transportation be provided?</h3>
+          <p class="faq__answer">
+            Yes, for the wedding day, shuttle service will be arranged to and
+            from the venue for all guests staying at the partner hotel. PWD
+            assistance is also available – please don't hesitate to reach out to
+            us so we can make arrangements for you, if needed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SECTION 8: RSVP / CONTACT COLLAGE
+         ========================================== -->
+    <section class="rsvp-section bg-linen" id="rsvp">
+      <div class="rsvp-canvas">
+        <!-- RSVP Card -->
+        <div class="rsvp__card">
+          <div class="rsvp__card-stamp"></div>
+          <p class="rsvp__card-script">RSVP by</p>
+          <p class="rsvp__card-date">October 15, 2030</p>
+        </div>
+
+        <!-- Couple Polaroid -->
+        <div class="rsvp__polaroid polaroid">
+          <div class="polaroid-inner">
+            <img
+              src="../../assets/images/wedding/wedding_template_5/couple-bench.png"
+              alt="Luis and Bianca on bench"
+            />
+          </div>
+        </div>
+
+        <!-- Envelope -->
+        <div class="rsvp__envelope">
+          <div class="envelope-body">
+            <div class="envelope-flap"></div>
+            <div class="envelope-lace"></div>
+          </div>
+        </div>
+
+        <!-- Yellow Flowers -->
+        <img
+          class="rsvp__yellow-flower"
+          src="../../assets/images/wedding/wedding_template_5/flower-golden.png"
+          alt=""
+        />
+
+        <!-- Contact Card -->
+        <div class="rsvp__contact">
+          <p class="rsvp__contact-heading">
+            Contact us for any<br />questions or concerns
+          </p>
+          <div class="rsvp__contact-divider"></div>
+          <p class="rsvp__contact-label">Mobile Number</p>
+          <p class="rsvp__contact-value">(123) 456-7890</p>
+          <div class="rsvp__contact-divider"></div>
+          <p class="rsvp__contact-label">Email Address</p>
+          <p class="rsvp__contact-value">hello@reallygreatsite.com</p>
+        </div>
+
+        <!-- Dried Golden Flowers -->
+        <img
+          class="rsvp__dried-flower"
+          src="../../assets/images/wedding/wedding_template_5/dried-flowers.png"
+          alt=""
+        />
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SCRIPTS
+         ========================================== -->
+    <script>
+      gsap.registerPlugin(ScrollTrigger);
+
+      // --- Lenis Smooth Scroll ---
+      const lenis = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true,
+      });
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // Start hero animations immediately.
+      initHeroAnimations();
+
+      // --- Hero Entrance Animations ---
+      function initHeroAnimations() {
+        const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        heroTl
+          .from(".hero__subtitle", { y: 30, opacity: 0, duration: 1 })
+          .from(".hero__title", { y: 50, opacity: 0, duration: 1.2 }, "-=0.6")
+          .from(
+            ".hero__polaroid",
+            {
+              scale: 0.85,
+              opacity: 0,
+              rotation: -5,
+              duration: 1.4,
+              ease: "power4.out",
+            },
+            "-=0.7",
+          )
+          .from(
+            ".hero__nav-link",
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.8,
+              stagger: 0.15,
+            },
+            "-=0.8",
+          )
+          .from(
+            ".hero__tagline",
+            { y: 20, opacity: 0, duration: 0.8 },
+            "-=0.4",
+          );
+
+        initCollageAnimations();
+      }
+
+      // --- Section 2: Collage Entrance ---
+      function initCollageAnimations() {
+        const collageTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".details-collage",
+            start: "top 75%",
+            end: "center center",
+            toggleActions: "play none none none",
+          },
+          defaults: { ease: "power3.out" },
+        });
+
+        collageTl
+          .from(".collage__venue-polaroid", {
+            x: -80,
+            rotation: -15,
+            opacity: 0,
+            duration: 1.2,
+          })
+          .from(
+            ".collage__details-card",
+            {
+              y: 60,
+              opacity: 0,
+              duration: 1,
+            },
+            "-=0.7",
+          )
+          .from(
+            ".collage__envelope",
+            {
+              y: 80,
+              opacity: 0,
+              scale: 0.9,
+              duration: 1.1,
+            },
+            "-=0.6",
+          )
+          .from(
+            ".collage__monogram-card",
+            {
+              x: -40,
+              opacity: 0,
+              duration: 0.9,
+            },
+            "-=0.5",
+          )
+          .from(
+            ".collage__couple-polaroid",
+            {
+              x: 80,
+              rotation: 10,
+              opacity: 0,
+              duration: 1.2,
+            },
+            "-=0.8",
+          )
+          .from(
+            ".collage__flower",
+            {
+              scale: 0,
+              opacity: 0,
+              duration: 0.7,
+              stagger: 0.15,
+            },
+            "-=0.5",
+          )
+          .from(
+            ".collage__stamp",
+            {
+              scale: 0,
+              opacity: 0,
+              duration: 0.4,
+              stagger: 0.1,
+            },
+            "-=0.3",
+          )
+          .from(
+            ".collage__butterfly",
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.6,
+            },
+            "-=0.2",
+          );
+      }
+
+      // --- Section 3: Story/Quote Animations ---
+      gsap.from(".story__quote", {
+        y: 60,
+        opacity: 0,
+        duration: 1.4,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".story-section", start: "top 75%" },
+      });
+      gsap.from(".story__body", {
+        y: 40,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.3,
+        scrollTrigger: { trigger: ".story-section", start: "top 70%" },
+      });
+      gsap.from(".story__polaroid-1", {
+        x: 80,
+        rotation: 20,
+        opacity: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: { trigger: ".story-section", start: "top 75%" },
+      });
+      gsap.from(".story__polaroid-2", {
+        x: 60,
+        rotation: -15,
+        opacity: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        delay: 0.2,
+        scrollTrigger: { trigger: ".story-section", start: "top 70%" },
+      });
+
+      // --- Section 4: About the Wedding Animations ---
+      gsap.from(".about__heading", {
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".about-section", start: "top 80%" },
+      });
+      gsap.from(".about__item", {
+        y: 60,
+        opacity: 0,
+        duration: 1.1,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".about__grid", start: "top 80%" },
+      });
+      gsap.from(".about__flower", {
+        scale: 0,
+        rotation: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".about__grid", start: "top 78%" },
+      });
+
+      // --- Section 5: Travel Details Animations ---
+      gsap.from(".travel__polaroid", {
+        x: -80,
+        rotation: -12,
+        opacity: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: { trigger: ".travel-section", start: "top 75%" },
+      });
+      gsap.from(".travel__heading", {
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".travel-section", start: "top 70%" },
+      });
+      gsap.from(".travel__item", {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.25,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".travel__right", start: "top 80%" },
+      });
+
+      // --- Section 6: Gift Registry Animations ---
+      gsap.from(".gift__flower", {
+        scale: 0,
+        rotation: 15,
+        opacity: 0,
+        duration: 1,
+        ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".gift-section", start: "top 80%" },
+      });
+      gsap.from(".gift__quote", {
+        y: 40,
+        opacity: 0,
+        duration: 1.3,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".gift-section", start: "top 75%" },
+      });
+      gsap.from(".gift__body", {
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".gift__quote", start: "bottom 80%" },
+      });
+
+      // --- Section 7: FAQ Animations ---
+      gsap.from(".faq__heading", {
+        x: -60,
+        opacity: 0,
+        duration: 1.3,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".faq-section", start: "top 75%" },
+      });
+      gsap.from(".faq__flower-deco", {
+        scale: 0,
+        rotation: -25,
+        opacity: 0,
+        duration: 1,
+        ease: "back.out(1.7)",
+        scrollTrigger: { trigger: ".faq-section", start: "top 70%" },
+      });
+      gsap.from(".faq__item", {
+        y: 45,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: { trigger: ".faq__right", start: "top 80%" },
+      });
+
+      // --- Section 8: RSVP/Contact Collage Animations ---
+      const rsvpTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".rsvp-section",
+          start: "top 75%",
+          toggleActions: "play none none none",
+        },
+        defaults: { ease: "power3.out" },
+      });
+
+      rsvpTl
+        .from(".rsvp__card", { x: -70, opacity: 0, duration: 1.1 })
+        .from(
+          ".rsvp__polaroid",
+          { x: 60, rotation: 10, opacity: 0, duration: 1.2 },
+          "-=0.7",
+        )
+        .from(
+          ".rsvp__envelope",
+          { y: 70, opacity: 0, scale: 0.9, duration: 1 },
+          "-=0.6",
+        )
+        .from(
+          ".rsvp__yellow-flower",
+          { scale: 0, rotation: -20, opacity: 0, duration: 0.8 },
+          "-=0.4",
+        )
+        .from(".rsvp__contact", { y: 50, opacity: 0, duration: 1.1 }, "-=0.6")
+        .from(
+          ".rsvp__dried-flower",
+          { x: 40, scale: 0, opacity: 0, duration: 0.9 },
+          "-=0.5",
+        );
+    </script>
+  </body>
+</html>

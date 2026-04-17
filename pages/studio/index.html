@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO | Studio Editor</title>
+    <meta
+      name="description"
+      content="Customize your invitation template in the INVIO Studio."
+    />
+    <meta name="theme-color" content="#1f2a37" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+
+    <link rel="stylesheet" href="/css/templates.css" />
+    <link rel="stylesheet" href="/pages/studio/studio.css" />
+  </head>
+  <body id="studio-editor">
+    <!-- Mobile Lock Screen -->
+    <div class="mobile-lock">
+      <div class="mobile-lock-content">
+        <i class="ph ph-desktop"></i>
+        <h2>Desktop Required</h2>
+        <p>
+          The Studio Editor is a professional tool that requires a larger
+          screen. Please switch to a tablet or computer to customize your
+          invitation.
+        </p>
+        <a class="button button--solid" href="/templates.html"
+          >Back to Marketplace</a
+        >
+      </div>
+    </div>
+
+    <div class="editor-container">
+      <!-- Header -->
+      <header class="editor-header">
+        <div class="header-left">
+          <a
+            href="../../templates.html"
+            class="header-back"
+            aria-label="Back to templates"
+          >
+            <i class="ph ph-arrow-left" aria-hidden="true"></i>
+            <span>Back</span>
+          </a>
+          <h1 class="editor-title" id="editorTitle">
+            Customize Your Invitation
+          </h1>
+        </div>
+
+        <div class="header-right">
+          <div class="save-status">
+            <span id="saveIndicator" class="save-text">All changes saved</span>
+            <i
+              id="saveIcon"
+              class="ph ph-check-circle save-icon"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <button class="publish-btn" id="publishBtn">
+            <i class="ph ph-share-network" aria-hidden="true"></i>
+            <span>Publish & Share</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Editor Grid -->
+      <div class="editor-grid">
+        <!-- Canvas (Live Preview) -->
+        <section class="editor-canvas" aria-label="Template preview">
+          <div class="canvas-controls">
+            <div class="device-toggle">
+              <button
+                class="device-btn active"
+                data-device="desktop"
+                title="Desktop view"
+              >
+                <i class="ph ph-desktop-tower" aria-hidden="true"></i>
+              </button>
+              <button
+                class="device-btn"
+                data-device="tablet"
+                title="Tablet view"
+              >
+                <i class="ph ph-device-tablet-camera" aria-hidden="true"></i>
+              </button>
+              <button
+                class="device-btn"
+                data-device="mobile"
+                title="Mobile view"
+              >
+                <i class="ph ph-device-mobile-camera" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="history-controls">
+              <button
+                id="undoBtn"
+                class="history-btn"
+                title="Undo (Ctrl+Z)"
+                disabled
+              >
+                <i class="ph ph-arrow-u-up-left"></i>
+              </button>
+              <button
+                id="redoBtn"
+                class="history-btn"
+                title="Redo (Ctrl+Y)"
+                disabled
+              >
+                <i class="ph ph-arrow-u-up-right"></i>
+              </button>
+            </div>
+
+            <span class="canvas-label" id="deviceLabel">Desktop</span>
+          </div>
+
+          <div class="canvas-wrapper">
+            <iframe
+              id="templateFrame"
+              class="template-iframe"
+              title="Template preview"
+              sandbox="allow-same-origin allow-scripts"
+            ></iframe>
+            <div class="canvas-overlay" id="canvasOverlay"></div>
+          </div>
+        </section>
+
+        <!-- Sidebar (Controls) -->
+        <aside class="editor-sidebar" aria-label="Editing controls">
+          <!-- Sidebar Tabs -->
+          <nav class="sidebar-tabs" role="tablist">
+            <button
+              class="tab-btn active"
+              data-tab="edit"
+              role="tab"
+              aria-selected="true"
+              id="tab-edit"
+            >
+              <i class="ph ph-pencil-simple"></i>
+              <span>Edit</span>
+            </button>
+            <button
+              class="tab-btn"
+              data-tab="layers"
+              role="tab"
+              aria-selected="false"
+              id="tab-layers"
+            >
+              <i class="ph ph-stack"></i>
+              <span>Layers</span>
+            </button>
+            <button
+              class="tab-btn"
+              data-tab="interactions"
+              role="tab"
+              aria-selected="false"
+              id="tab-interactions"
+            >
+              <i class="ph ph-magic-wand"></i>
+              <span>Extras</span>
+            </button>
+          </nav>
+
+          <div class="sidebar-sticky">
+            <!-- EDIT TAB CONTENT -->
+            <div id="editTab" class="tab-content active">
+              <!-- Invitation Metadata -->
+              <section class="control-panel">
+                <h2 class="panel-title">Invitation Details</h2>
+                <div class="control-group">
+                  <label for="invitationName">Invitation Name</label>
+                  <input
+                    type="text"
+                    id="invitationName"
+                    placeholder="e.g., Smith Wedding"
+                    maxlength="50"
+                  />
+                  <small id="nameHint"
+                    >Used to create your shareable link</small
+                  >
+                </div>
+              </section>
+
+              <!-- Element Editor Panel -->
+              <section class="control-panel">
+                <h2 class="panel-title">Edit Element</h2>
+                <div id="elementPanel" class="element-panel">
+                  <p class="panel-hint">
+                    <i class="ph ph-cursor-click" aria-hidden="true"></i>
+                    Click on any text or image in the preview to edit
+                  </p>
+                </div>
+              </section>
+
+              <!-- Text Controls (Hidden Until Element Selected) -->
+              <section id="textControls" class="control-panel hidden">
+                <h2 class="panel-title">Text Editor</h2>
+                <div class="control-group">
+                  <label for="textInput" id="textLabel">Text</label>
+                  <textarea
+                    id="textInput"
+                    placeholder="Edit text here..."
+                    rows="3"
+                    maxlength="200"
+                  ></textarea>
+                  <small id="charCount">0 / 200</small>
+                </div>
+              </section>
+
+              <!-- Image Controls (Hidden Until Element Selected) -->
+              <section id="imageControls" class="control-panel hidden">
+                <h2 class="panel-title">Image Editor</h2>
+                <div class="control-group">
+                  <label for="imageUpload">Upload Image</label>
+                  <div class="image-upload-zone" id="imageDropZone">
+                    <i class="ph ph-image" aria-hidden="true"></i>
+                    <p>Drag image here or click to browse</p>
+                    <small>JPG, PNG • Max 5MB</small>
+                    <input
+                      type="file"
+                      id="imageUpload"
+                      accept="image/jpeg,image/png"
+                      hidden
+                    />
+                  </div>
+                  <div id="imagePreview" class="image-preview hidden">
+                    <img id="previewImg" src="" alt="Preview" />
+                    <button id="clearImageBtn" class="btn-small" type="button">
+                      <i class="ph ph-trash" aria-hidden="true"></i>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Color Controls (Hidden Until Element Selected) -->
+              <section id="colorControls" class="control-panel hidden">
+                <h2 class="panel-title">Color Editor</h2>
+                <div class="control-group">
+                  <label for="colorInput">Pick Color</label>
+                  <div class="color-picker-wrapper">
+                    <input type="color" id="colorInput" />
+                    <input
+                      type="text"
+                      id="colorHex"
+                      placeholder="#000000"
+                      maxlength="7"
+                    />
+                  </div>
+                  <button id="resetColorBtn" class="btn-small" type="button">
+                    <i
+                      class="ph ph-arrow-counter-clockwise"
+                      aria-hidden="true"
+                    ></i>
+                    Reset to Default
+                  </button>
+                </div>
+              </section>
+            </div>
+
+            <!-- LAYERS TAB CONTENT -->
+            <div id="layersTab" class="tab-content">
+              <section class="control-panel">
+                <h2 class="panel-title">Page Elements</h2>
+                <p class="panel-subtitle">Select to edit</p>
+                <div id="layersList" class="layers-list">
+                  <!-- Generated by JS -->
+                  <p class="panel-hint">Scanning page elements...</p>
+                </div>
+              </section>
+            </div>
+
+            <!-- INTERACTION TAB CONTENT -->
+            <div id="interactionsTab" class="tab-content">
+              <section class="control-panel">
+                <h2 class="panel-title">RSVP Form</h2>
+                <div class="control-group">
+                  <div class="toggle-wrapper">
+                    <label for="rsvpToggle">Enable RSVP Form</label>
+                    <input type="checkbox" id="rsvpToggle" class="ios-toggle" />
+                  </div>
+                  <div id="rsvpSettings" class="sub-settings hidden">
+                    <div class="control-group">
+                      <label for="rsvpTitle">Form Title</label>
+                      <input
+                        type="text"
+                        id="rsvpTitle"
+                        value="Are you coming?"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="control-panel">
+                <h2 class="panel-title">Google Maps</h2>
+                <div class="control-group">
+                  <div class="toggle-wrapper">
+                    <label for="mapsToggle">Enable Location Map</label>
+                    <input type="checkbox" id="mapsToggle" class="ios-toggle" />
+                  </div>
+                  <div id="mapsSettings" class="sub-settings hidden">
+                    <div class="control-group">
+                      <label for="mapsAddress">Address / URL</label>
+                      <input
+                        type="text"
+                        id="mapsAddress"
+                        placeholder="123 Wedding Lane..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Keyboard Shortcuts Help -->
+            <section class="control-panel shortcuts-panel">
+              <h3 class="panel-subtitle">Shortcuts</h3>
+              <ul class="shortcuts-list">
+                <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> Undo / <kbd>Y</kbd> Redo</li>
+                <li><kbd>Ctrl</kbd> + <kbd>S</kbd> Save</li>
+                <li><kbd>Esc</kbd> Deselect</li>
+              </ul>
+            </section>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Publish Modal -->
+      <div
+        id="publishModal"
+        class="modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="publishTitle"
+      >
+        <div class="modal-backdrop" data-close="true"></div>
+        <div class="modal-panel">
+          <button
+            class="modal-close"
+            type="button"
+            data-close="true"
+            aria-label="Close"
+          >
+            <i class="ph ph-x" aria-hidden="true"></i>
+          </button>
+
+          <div class="modal-content">
+            <h2 id="publishTitle" class="modal-title">
+              Publish Your Invitation
+            </h2>
+            <p class="modal-text">
+              Once published, your invitation will be live and ready to share.
+              You can continue editing it anytime.
+            </p>
+
+            <div class="publish-form">
+              <label for="publishSlug">Your Link</label>
+              <div class="slug-input-group">
+                <span class="slug-prefix">invite?slug=</span>
+                <input
+                  type="text"
+                  id="publishSlug"
+                  placeholder="smith-wedding"
+                  maxlength="40"
+                  pattern="[a-z0-9-]+"
+                  aria-describedby="slugHint"
+                />
+              </div>
+              <small id="slugHint">
+                Use lowercase letters, numbers, and hyphens only
+              </small>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn-secondary" type="button" data-close="true">
+                Cancel
+              </button>
+              <button class="btn-primary" id="confirmPublishBtn" type="button">
+                Publish Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Modal -->
+      <div
+        id="successModal"
+        class="modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="successTitle"
+      >
+        <div class="modal-backdrop" data-close="true"></div>
+        <div class="modal-panel">
+          <div class="modal-content">
+            <div class="success-icon">
+              <i class="ph ph-check-circle" aria-hidden="true"></i>
+            </div>
+            <h2 id="successTitle" class="modal-title">Invitation Published!</h2>
+            <p class="modal-text">
+              Your invitation is now live and ready to share.
+            </p>
+
+            <div class="share-link-box">
+              <input
+                type="text"
+                id="shareLink"
+                readonly
+                aria-label="Shareable invitation link"
+              />
+              <button
+                id="copyLinkBtn"
+                class="btn-icon"
+                type="button"
+                title="Copy link"
+              >
+                <i class="ph ph-copy" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn-primary" type="button" data-close="true">
+                Continue Editing
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notifications -->
+      <div
+        id="toastContainer"
+        class="toast-container"
+        role="region"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/env-init.js"></script>
+    <script src="/pages/studio/EditorState.js" defer></script>
+    <script src="/pages/studio/elementScanner.js" defer></script>
+    <script src="/pages/studio/studio.js" defer></script>
+  </body>
+</html>

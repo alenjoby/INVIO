@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE NEXUS | Academic Flagship Template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,900;1,400&family=Plus+Jakarta+Sans:wght@200;800&family=Space+Grotesk:wght@300;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+      :root {
+        /* THEME: Obsidian, Gold, and Muted Violet */
+        --gold: #d4af37;
+        --obsidian: #0a0b10;
+        --amethyst: #1a1b2e;
+        --text: #f0f2f5;
+        --glass: rgba(255, 255, 255, 0.03);
+        --border: rgba(212, 175, 55, 0.2);
+
+        /* Envelope vars */
+        --bg-color: #0b0f19;
+        --env-back: #161b26;
+        --env-front: #1e2536;
+        --env-flap: #232a3d;
+        --card-bg: #ffffff;
+        --text-main: #0a0a0b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        cursor: none !important;
+      }
+
+      body,
+      html {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--obsidian);
+        /* DYNAMIC BACKGROUND GRADIENT */
+        background-image:
+          radial-gradient(
+            circle at 20% 30%,
+            var(--amethyst) 0%,
+            transparent 40%
+          ),
+          radial-gradient(circle at 80% 70%, #161205 0%, transparent 40%);
+        background-attachment: fixed;
+        color: var(--text);
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        height: 250vh; /* Needed for envelope scroll */
+      }
+
+      /* DYNAMIC GRAIN OVERLAY */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("https://www.transparenttextures.com/patterns/stardust.png");
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      /* CUSTOM CURSOR SUITE */
+      #cursor {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px var(--gold);
+      }
+      #cursor-ring {
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s ease,
+          height 0.2s ease,
+          background-color 0.2s ease,
+          border-color 0.2s ease;
+      }
+      /* Cursor Interactive State */
+      body.hovering-interactive #cursor-ring {
+        width: 65px;
+        height: 65px;
+        background-color: rgba(212, 175, 55, 0.1);
+        border-color: var(--gold);
+      }
+      body.hovering-interactive #cursor {
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+
+      /* Canvas */
+      #network-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.4;
+      }
+
+      .viewport {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        pointer-events: none;
+        perspective: 1200px;
+      }
+
+      .envelope-system {
+        position: relative;
+        width: 600px;
+        height: 900px;
+        display: flex;
+        align-items: flex-end;
+        transform: translateY(15vh);
+        pointer-events: auto;
+        transform-style: preserve-3d;
+        flex-shrink: 0; /* CRITICAL FIX: Prevents mobile flexbox from squishing the layout */
+      }
+
+      .mask-box {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        transform-style: preserve-3d;
+      }
+
+      .env-back {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 350px;
+        background: var(--env-back);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+        border-radius: 6px;
+        z-index: 1;
+      }
+
+      .card {
+        position: absolute;
+        bottom: -360px;
+        left: 20px;
+        width: calc(100% - 40px); /* FIX: Relative width prevents blowout */
+        height: 580px;
+        background: var(--card-bg);
+        border-radius: 4px;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+        border-top: 8px solid var(--gold);
+        display: flex;
+        flex-direction: column;
+        padding: 30px 45px;
+        box-sizing: border-box;
+        color: var(--text-main);
+        transform: translateY(0);
+        will-change: transform;
+        z-index: 2;
+      }
+
+      .env-front {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 350px;
+        background: var(--env-front);
+        clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 50%, 0 0);
+        border-radius: 0 0 6px 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 3;
+      }
+
+      .env-flap {
+        position: absolute;
+        bottom: 175px;
+        left: 0;
+        width: 100%;
+        height: 175px;
+        background: var(--env-flap);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        transform-origin: top center;
+        z-index: 4;
+        will-change: transform;
+      }
+
+      .seal {
+        position: absolute;
+        bottom: 140px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        background: radial-gradient(circle at center, #ffd700 0%, #b8860b 100%);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Cinzel";
+        font-size: 1.8rem;
+        color: #4a3300;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        font-weight: bold;
+        z-index: 5;
+      }
+
+      /* Typography & University Additions */
+      .label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        color: #888;
+        text-align: center;
+        margin-bottom: 5px;
+        display: block;
+      }
+      .crest {
+        font-family: "Cinzel";
+        font-size: 2rem;
+        color: var(--gold);
+        margin-bottom: 2px;
+        text-align: center;
+      }
+      .motto {
+        font-family: "Cinzel";
+        font-size: 0.55rem;
+        letter-spacing: 3px;
+        color: #888;
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      .dept {
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+        color: var(--gold);
+        text-align: center;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .title {
+        font-family: "Playfair Display";
+        font-size: 3rem;
+        line-height: 1;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      .subtitle {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: #555;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+      }
+
+      .details p {
+        font-size: 0.8rem;
+        margin: 6px 0;
+        color: #444;
+      }
+      .details strong {
+        color: var(--text-main);
+        font-weight: 700;
+      }
+
+      /* LIVE COUNTDOWN STYLES */
+      .countdown-wrapper {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0 15px 0;
+        padding: 10px 15px;
+        background: #fcfcfc;
+        border: 1px solid #eee;
+        border-radius: 4px;
+      }
+      .time-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .time-val {
+        font-family: "Courier Prime", monospace;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .time-lbl {
+        font-size: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #888;
+        margin-top: 5px;
+      }
+
+      /* Buttons Group */
+      .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: auto;
+        width: 100%;
+      }
+      .rsvp-btn {
+        flex: 1;
+        padding: 15px 10px;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+        font-family: "Space Grotesk";
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        position: relative;
+      }
+      .btn-accept {
+        background: var(--text-main);
+        color: var(--gold);
+      }
+      .btn-accept:hover {
+        background: var(--gold);
+        color: var(--text-main);
+      }
+      .btn-accept.success {
+        background: var(--gold);
+        color: var(--text-main);
+        box-shadow: 0 0 30px rgba(229, 179, 67, 0.4);
+        pointer-events: none;
+      }
+      .btn-decline {
+        background: transparent;
+        color: #888;
+        border: 1px solid #ccc;
+      }
+      .btn-decline:hover {
+        color: var(--text-main);
+        border-color: var(--text-main);
+      }
+      .btn-decline.failed {
+        background: #f4f4f4;
+        color: #aaa;
+        border-color: #eee;
+        pointer-events: none;
+      }
+
+      .hint {
+        position: absolute;
+        top: 15vh;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--gold);
+        letter-spacing: 5px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        opacity: 0.6;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* =========================================
+         MOBILE RESPONSIVE FIXES
+         ========================================= */
+
+      /* Hide custom cursor on touch screens */
+      @media (hover: none) and (pointer: coarse) {
+        #cursor, #cursor-ring {
+          display: none !important;
+        }
+        * {
+          cursor: auto !important;
+        }
+      }
+
+      /* Tablet & Small Desktop */
+      @media (max-width: 768px) {
+        .envelope-system {
+          transform: translateY(5vh) scale(0.75);
+        }
+        .hint {
+          top: 10vh;
+        }
+      }
+
+      /* Mobile Phones */
+      @media (max-width: 480px) {
+        .envelope-system {
+          /* Scale the entire envelope structure down proportionally */
+          transform: translateY(0vh) scale(0.6);
+        }
+        .hint {
+          top: 6vh;
+          font-size: 0.9rem;
+        }
+        /* Boost text legibility to counteract the CSS scale-down */
+        .title { font-size: 3.5rem; }
+        .details p { font-size: 1.1rem; }
+        .subtitle { font-size: 1.1rem; }
+        .time-val { font-size: 1.6rem; }
+        .time-lbl { font-size: 0.7rem; }
+        .label, .motto, .dept { font-size: 0.8rem; }
+        .rsvp-btn { font-size: 1.1rem; padding: 18px 10px; }
+      }
+
+      /* Very Small Mobile Phones (e.g. older iPhones) */
+      @media (max-width: 380px) {
+        .envelope-system {
+          transform: translateY(-2vh) scale(0.5);
+        }
+        .title { font-size: 4rem; }
+        .details p { font-size: 1.3rem; }
+        .time-val { font-size: 2rem; }
+        .time-lbl { font-size: 0.9rem; }
+        .label, .motto, .dept { font-size: 1rem; }
+        .subtitle { font-size: 1.3rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <canvas id="network-canvas"></canvas>
+
+    <div class="viewport">
+      <div class="hint">Scroll down to extract</div>
+
+      <div class="envelope-system interactive-el">
+        <div class="mask-box">
+          <div class="env-back"></div>
+
+          <div id="card" class="card">
+            <span id="guest-name" class="label">Distinguished Guest</span>
+
+            <div class="crest" data-edit="text" data-id="institution-name">
+              BATHSPA
+            </div>
+            <div class="motto" data-edit="text" data-id="institution-motto">
+              VERITAS ET SCIENTIA
+            </div>
+            <div class="dept" data-edit="text" data-id="department-name">
+              Office of the Chancellor
+            </div>
+            <div class="title" data-edit="text" data-id="event-title">
+              Academic<br />Innovation Gala
+            </div>
+            <div class="subtitle" data-edit="text" data-id="event-tagline">
+              Converging quantum logic and collective intelligence.
+            </div>
+
+            <div
+              class="details"
+              style="display: flex; justify-content: space-between"
+            >
+              <div>
+                <p>
+                  <strong>DATE:</strong>
+                  <span data-edit="text" data-id="event-date"
+                    >Oct 12, 2026</span
+                  >
+                </p>
+                <p>
+                  <strong>LOCATION:</strong>
+                  <span data-edit="text" data-id="event-venue"
+                    >The Grand Atrium</span
+                  >
+                </p>
+                <p>
+                  <strong>ATTIRE:</strong>
+                  <span data-edit="text" data-id="dress-code"
+                    >Academic Regalia / Formal</span
+                  >
+                </p>
+              </div>
+              <div style="text-align: right">
+                <p id="status-text"><strong>STATUS:</strong> <br />AWAITING</p>
+                <p
+                  style="
+                    margin-top: 5px;
+                    font-family: &quot;Courier Prime&quot;, monospace;
+                    font-size: 0.5rem;
+                    color: #888;
+                  "
+                >
+                  ID: NX-8492
+                </p>
+                <div
+                  style="
+                    font-family: monospace;
+                    font-size: 1rem;
+                    letter-spacing: -1px;
+                    color: var(--gold);
+                    opacity: 0.7;
+                    font-weight: bold;
+                  "
+                >
+                  ||||| ||| || |
+                </div>
+              </div>
+            </div>
+
+            <div id="countdown-container" class="countdown-wrapper">
+              <div class="time-box">
+                <span id="c-days" class="time-val">00</span
+                ><span class="time-lbl">Days</span>
+              </div>
+              <div class="time-box">
+                <span id="c-hours" class="time-val">00</span
+                ><span class="time-lbl">Hours</span>
+              </div>
+              <div class="time-box">
+                <span id="c-minutes" class="time-val">00</span
+                ><span class="time-lbl">Minutes</span>
+              </div>
+              <div class="time-box">
+                <span id="c-seconds" class="time-val">00</span
+                ><span class="time-lbl">Seconds</span>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button id="accept-btn" class="rsvp-btn btn-accept">
+                Accept
+              </button>
+              <button id="decline-btn" class="rsvp-btn btn-decline">
+                Decline
+              </button>
+            </div>
+          </div>
+
+          <div class="env-front"></div>
+          <div id="flap" class="env-flap"></div>
+        </div>
+
+        <div id="seal" class="seal">Ψ</div>
+      </div>
+    </div>
+
+    <script>
+      // --- ON LOAD INITIALIZATIONS ---
+      window.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get("guest");
+        if (guestName)
+          document.getElementById("guest-name").innerText =
+            guestName + ", you are summoned.";
+
+        startCountdown();
+      });
+
+      // --- FLUID CURSOR SYSTEM ---
+      const cursor = document.getElementById("cursor");
+      const cursorRing = document.getElementById("cursor-ring");
+      let mouseX = window.innerWidth / 2,
+        mouseY = window.innerHeight / 2;
+      let ringX = mouseX,
+        ringY = mouseY;
+
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if(cursor) cursor.style.left = mouseX + "px";
+        if(cursor) cursor.style.top = mouseY + "px";
+      });
+
+      function renderCursor() {
+        ringX += (mouseX - ringX) * 0.15;
+        ringY += (mouseY - ringY) * 0.15;
+        if(cursorRing) cursorRing.style.left = ringX + "px";
+        if(cursorRing) cursorRing.style.top = ringY + "px";
+        requestAnimationFrame(renderCursor);
+      }
+      requestAnimationFrame(renderCursor);
+
+      document.querySelectorAll(".interactive-el, .rsvp-btn").forEach((el) => {
+        el.addEventListener("mouseenter", () =>
+          document.body.classList.add("hovering-interactive"),
+        );
+        el.addEventListener("mouseleave", () =>
+          document.body.classList.remove("hovering-interactive"),
+        );
+      });
+
+      // --- LIVE COUNTDOWN LOGIC ---
+      function startCountdown() {
+        const targetDate = new Date("October 12, 2026 18:00:00").getTime();
+        const timer = setInterval(() => {
+          const now = new Date().getTime();
+          const distance = targetDate - now;
+
+          if (distance < 0) {
+            clearInterval(timer);
+            document.getElementById("countdown-container").innerHTML =
+              "<div class='time-val' style='width: 100%; text-align: center; font-size: 1rem;'>EVENT INITIATED</div>";
+            return;
+          }
+
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor(
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          );
+          const minutes = Math.floor(
+            (distance % (1000 * 60 * 60)) / (1000 * 60),
+          );
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          document.getElementById("c-days").innerText = String(days).padStart(
+            2,
+            "0",
+          );
+          document.getElementById("c-hours").innerText = String(hours).padStart(
+            2,
+            "0",
+          );
+          document.getElementById("c-minutes").innerText = String(
+            minutes,
+          ).padStart(2, "0");
+          document.getElementById("c-seconds").innerText = String(
+            seconds,
+          ).padStart(2, "0");
+        }, 1000);
+      }
+
+      // --- BACKGROUND NEURAL NETWORK ---
+      const canvas = document.getElementById("network-canvas");
+      const ctx = canvas.getContext("2d");
+      let width,
+        height,
+        particles = [];
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.radius = Math.random() * 1.5;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > width) this.vx = -this.vx;
+          if (this.y < 0 || this.y > height) this.vy = -this.vy;
+          let dx = mouseX - this.x;
+          let dy = mouseY - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            this.x -= dx * 0.01;
+            this.y -= dy * 0.01;
+          }
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "#e5b343";
+          ctx.fill();
+        }
+      }
+      for (let i = 0; i < 70; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+          for (let j = i; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 120) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(229, 179, 67, ${1 - distance / 120})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      // --- SEQUENTIAL SCROLL ANIMATION (FLAP -> CARD) ---
+      window.addEventListener("scroll", () => {
+        const card = document.getElementById("card");
+        const seal = document.getElementById("seal");
+        const flap = document.getElementById("flap");
+        const scrollY = window.scrollY || window.pageYOffset;
+
+        // 1. FLAP OPENS FIRST
+        let flapAngle = scrollY * 1.2;
+        if (flapAngle > 180) flapAngle = 180;
+        flap.style.transform = `rotateX(${flapAngle}deg)`;
+
+        // Z-INDEX SWAP
+        if (flapAngle >= 90) {
+          flap.style.zIndex = 1;
+        } else {
+          flap.style.zIndex = 4;
+        }
+
+        // 2. SEAL BREAKS
+        let sealOp = 1 - scrollY / 100;
+        seal.style.opacity = sealOp > 0 ? sealOp : 0;
+        seal.style.transform = `translateX(-50%) scale(${1 + scrollY * 0.002})`;
+
+        // 3. CARD SLIDES OUT
+        let cardScroll = scrollY - 100;
+        if (cardScroll < 0) cardScroll = 0;
+
+        let pull = cardScroll * 0.9;
+
+        if (pull > 780) pull = 780;
+
+        card.style.transform = `translateY(-${pull}px)`;
+      });
+
+      // --- BUTTON LOGIC WITH GRAD HATS ---
+      const acceptBtn = document.getElementById("accept-btn");
+      const declineBtn = document.getElementById("decline-btn");
+      const statusText = document.getElementById("status-text");
+
+      acceptBtn.addEventListener("click", function (e) {
+        this.classList.add("success");
+        this.innerText = "CONFIRMED";
+        declineBtn.style.display = "none";
+        statusText.innerHTML =
+          '<strong>STATUS:</strong> <br><span style="color: #e5b343;">CONFIRMED</span>';
+
+        // MIXED CONFETTI: Grad Hats + Regular Confetti
+        try {
+          const gradHat = confetti.shapeFromText({ text: "🎓" });
+          const count = 200;
+          const defaults = {
+            origin: { y: 0.7 },
+            zIndex: 9999,
+            shapes: [gradHat],
+            scalar: 3,
+          };
+
+          function fire(particleRatio, opts) {
+            confetti(
+              Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+              }),
+            );
+          }
+
+          fire(0.25, { spread: 26, startVelocity: 55 });
+          fire(0.2, { spread: 60 });
+          fire(0.35, { spread: 100, decay: 0.91, scalar: 2.5 });
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 25,
+            decay: 0.92,
+            scalar: 3.5,
+          });
+          fire(0.1, { spread: 120, startVelocity: 45 });
+        } catch (e) {
+          // Fallback for older browsers
+          confetti({
+            particleCount: 150,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ["#e5b343", "#ffffff", "#ffd700"],
+          });
+        }
+      });
+
+      declineBtn.addEventListener("click", function (e) {
+        this.classList.add("failed");
+        this.innerText = "DECLINED";
+        acceptBtn.style.display = "none";
+        statusText.innerHTML =
+          '<strong>STATUS:</strong> <br><span style="color: #888;">DECLINED</span>';
+      });
+    </script>
+  </body>
+</html>

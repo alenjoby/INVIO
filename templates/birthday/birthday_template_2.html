@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Julianna | The Golden Milestone</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <style>
+      :root {
+        /* Ultra Premium Palette */
+        --bg-dark: #050505;
+        --bg-darker: #020202;
+        --gold-light: #fbefcd;
+        --gold-base: #d4af37;
+        --gold-dark: #a67c00;
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.5);
+
+        /* Typography */
+        --font-serif: "Cormorant Garamond", serif;
+        --font-sans: "Montserrat", sans-serif;
+        --font-script: "hero", cursive;
+        --font-title: "hero2", script;
+      }
+
+      @font-face {
+        font-family: "hero";
+        src: url("../../assets/fonts/moon-time-regular.ttf");
+      }
+
+      @font-face {
+        font-family: "hero2";
+        src: url("../../assets/fonts/KaushanScript-Regular.ttf");
+      }
+
+      /* --- Reset & Base --- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        cursor: none; /* Hide default cursor for custom cursor */
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: var(--font-sans);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        background-image: radial-gradient(
+          circle at 50% 0%,
+          rgba(212, 175, 55, 0.05),
+          transparent 60%
+        );
+      }
+
+      /* --- Noise / Film Grain --- */
+      .noise {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9998;
+        opacity: 0.06;
+        background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+      }
+
+      /* --- Custom Cursor --- */
+      .cursor-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--gold-light);
+        border-radius: 50%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 10000;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+      }
+
+      .cursor-outline {
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        border-radius: 50%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.3s,
+          height 0.3s,
+          border-color 0.3s,
+          background-color 0.3s;
+      }
+
+      /* --- Reusable --- */
+      .split-line {
+        overflow: hidden;
+      }
+      .split-line span {
+        display: inline-block;
+        transform: translateY(110%);
+        will-change: transform;
+      }
+
+      /* --- 1. HERO SECTION --- */
+      .hero {
+        height: 100vh;
+        width: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* Giant Background Text */
+      .hero__bg-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: var(--font-serif);
+        font-size: clamp(10rem, 25vw, 25rem);
+        font-weight: 400;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.05);
+        line-height: 0.8;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+        z-index: 1;
+      }
+
+      /* Center Arch Image */
+      .hero__arch-wrap {
+        position: absolute;
+        width: clamp(300px, 40vw, 500px);
+        height: 80vh;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1000px;
+      }
+
+      .hero__arch {
+        width: 100%;
+        height: 100%;
+        clip-path: ellipse(50% 50% at 50% 50%); /* Classic oval mask */
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        /* Optional CSS border radius hack for smoothing clipping: */
+        border-radius: 50%;
+      }
+
+      .hero__arch img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(40%) contrast(1.1) brightness(0.9);
+        transform: scale(1.1); /* for parallax */
+      }
+
+      /* Overlay Text */
+      .hero__content {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .hero__eyebrow {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: var(--gold-light);
+        margin-bottom: 2rem;
+        opacity: 0;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 8px 16px;
+        backdrop-filter: blur(5px);
+        border-radius: 30px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+      }
+
+      .hero__title {
+        font-family: var(--font-script);
+        font-size: clamp(6rem, 15vw, 15rem);
+        color: var(--white);
+        line-height: 0.7;
+        text-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        transform: rotate(-5deg);
+      }
+
+      .hero__subtitle {
+        margin-top: 3rem;
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        color: var(--gold-base);
+        text-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
+      }
+
+      /* Floating Balloons */
+      .bal-wrap {
+        position: absolute;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .bal-wrap-1 {
+        top: 5%;
+        left: 10%;
+        width: clamp(150px, 20vw, 250px);
+      }
+      .bal-wrap-2 {
+        bottom: 10%;
+        right: 10%;
+        width: clamp(100px, 15vw, 200px);
+      }
+
+      .bal {
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.8));
+        opacity: 0.85;
+        animation: floating 6s ease-in-out infinite;
+        transform-origin: center;
+      }
+      .bal-1 {
+        animation-delay: 0s;
+        transform: rotate(-10deg);
+      }
+      .bal-2 {
+        animation-delay: -3s;
+        animation-direction: reverse;
+        transform: rotate(15deg);
+      }
+
+      @keyframes floating {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-30px);
+        }
+      }
+
+      /* Scroll indicator */
+      .hero__scroll {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        z-index: 10;
+      }
+      .hero__scroll span {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        color: var(--text-muted);
+      }
+      .hero__scroll-line {
+        width: 1px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero__scroll-line::after {
+        content: "";
+        position: absolute;
+        top: -100%;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gold-base);
+        animation: scrolldown 2s ease-in-out infinite;
+      }
+      @keyframes scrolldown {
+        0% {
+          top: -100%;
+        }
+        100% {
+          top: 100%;
+        }
+      }
+
+      /* --- 2. STORY SECTION --- */
+      .story {
+        padding: 15rem 5%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: linear-gradient(
+          to bottom,
+          var(--bg-dark),
+          var(--bg-darker)
+        );
+      }
+
+      .story__quote {
+        font-family: var(--font-serif);
+        font-size: clamp(2rem, 5vw, 4.5rem);
+        font-weight: 300;
+        text-align: center;
+        line-height: 1.2;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .story__quote-gold {
+        color: var(--gold-base);
+        font-style: italic;
+        display: block;
+        margin-top: 1rem;
+      }
+
+      .story__decor {
+        font-family: var(--font-script);
+        font-size: clamp(4rem, 10vw, 8rem);
+        color: rgba(212, 175, 55, 0.1);
+        position: absolute;
+        top: -40%;
+        left: 50%;
+        transform: translateX(-50%) rotate(-5deg);
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      /* --- 3. EDITORIAL DETAILS --- */
+      .editorial {
+        padding: 10rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .ed-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 5rem 0;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        transition:
+          padding-left 0.4s,
+          padding-right 0.4s,
+          background 0.4s;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        cursor: none; /* retain custom cursor */
+      }
+      .ed-row:first-child {
+        border-top: 1px solid rgba(212, 175, 55, 0.2);
+      }
+
+      /* Hover wipe effect */
+      .ed-row::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 0%;
+        background: rgba(212, 175, 55, 0.03);
+        transition: height 0.4s ease;
+        z-index: 0;
+      }
+      .ed-row:hover::after {
+        height: 100%;
+      }
+      .ed-row:hover {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+
+      .ed-label {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4em;
+        color: var(--gold-light);
+        width: 30%;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .ed-label::before {
+        content: "";
+        width: 30px;
+        height: 1px;
+        background: var(--gold-base);
+      }
+
+      .ed-content {
+        width: 70%;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 2rem;
+      }
+
+      .ed-main {
+        font-family: var(--font-serif);
+        font-size: clamp(3rem, 6vw, 6rem);
+        font-weight: 300;
+        line-height: 1;
+        color: var(--white);
+      }
+
+      .ed-main span {
+        color: var(--gold-base);
+        font-style: italic;
+      }
+
+      .ed-sub {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        letter-spacing: 0.1em;
+        max-width: 350px;
+        text-transform: uppercase;
+      }
+
+      /* --- 4. RSVP Section --- */
+      .rsvp {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: #000;
+      }
+
+      .rsvp__inner {
+        text-align: center;
+        z-index: 2;
+      }
+
+      .rsvp__title {
+        font-family: var(--font-script);
+        font-size: clamp(4rem, 12vw, 10rem);
+        color: var(--white);
+        margin-bottom: 2rem;
+      }
+
+      /* Magnetic Button */
+      .btn-wrap {
+        display: inline-block;
+        padding: 2rem; /* creates area for magnetism */
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        background: transparent;
+        color: var(--gold-light);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition:
+          background 0.3s,
+          color 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: var(--gold-base);
+        transform: scale(0);
+        transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transform-origin: center;
+        z-index: -1;
+      }
+      .btn:hover {
+        color: var(--bg-dark);
+      }
+      .btn:hover::after {
+        transform: scale(1);
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .ed-row {
+          flex-direction: column;
+          gap: 3rem;
+          padding: 4rem 0;
+        }
+        .ed-label {
+          width: 100%;
+        }
+        .ed-content {
+          width: 100%;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .ed-row:hover {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+      @media (max-width: 600px) {
+        .hero__arch {
+          border-radius: 200px;
+          clip-path: none;
+        }
+        .hero__bg-text {
+          font-size: 6rem;
+          letter-spacing: 5px;
+        }
+        .hero__title {
+          font-size: 5rem;
+        }
+        .hero__eyebrow {
+          font-size: 0.65rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Overlay Effects -->
+    <div class="noise"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="hero">
+        <div class="hero__bg-text" data-speed="0.8">
+          T W E N T Y&nbsp; O N E
+        </div>
+
+        <!-- Floating Balloons -->
+        <div class="bal-wrap bal-wrap-1" data-speed="0.2">
+          <img
+            src="../../assets/images/birthday/template_2/HD_Yellow_Golden_Gold_Balloon_Fly_PNG-removebg-preview.png"
+            class="bal bal-1"
+            alt="balloon"
+          />
+        </div>
+        <div class="bal-wrap bal-wrap-2" data-speed="-0.2">
+          <img
+            src="../../assets/images/birthday/template_2/ballons.png"
+            class="bal bal-2"
+            alt="balloon"
+          />
+        </div>
+
+        <div class="hero__arch-wrap" data-speed="1.2">
+          <div class="hero__arch">
+            <img
+              src="../../assets/images/birthday/template_2/golden 21st birthday.webp"
+              alt="Juliana Hero"
+            />
+          </div>
+        </div>
+
+        <div class="hero__content">
+          <div class="hero__eyebrow">A Milestone Celebration</div>
+          <div class="split-line">
+            <h1 class="hero__title">
+              <span data-edit="text" data-id="birthday-person-name"
+                >Juliana</span
+              >
+            </h1>
+          </div>
+          <div class="split-line">
+            <div class="hero__subtitle">
+              Chapter
+              <span data-edit="text" data-id="birthday-age">Twenty-One</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__scroll">
+          <span>The Story</span>
+          <div class="hero__scroll-line"></div>
+        </div>
+      </section>
+
+      <!-- STORY -->
+      <section class="story">
+        <div class="story__decor">A New Era</div>
+        <h2 class="story__quote">
+          This isn't just a birthday.<br />
+          It's a celebration of every dream chased<br />
+          <span class="story__quote-gold">and every smile shared.</span>
+        </h2>
+      </section>
+
+      <!-- EDITORIAL DETAILS -->
+      <section class="editorial" id="details">
+        <a href="#rsvp" class="ed-row hover-target">
+          <div class="ed-label">The Date</div>
+          <div class="ed-content">
+            <div class="ed-main">
+              <span data-edit="text" data-id="party-date"
+                >Saturday, <br /><span>June 30th</span></span
+              >
+            </div>
+            <div class="ed-sub">
+              Evening festivities<br />commence at
+              <span data-edit="text" data-id="party-start-time">10:00 PM</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#rsvp" class="ed-row hover-target">
+          <div class="ed-label">Attire</div>
+          <div class="ed-content">
+            <div class="ed-main">Midnight <br /><span>Glamour</span></div>
+            <div class="ed-sub">
+              Black Tie Optional<br />Golden Accents Encouraged
+            </div>
+          </div>
+        </a>
+
+        <a href="#rsvp" class="ed-row hover-target">
+          <div class="ed-label">Location</div>
+          <div class="ed-content">
+            <div class="ed-main">
+              <span data-edit="text" data-id="venue-name"
+                >The Golden <br /><span>Manor</span></span
+              >
+            </div>
+            <div class="ed-sub">
+              <span data-edit="text" data-id="venue-address"
+                >123 Anywhere Street<br />
+                Metropolis City, NY</span
+              >
+            </div>
+          </div>
+        </a>
+      </section>
+
+      <!-- RSVP -->
+      <section class="rsvp">
+        <div class="rsvp__inner">
+          <h2 class="rsvp__title">Join the Night</h2>
+          <div class="btn-wrap magnetic">
+            <a href="#" class="btn hover-target">RSVP</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // --- 0. Utility: Split Text into Words/Chars for Reveal ---
+      // A simple custom text splitter to avoid needing a premium plugin
+      document.querySelectorAll(".story__quote").forEach((el) => {
+        const lines = el.innerHTML.split("<br>");
+        el.innerHTML = "";
+        lines.forEach((line) => {
+          if (line.trim() !== "") {
+            const wrap = document.createElement("div");
+            wrap.className = "split-line";
+            const span = document.createElement("span");
+            span.innerHTML = line;
+            wrap.appendChild(span);
+            el.appendChild(wrap);
+          }
+        });
+      });
+
+      const initAnimations = () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. Custom Cursor ---
+        const cursorDot = document.querySelector(".cursor-dot");
+        const cursorOutline = document.querySelector(".cursor-outline");
+        const hoverTargets = document.querySelectorAll("a, .hover-target");
+
+        window.addEventListener("mousemove", (e) => {
+          gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+          gsap.to(cursorOutline, {
+            x: e.clientX,
+            y: e.clientY,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        });
+
+        hoverTargets.forEach((target) => {
+          target.addEventListener("mouseenter", () => {
+            gsap.to(cursorOutline, {
+              width: 80,
+              height: 80,
+              backgroundColor: "rgba(212, 175, 55, 0.1)",
+              borderColor: "transparent",
+              duration: 0.3,
+            });
+          });
+          target.addEventListener("mouseleave", () => {
+            gsap.to(cursorOutline, {
+              width: 40,
+              height: 40,
+              backgroundColor: "transparent",
+              borderColor: "rgba(212, 175, 55, 0.4)",
+              duration: 0.3,
+            });
+          });
+        });
+
+        // --- Magnetic Button ---
+        const magnetics = document.querySelectorAll(".magnetic");
+        magnetics.forEach((wrap) => {
+          const btn = wrap.querySelector(".btn");
+          wrap.addEventListener("mousemove", (e) => {
+            const rect = wrap.getBoundingClientRect();
+            const rx = e.clientX - rect.left - rect.width / 2;
+            const ry = e.clientY - rect.top - rect.height / 2;
+
+            gsap.to(btn, {
+              x: rx * 0.4,
+              y: ry * 0.4,
+              duration: 0.4,
+              ease: "power2.out",
+            });
+          });
+          wrap.addEventListener("mouseleave", () => {
+            gsap.to(btn, {
+              x: 0,
+              y: 0,
+              duration: 0.7,
+              ease: "elastic.out(1, 0.3)",
+            });
+          });
+        });
+
+        // --- 2. Start Hero Animation Immediately ---
+        playHero();
+
+        // --- 3. Hero Reveal ---
+        function playHero() {
+          const tl = gsap.timeline();
+          tl.fromTo(
+            ".hero__arch",
+            { scale: 0.8, filter: "brightness(0)" },
+            {
+              scale: 1,
+              filter: "brightness(1)",
+              duration: 2,
+              ease: "power4.out",
+            },
+            0,
+          )
+            .to(".hero__eyebrow", { opacity: 1, duration: 1 }, 1)
+            .fromTo(
+              ".hero__title",
+              { y: "110%", rotate: 0 },
+              { y: "0%", rotate: -5, duration: 1.5, ease: "power4.out" },
+              0.5,
+            )
+            .fromTo(
+              ".hero__subtitle",
+              { y: "110%" },
+              { y: "0%", duration: 1.5, ease: "power4.out" },
+              0.7,
+            )
+            .fromTo(
+              ".hero__bg-text",
+              { scale: 0.9, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 2, ease: "power3.out" },
+              0.2,
+            )
+            .fromTo(
+              ".bal",
+              { y: 100, opacity: 0 },
+              {
+                y: 0,
+                opacity: 0.85,
+                duration: 2,
+                stagger: 0.2,
+                ease: "power3.out",
+              },
+              0.8,
+            );
+        }
+
+        // --- 4. Scroll Animations ---
+        // Subtle Parallax on Hero elements
+        gsap.utils.toArray("[data-speed]").forEach((el) => {
+          const speed = parseFloat(el.getAttribute("data-speed"));
+          gsap.to(el, {
+            y: () => ScrollTrigger.maxScroll(window) * speed * 0.1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        });
+
+        // Parallax image inside Arch
+        gsap.to(".hero__arch img", {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        // Story Text Reveal
+        gsap.utils
+          .toArray(".story__quote .split-line span")
+          .forEach((span, i) => {
+            gsap.to(span, {
+              scrollTrigger: {
+                trigger: ".story",
+                start: "top 75%",
+              },
+              y: 0,
+              duration: 1.2,
+              ease: "power4.out",
+              delay: i * 0.15,
+            });
+          });
+
+        // Editorial Details Scroll Reveal
+        gsap.from(".ed-row", {
+          scrollTrigger: {
+            trigger: ".editorial",
+            start: "top 80%",
+          },
+          y: 40,
+          opacity: 0,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: "power3.out",
+        });
+      };
+
+      // --- Smooth Scroll (Lenis) ---
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      // Initialize when DOM is ready
+      window.addEventListener("DOMContentLoaded", initAnimations);
+    </script>
+  </body>
+</html>

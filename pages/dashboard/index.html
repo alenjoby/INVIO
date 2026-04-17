@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO Dashboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons (Phosphor) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- External Styles -->
+    <link rel="stylesheet" href="/css/landing.css" />
+    <link rel="stylesheet" href="/pages/dashboard/dashboard.css" />
+  </head>
+  <body class="dash-body">
+    <nav class="dash-nav">
+      <a
+        href="/templates.html"
+        class="back-circle-btn"
+        aria-label="Back to marketplace"
+      >
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
+      </a>
+      <div class="dash-nav-brand">INVIO</div>
+      <div class="dash-nav-links">
+        <a href="/pages/studio/index.html" class="nav-item">
+          <i class="ph ph-paint-brush"></i>
+          <span>Studio</span>
+        </a>
+        <a href="#" class="nav-item active">
+          <i class="ph ph-squares-four"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <section class="dash-history-panel" aria-label="Template history">
+        <div class="dash-history-header">
+          <i class="ph ph-clock-counter-clockwise"></i>
+          <span>Template History</span>
+        </div>
+        <div class="dash-history-scroll">
+          <ul class="template-history-list" id="template-history-list">
+            <!-- Injected via JS -->
+          </ul>
+        </div>
+      </section>
+      <div class="dash-nav-bottom">
+        <div class="user-profile">
+          <div class="user-avatar" id="user-avatar">--</div>
+          <div class="user-info">
+            <span class="welcome-text">Welcome,</span>
+            <span class="user-name" id="user-name">Loading...</span>
+          </div>
+        </div>
+        <div class="nav-divider"></div>
+        <a href="/" class="nav-item" id="logout-link">
+          <i class="ph ph-sign-out"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </nav>
+
+    <main class="dash-main">
+      <header class="dash-header bento-card">
+        <div class="header-content">
+          <div class="status-badge">Live Event</div>
+          <h1 class="event-title">Loading invitation...</h1>
+          <p class="event-meta">Waiting for live data</p>
+        </div>
+        <div class="header-actions">
+          <button
+            class="dash-btn dash-btn-outline"
+            onclick="window.location.href = '/pages/studio/index.html'"
+          >
+            <i class="ph ph-pencil-simple"></i> Edit Design
+          </button>
+          <button
+            class="dash-btn dash-btn-primary"
+            onclick="alert('Link Copied!')"
+          >
+            <i class="ph ph-link"></i> Copy Link
+          </button>
+        </div>
+      </header>
+
+      <div class="bento-grid">
+        <!-- Total Responses -->
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-envelope-open"></i>
+            <span>Response Rate</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-responses">
+              --<span class="stat-total">/--</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Headcount -->
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-users"></i>
+            <span>Confirmed Guests</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-headcount">--</div>
+            <div class="stat-subtext">No live responses yet</div>
+          </div>
+        </div>
+
+        <!-- Days Left -->
+        <div class="bento-card stat-card gs-elem">
+          <div class="stat-header">
+            <i class="ph ph-calendar-blank"></i>
+            <span>Time Remaining</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value" id="val-days">--</div>
+            <div class="stat-subtext">Days until event</div>
+          </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="bento-card preview-card gs-elem">
+          <div class="preview-header">
+            <i class="ph ph-device-mobile"></i>
+            <span>Live Preview</span>
+          </div>
+          <div class="preview-container">
+            <!-- Load a template here -->
+            <iframe
+              id="preview-frame"
+              src="about:blank"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Guest Ledger -->
+        <div class="bento-card ledger-card gs-elem">
+          <div class="ledger-header">
+            <div class="ledger-title">
+              <i class="ph ph-address-book"></i>
+              <span>Guest Ledger</span>
+            </div>
+            <div class="ledger-filters">
+              <input
+                type="text"
+                class="dash-input"
+                placeholder="Search guests..."
+                id="guest-search"
+              />
+              <select class="dash-select" id="guest-filter">
+                <option value="all">All Statuses</option>
+                <option value="accepted">Confirmed</option>
+                <option value="declined">Declined</option>
+              </select>
+              <button
+                class="dash-btn dash-btn-outline icon-only"
+                title="Export to CSV"
+              >
+                <i class="ph ph-download-simple"></i>
+              </button>
+            </div>
+          </div>
+          <div class="ledger-table-wrapper">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Guest Name</th>
+                  <th>Status</th>
+                  <th>Dietary/Notes</th>
+                  <th>RSVP Date</th>
+                </tr>
+              </thead>
+              <tbody id="guest-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="/js/page-transition.js" defer></script>
+    <script type="module" src="/pages/dashboard/dashboard.js"></script>
+  </body>
+</html>

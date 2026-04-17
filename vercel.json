@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "name": "invio-frontend",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/invite", "destination": "/invite.html" },
+    { "source": "/templates", "destination": "/templates.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    {
+      "source": "/checkout/index",
+      "destination": "/pages/checkout/index.html"
+    },
+    { "source": "/checkout/(.*)", "destination": "/pages/checkout/index.html" },
+    { "source": "/checkout", "destination": "/pages/checkout/index.html" },
+    { "source": "/studio", "destination": "/pages/studio/index.html" },
+    {
+      "source": "/studio/(.*)",
+      "destination": "/pages/studio/index.html"
+    },
+    { "source": "/auth", "destination": "/pages/auth/index.html" },
+    {
+      "source": "/:slug([a-z0-9][a-z0-9-]*)",
+      "destination": "/invite.html?slug=:slug"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
+}
