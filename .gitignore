@@ -9,6 +9,7 @@ server/.env
 # Documentation (User requested to exclude all .md files)
 *.md
 **/*.md
+!README.md
 
 # Logs
 npm-debug.log*
