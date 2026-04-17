@@ -102,22 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const updateNavButtons = () => {
-    const dashboardBtn = document.getElementById("navDashboardBtn");
-    const loginBtn = document.getElementById("navLoginBtn");
-    const signupBtn = document.getElementById("navSignupBtn");
-
-    if (window.authApi && window.authApi.isAuthenticated()) {
-      dashboardBtn?.classList.remove("is-hidden");
-      loginBtn?.classList.add("is-hidden");
-      signupBtn?.classList.add("is-hidden");
-    } else {
-      dashboardBtn?.classList.add("is-hidden");
-      loginBtn?.classList.remove("is-hidden");
-      signupBtn?.classList.remove("is-hidden");
-    }
-  };
-
   const init = async () => {
     // Sync session with server if authApi is available
     if (window.authApi) {
@@ -127,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHeaderState();
     refreshCountdowns();
     setActiveRsvp("accept");
-    updateNavButtons();
   };
 
   init().catch((err) => console.error("Initialization failed:", err));
