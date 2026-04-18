@@ -911,8 +911,10 @@ button { font: inherit; cursor: pointer; }
    FOOTER — Quiet single-line
    ───────────────────────────────────────────────────────────────────── */
 .site-footer {
-  border-top: 1px solid var(--line-faint);
-  padding: clamp(2.5rem, 4vw, 4rem) clamp(1.5rem, 4vw, 4rem);
+  background: #000;
+  color: #fff;
+  padding: clamp(3rem, 5vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-inner {
@@ -928,8 +930,9 @@ button { font: inherit; cursor: pointer; }
 }
 
 .footer-brand img {
-  height: 1.3rem;
-  opacity: 0.5;
+  height: 1.4rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
   transition: opacity 0.5s var(--ease);
 }
 
@@ -940,47 +943,48 @@ button { font: inherit; cursor: pointer; }
 .footer-nav {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2vw, 2rem);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  gap: clamp(1rem, 2vw, 2.5rem);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .footer-nav a {
   transition: color 0.4s var(--ease);
 }
 
-.footer-nav a:hover { color: var(--ink); }
+.footer-nav a:hover { color: #fff; }
 
-.footer-nav i { font-size: 1rem; }
+.footer-nav i { font-size: 1.1rem; }
 
 .footer-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line-faint);
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-bottom p {
   margin: 0;
-  font-size: 0.78rem;
-  color: var(--muted);
-  max-width: 40ch;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  max-width: 42ch;
+  line-height: 1.6;
 }
 
 .footer-totop {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.5);
   transition: color 0.4s var(--ease);
 }
 
-.footer-totop:hover { color: var(--ink); }
+.footer-totop:hover { color: #fff; }
 
 /* ─────────────────────────────────────────────────────────────────────
    LEGACY COMPAT — Classes landing.js may reference
