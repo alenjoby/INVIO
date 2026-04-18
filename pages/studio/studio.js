@@ -1216,13 +1216,13 @@ class StudioEditor {
         mapFilter: "invert(90%) hue-rotate(180deg) grayscale(0.2)",
       },
       "wedding_template_4.html": {
-        accent: "#e5baba",
-        bg: "#fffcfc",
+        accent: "#8b1538",
+        bg: "#fff5eb",
         titleFont: "Playfair Display",
-        bodyFont: "Montserrat",
+        bodyFont: "Playfair Display",
         style:
-          "border-radius: 50px; border: 1px solid #f0e0e0; box-shadow: 0 10px 30px rgba(229,186,186,0.1);",
-        mapFilter: "hue-rotate(-10deg) saturate(0.8)",
+          "border-radius: 22px; border: 1px solid rgba(139,21,56,0.25); box-shadow: 0 18px 36px rgba(87,16,36,0.12);",
+        mapFilter: "saturate(0.9) sepia(15%)",
       },
       "wedding_template_5.html": {
         accent: "#5c0000",
@@ -1355,6 +1355,10 @@ class StudioEditor {
 
     const inter = this.state.data.interactions;
     const design = this.getTemplateDesign();
+    let tid = (this.state.data.templateId || "").toLowerCase();
+    const templatePath = this.getTemplatePathById(this.state.data.templateId);
+    if (templatePath) tid = templatePath.split("/").pop().toLowerCase();
+    const isWeddingTemplate4 = tid === "wedding_template_4.html";
 
     let container = frameDoc.getElementById("__invio-interactions");
     if (!container) {
@@ -1398,12 +1402,125 @@ class StudioEditor {
         .invio-btn { padding: 15px 30px; font-size: 1rem; }
         .invio-map-iframe { height: 300px; }
       }
+
+      ${
+        isWeddingTemplate4
+          ? `
+      #__invio-interactions { padding-top: 70px; }
+      .invio-card.invio-w4-rsvp {
+        text-align: left;
+        max-width: 860px;
+        padding: clamp(28px, 5vw, 46px);
+        background: linear-gradient(145deg, #fff8f2 0%, #fff3e8 100%);
+        color: #3e252b;
+        border: 1px solid rgba(139, 21, 56, 0.22);
+        border-radius: 24px;
+      }
+      .invio-w4-kicker {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(139, 21, 56, 0.28);
+        color: #7b213d;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+      }
+      .invio-card.invio-w4-rsvp .invio-title {
+        color: #8b1538;
+        font-size: clamp(2rem, 4.5vw, 3.1rem);
+        margin-bottom: 12px;
+      }
+      .invio-w4-intro {
+        margin: 0 0 24px;
+        color: #6c3b48;
+        font-size: 1.02rem;
+        line-height: 1.75;
+      }
+      .invio-w4-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .invio-w4-grid .invio-input,
+      .invio-w4-rsvp .invio-input {
+        border: 1px solid rgba(139, 21, 56, 0.22);
+        background: #fffdfb;
+        color: #3b2229;
+        border-radius: 14px;
+        margin-bottom: 0;
+      }
+      .invio-w4-actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .invio-w4-note {
+        font-size: 0.86rem;
+        letter-spacing: 0.4px;
+        color: #7a4654;
+      }
+      .invio-btn.invio-w4-btn {
+        background: #8b1538;
+        color: #fff8f5;
+        border-radius: 999px;
+        padding: 14px 28px;
+        margin-top: 0;
+        letter-spacing: 1.2px;
+      }
+      .invio-btn.invio-w4-btn:hover {
+        box-shadow: 0 12px 24px rgba(139, 21, 56, 0.32);
+      }
+      @media (max-width: 768px) {
+        .invio-card.invio-w4-rsvp {
+          padding: 24px 18px;
+          border-radius: 18px;
+        }
+        .invio-w4-grid {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+        .invio-w4-actions {
+          align-items: stretch;
+        }
+        .invio-btn.invio-w4-btn {
+          width: 100%;
+        }
+      }
+          `
+          : ""
+      }
     `;
 
     container.innerHTML = "";
 
     if (inter.rsvp.enabled) {
-      container.innerHTML += `
+      if (isWeddingTemplate4) {
+        container.innerHTML += `
+        <div class="invio-card invio-w4-rsvp invio-reveal" data-invio-anim="reveal">
+          <span class="invio-w4-kicker">RSVP</span>
+          <h2 class="invio-title">${inter.rsvp.title}</h2>
+          <p class="invio-w4-intro">Kindly let us know if you can celebrate with us in Madrid. Your response helps us prepare your welcome details and seating.</p>
+          <form onsubmit="event.preventDefault(); alert('RSVP sent successfully!')">
+            <div class="invio-w4-grid">
+              <input type="text" class="invio-input" placeholder="Guest full name" required>
+              <input type="email" class="invio-input" placeholder="Email address" required>
+              <select class="invio-input" required><option value="">RSVP status</option><option>Joyfully Accepts</option><option>Regretfully Declines</option></select>
+              <input type="text" class="invio-input" placeholder="Dietary notes (optional)">
+            </div>
+            <div class="invio-w4-actions">
+              <span class="invio-w4-note">Please respond before October 15, 2030</span>
+              <button class="invio-btn invio-w4-btn" type="submit">Send RSVP</button>
+            </div>
+          </form>
+        </div>
+      `;
+      } else {
+        container.innerHTML += `
         <div class="invio-card invio-reveal" data-invio-anim="reveal">
           <h2 class="invio-title">${inter.rsvp.title}</h2>
           <form onsubmit="event.preventDefault(); alert('RSVP sent successfully!')">
@@ -1414,6 +1531,7 @@ class StudioEditor {
           </form>
         </div>
       `;
+      }
     }
     if (inter.maps.enabled) {
       let mapQuery = inter.maps.address || "Main Street";

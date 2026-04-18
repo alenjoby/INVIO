@@ -4,13 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Luis & Bianca — Wedding — Madrid</title>
-    
+
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
-    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/images/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/images/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/images/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
+    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
 
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap"
@@ -23,6 +37,8 @@
         --clr-beige: #fff5eb;
         --clr-text-light: #fff8f5;
         --clr-text-dark: #2a2a2a;
+        --radius-card: 18px;
+        --radius-frame: 22px;
       }
 
       html {
@@ -40,9 +56,19 @@
 
       body {
         margin: 0;
-        background: linear-gradient(180deg, var(--clr-beige) 0%, #fff 100%);
+        background: linear-gradient(180deg, var(--clr-beige) 0%, #fffcf8 100%);
         color: var(--clr-text-dark);
         -webkit-font-smoothing: antialiased;
+      }
+
+      section {
+        position: relative;
+        overflow: hidden;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
       }
 
       header {
@@ -66,6 +92,16 @@
         font-size: 0.9rem;
       }
 
+      .bg-red {
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+      }
+
+      .bg-beige {
+        background: var(--clr-beige);
+        color: var(--clr-text-dark);
+      }
+
       .texture-overlay {
         position: fixed;
         inset: 0;
@@ -79,15 +115,13 @@
       }
 
       .sec-hero {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
         align-items: center;
-        gap: clamp(2rem, 5vw, 4rem);
+        justify-content: center;
         background: var(--clr-red);
         color: var(--clr-text-light);
         padding: clamp(4rem, 8vw, 6rem);
         min-height: 100vh;
-        justify-content: center;
       }
 
       .script-title {
@@ -157,6 +191,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-wrap: wrap;
         gap: clamp(1.4rem, 5vw, 4rem);
         margin-bottom: 2.2rem;
       }
@@ -173,6 +208,12 @@
 
       .nav-link:hover {
         opacity: 0.75;
+      }
+
+      .nav-link:focus-visible,
+      .faq-trigger:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 3px;
       }
 
       .hero-image-wrapper {
@@ -287,6 +328,13 @@
       .img-col {
         flex: 1;
         position: relative;
+      }
+
+      .flex-collage {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        min-height: clamp(360px, 40vw, 460px);
       }
 
       .taped-photo {
@@ -435,7 +483,42 @@
         transform: rotate(45deg);
       }
 
-      .sec-about bg-beige {
+      .faq-item.is-open .faq-answer {
+        max-height: 24rem;
+      }
+
+      .footer-text {
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .body-text {
+        max-width: 62ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .bg-red .body-text {
+        color: rgba(255, 248, 245, 0.92);
+      }
+
+      .align-start {
+        align-items: flex-start;
+      }
+
+      .leading-tight {
+        line-height: 1.08;
+      }
+
+      .offset-flower {
+        margin-top: 1.2rem;
+      }
+
+      .tilt-slight {
+        transform: rotate(-2deg);
+      }
+
+      .sec-about.bg-beige {
         padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
       }
 
@@ -506,9 +589,346 @@
         clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
       }
 
+      .section-shell {
+        width: min(1160px, calc(100% - 3rem));
+        margin-inline: auto;
+      }
+
+      .sec-story {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+
+      .story-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: clamp(1.5rem, 4vw, 3.5rem);
+        align-items: center;
+      }
+
+      .story-note {
+        background: color-mix(in srgb, var(--clr-beige) 78%, white);
+        border: 1px solid rgba(139, 21, 56, 0.18);
+        padding: clamp(1.5rem, 4vw, 2.8rem);
+        box-shadow: 0 20px 45px rgba(113, 21, 47, 0.11);
+        border-radius: var(--radius-card);
+      }
+
+      .story-note h2 {
+        margin: 0 0 1rem;
+      }
+
+      .story-note p {
+        margin-bottom: 1.2rem;
+      }
+
+      .story-photos {
+        position: relative;
+        min-height: clamp(320px, 42vw, 520px);
+      }
+
+      .story-photo {
+        position: absolute;
+        background: #fffdfb;
+        box-shadow: 0 16px 40px rgba(68, 28, 40, 0.18);
+        padding: 10px;
+        border-radius: var(--radius-frame);
+        overflow: hidden;
+      }
+
+      .story-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .story-photo.one {
+        width: min(44vw, 370px);
+        height: min(54vw, 420px);
+        top: 0;
+        left: 0;
+        transform: rotate(-3deg);
+      }
+
+      .story-photo.two {
+        width: min(30vw, 230px);
+        height: min(37vw, 290px);
+        right: 4%;
+        bottom: 8%;
+        transform: rotate(4deg);
+      }
+
+      .story-stamp {
+        position: absolute;
+        right: 12%;
+        top: 8%;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        border: 1px solid rgba(255, 248, 245, 0.55);
+        padding: 0.95rem 1.2rem;
+        letter-spacing: 1px;
+        transform: rotate(-8deg);
+        border-radius: 999px;
+      }
+
+      .sec-itinerary-redesigned {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+
+      .itinerary-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: clamp(1.5rem, 4vw, 3.2rem);
+        align-items: start;
+      }
+
+      .itinerary-intro p {
+        max-width: 48ch;
+      }
+
+      .itinerary-track {
+        border-left: 1px solid rgba(255, 248, 245, 0.45);
+        padding-left: clamp(1rem, 2.6vw, 2rem);
+        display: grid;
+        gap: 1.25rem;
+      }
+
+      .itinerary-step {
+        background: rgba(255, 248, 245, 0.08);
+        border: 1px solid rgba(255, 248, 245, 0.28);
+        padding: 1.15rem 1.2rem;
+        border-radius: var(--radius-card);
+      }
+
+      .itinerary-step h3 {
+        margin: 0.15rem 0 0.55rem;
+        letter-spacing: 0.6px;
+      }
+
+      .time-pill {
+        display: inline-block;
+        margin: 0;
+        padding: 0.22rem 0.62rem;
+        border: 1px solid rgba(255, 248, 245, 0.4);
+        font-size: 0.84rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-radius: 999px;
+      }
+
+      .sec-madrid {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+
+      .madrid-layout {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: stretch;
+      }
+
+      .madrid-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .madrid-card {
+        border: 1px solid rgba(139, 21, 56, 0.2);
+        background: color-mix(in srgb, var(--clr-beige) 70%, white);
+        padding: 1.1rem 1.1rem 1.2rem;
+        border-radius: var(--radius-card);
+      }
+
+      .madrid-card h3 {
+        margin: 0 0 0.5rem;
+      }
+
+      .madrid-card.wide {
+        grid-column: span 2;
+      }
+
+      .madrid-photo-wrap {
+        position: relative;
+        min-height: 100%;
+      }
+
+      .madrid-photo {
+        height: 100%;
+        min-height: 360px;
+        background: #fffdf9;
+        padding: 10px;
+        box-shadow: 0 14px 30px rgba(82, 26, 45, 0.2);
+        border-radius: var(--radius-frame);
+        overflow: hidden;
+      }
+
+      .madrid-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .madrid-caption {
+        position: absolute;
+        left: -12px;
+        bottom: -18px;
+        background: var(--clr-red);
+        color: var(--clr-text-light);
+        padding: 0.75rem 1rem;
+        font-size: 0.86rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 999px;
+      }
+
+      .sec-registry-modern {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+
+      .registry-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: center;
+      }
+
+      .registry-copy p {
+        color: rgba(255, 248, 245, 0.9);
+      }
+
+      .registry-panel {
+        background: rgba(255, 248, 245, 0.1);
+        border: 1px solid rgba(255, 248, 245, 0.3);
+        padding: clamp(1.3rem, 3vw, 2rem);
+        backdrop-filter: blur(1px);
+        border-radius: var(--radius-card);
+      }
+
+      .registry-panel p {
+        margin: 0.45rem 0;
+      }
+
+      .sec-faq-modern {
+        padding: clamp(4rem, 8vw, 6rem) 0;
+      }
+
+      .faq-layout {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: clamp(1.3rem, 4vw, 2.8rem);
+        align-items: start;
+      }
+
+      .faq-kicker {
+        max-width: 28ch;
+      }
+
+      .sec-faq-modern .faq-item {
+        border-bottom: 1px solid rgba(139, 21, 56, 0.25);
+      }
+
+      .sec-faq-modern .faq-trigger {
+        color: var(--clr-text-dark);
+        padding: 0.8rem 0 1rem;
+      }
+
+      .sec-faq-modern .faq-answer p {
+        color: #4d2a34;
+      }
+
+      .sec-rsvp-modern {
+        padding: clamp(4rem, 8vw, 6.5rem) 0;
+      }
+
+      .rsvp-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: center;
+      }
+
+      .rsvp-collage-modern {
+        position: relative;
+        min-height: clamp(380px, 44vw, 500px);
+      }
+
+      .rsvp-piece {
+        position: absolute;
+        background: #fff;
+        box-shadow: 0 18px 40px rgba(24, 8, 14, 0.26);
+        border-radius: var(--radius-frame);
+        overflow: hidden;
+      }
+
+      .rsvp-piece.photo {
+        width: min(42vw, 350px);
+        padding: 10px 10px 30px;
+        top: 0;
+        left: 8%;
+        transform: rotate(-4deg);
+      }
+
+      .rsvp-piece.photo img {
+        width: 100%;
+        height: auto;
+      }
+
+      .rsvp-piece.envelope {
+        width: min(34vw, 260px);
+        right: 4%;
+        bottom: 9%;
+        transform: rotate(5deg);
+        padding: 8px;
+      }
+
+      .rsvp-piece.envelope img {
+        width: 100%;
+        height: auto;
+      }
+
+      .rsvp-info {
+        border: 1px solid rgba(255, 248, 245, 0.35);
+        background: rgba(255, 248, 245, 0.1);
+        padding: clamp(1.4rem, 3.2vw, 2.2rem);
+        border-radius: var(--radius-card);
+      }
+
+      .rsvp-info p {
+        margin-bottom: 0.8rem;
+        color: rgba(255, 248, 245, 0.9);
+      }
+
+      .rsvp-info .divider {
+        margin-inline: 0;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem 1.2rem;
+      }
+
+      .label-small {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255, 248, 245, 0.72);
+      }
+
       @media (max-width: 900px) {
         section {
           min-height: auto;
+        }
+
+        .sec-hero {
+          min-height: auto;
+          padding: clamp(3rem, 9vw, 4.5rem) 1.2rem;
+        }
+
+        .hero-content h1 {
+          transform: none;
         }
 
         .flex-row,
@@ -530,6 +950,13 @@
         .hero-center-block {
           flex-direction: column;
           gap: 2rem;
+        }
+
+        .flex-collage {
+          min-height: auto;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.2rem;
         }
 
         .collage-container {
@@ -558,6 +985,12 @@
           margin-left: 0;
         }
 
+        .taped-photo {
+          width: min(88vw, 420px);
+          height: auto;
+          aspect-ratio: 4 / 5;
+        }
+
         .offset-down {
           top: 0;
         }
@@ -571,6 +1004,89 @@
         .offset-flower {
           transform: none;
           margin-top: 1rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .collage-container {
+          min-height: 0;
+          padding-top: 1.8rem;
+          padding-bottom: 1.8rem;
+        }
+
+        .script-title.monogram-text {
+          font-size: clamp(3.1rem, 16vw, 4.2rem);
+        }
+
+        .r-contact-card p {
+          font-size: 0.95rem;
+        }
+      }
+
+      @media (max-width: 960px) {
+        .story-layout,
+        .itinerary-layout,
+        .madrid-layout,
+        .registry-layout,
+        .faq-layout,
+        .rsvp-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .story-photos,
+        .rsvp-collage-modern {
+          min-height: 340px;
+        }
+
+        .madrid-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .madrid-card.wide {
+          grid-column: auto;
+        }
+
+        .itinerary-track {
+          border-left: none;
+          border-top: 1px solid rgba(255, 248, 245, 0.35);
+          padding-left: 0;
+          padding-top: 1rem;
+        }
+
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 700px) {
+        .section-shell {
+          width: min(1160px, calc(100% - 1.5rem));
+        }
+
+        .story-photo {
+          position: relative;
+          inset: auto;
+          transform: none !important;
+          width: 100% !important;
+          height: auto !important;
+          margin-bottom: 0.9rem;
+        }
+
+        .story-stamp {
+          position: relative;
+          right: auto;
+          top: auto;
+          display: inline-block;
+          margin-top: 0.4rem;
+          transform: rotate(0);
+        }
+
+        .rsvp-piece {
+          position: relative;
+          inset: auto;
+          transform: none !important;
+          width: 100% !important;
+          margin-bottom: 0.8rem;
         }
       }
 
@@ -613,7 +1129,7 @@
             <a href="#itinerary" class="nav-link fade-in">ITINERARY</a>
             <div class="hero-image-wrapper reveal-image">
               <img
-                src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80"
                 alt="Luis and Bianca"
                 class="polaroid"
                 width="320"
@@ -630,255 +1146,254 @@
         </div>
       </section>
 
-      <section class="sec-collage bg-beige">
-        <div class="collage-container">
-          <img
-            src="https://images.unsplash.com/photo-1549666014-b8923dc10b99?q=80&w=500"
-            class="collage-item c-img-1"
-            data-speed="0.05"
-            alt="Palacio de Cristal"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=300"
-            class="collage-item c-envelope"
-            data-speed="-0.02"
-            alt="Envelope"
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="collage-item c-card-red" data-speed="0.08">
-            <p data-edit="text" data-id="wedding-date-card">December 7, 2030</p>
-            <div class="divider"></div>
-            <p data-edit="text" data-id="venue-address-card">
-              123 Calle Dondequeria<br />28015 Madrid, Spain
+      <section class="sec-story bg-beige" id="details">
+        <div class="section-shell story-layout">
+          <article class="story-note fade-up">
+            <p class="overline">FROM MADRID, WITH LOVE</p>
+            <h2 class="script-title xl">Our Story, Woven Into This Weekend</h2>
+            <p class="body-text">
+              We are gathering in Madrid for a celebration that feels intimate,
+              warm, and deeply personal. Think old-city charm, candlelit dinner,
+              and one beautiful day shared with the people we love most.
             </p>
-            <div class="divider"></div>
-            <p data-edit="text" data-id="ceremony-time-card">
-              4:00 PM till late
+            <p class="body-text">
+              Below you will find the key details for the weekend, including the
+              ceremony timing, travel pointers, and RSVP notes.
             </p>
-          </div>
-          <img
-            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
-            class="collage-item c-img-2"
-            data-speed="-0.06"
-            alt="Couple"
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="collage-item c-monogram" data-speed="0.03">
-            <h2
-              class="script-title monogram-text"
+          </article>
+          <div class="story-photos">
+            <figure class="story-photo one reveal-image" data-speed="0.04">
+              <img
+                src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80"
+                alt="Luis and Bianca portrait"
+                width="800"
+                height="1000"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+            <figure class="story-photo two reveal-image" data-speed="-0.03">
+              <img
+                src="https://images.unsplash.com/photo-1539037116277-4db20889f2d4?auto=format&fit=crop&w=700&q=80"
+                alt="Madrid city scenery"
+                width="500"
+                height="670"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+            <div
+              class="story-stamp fade-in"
               data-edit="text"
               data-id="initials-monogram"
             >
-              LB
+              LB IN MADRID
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-itinerary-redesigned bg-red" id="itinerary">
+        <div class="section-shell itinerary-layout">
+          <article class="itinerary-intro fade-up">
+            <p class="overline">WEDDING DAY FLOW</p>
+            <h2 class="script-title xl">A Day Designed to Feel Easy</h2>
+            <p>
+              We kept the schedule thoughtful so everyone can enjoy each moment
+              without rushing. Save these key timings and location details.
+            </p>
+          </article>
+          <div class="itinerary-track">
+            <article class="itinerary-step fade-up">
+              <p class="time-pill" data-edit="text" data-id="wedding-date-card">
+                December 7, 2030
+              </p>
+              <h3>Welcome Gathering</h3>
+              <p>
+                Light refreshments and welcome drinks before the ceremony,
+                overlooking the garden grounds.
+              </p>
+            </article>
+            <article class="itinerary-step fade-up">
+              <p
+                class="time-pill"
+                data-edit="text"
+                data-id="ceremony-time-card"
+              >
+                4:00 PM Till Late
+              </p>
+              <h3>Main Ceremony</h3>
+              <p data-edit="text" data-id="venue-address-card">
+                123 Calle Dondequeria, 28015 Madrid, Spain
+              </p>
+            </article>
+            <article class="itinerary-step fade-up">
+              <p class="time-pill">After Ceremony</p>
+              <h3>Dinner and Celebration</h3>
+              <p>
+                Tapas-style dinner, live music, and dancing through the evening
+                with the city lights around us.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-madrid bg-beige">
+        <div class="section-shell madrid-layout">
+          <div class="madrid-cards">
+            <article class="madrid-card fade-up">
+              <h3 class="script-title md">Flights</h3>
+              <p>
+                Please arrange your own airfare. We suggest arriving by December
+                5 for a comfortable lead-in before the celebrations.
+              </p>
+            </article>
+            <article class="madrid-card fade-up">
+              <h3 class="script-title md">Stay</h3>
+              <p>
+                Room blocks are reserved at Hotel Maravillosa. Nearby areas like
+                Retiro and central Madrid are also convenient options.
+              </p>
+            </article>
+            <article class="madrid-card wide fade-up">
+              <h3 class="script-title md">Weekend Plan</h3>
+              <p>
+                Confirmed guests will receive a detailed itinerary including a
+                welcome dinner, optional city walk, and transportation notes.
+              </p>
+            </article>
+          </div>
+          <div class="madrid-photo-wrap fade-up">
+            <div class="madrid-photo reveal-image" data-speed="0.05">
+              <img
+                src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1100&q=80"
+                alt="Madrid venue inspiration"
+                width="900"
+                height="1200"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="madrid-caption">Travel details curated for guests</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec-registry-modern bg-red">
+        <div class="section-shell registry-layout">
+          <article class="registry-copy fade-up">
+            <h2 class="script-title xl">Your Presence Is Our Favorite Gift</h2>
+            <p>
+              Celebrating together in Madrid is already more than we could ask
+              for. If you would still like to gift, we created a simple registry
+              option for convenience.
+            </p>
+          </article>
+          <aside class="registry-panel fade-up">
+            <p><strong>Registry:</strong> Sining Spaces</p>
+            <p><strong>Reference:</strong> No. 12345</p>
+            <p><strong>Email:</strong> hello@reallygreatsite.com</p>
+            <div class="divider"></div>
+            <p>
+              You may also request future-fund details by email if that feels
+              more meaningful to you.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="sec-faq-modern bg-beige">
+        <div class="section-shell faq-layout">
+          <article class="faq-kicker fade-up">
+            <p class="overline">PLANNING SUPPORT</p>
+            <h2 class="script-title xl leading-tight">
+              Frequently Asked Questions
             </h2>
-          </div>
-        </div>
-      </section>
-
-      <section class="sec-intro bg-red flex-row" id="details">
-        <div class="text-col fade-up">
-          <h2 class="script-title lg">
-            A dream wedding, far from home but close to the heart.
-          </h2>
-          <p class="body-text">
-            Share details about your ceremony, reception, or any other program
-            related thing here. Share details about your ceremony, reception, or
-            any other program related thing here. Share details about your
-            ceremony, reception, or any other program related thing here. Share
-            details about your ceremony, reception, or any other program related
-            thing here.
-          </p>
-        </div>
-        <div class="img-col flex-collage">
-          <img
-            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
-            class="taped-photo img-tilt-left reveal-image"
-            alt="Luis"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
-            class="taped-photo img-tilt-right reveal-image offset-down"
-            alt="Bianca"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      </section>
-
-      <section class="sec-about bg-beige">
-        <h2 class="script-title xl text-center fade-up">About the Wedding</h2>
-        <div class="grid-3-col">
-          <div class="info-block fade-up" style="transition-delay: 0.1s">
-            <div class="flower-icon" aria-hidden="true"></div>
-            <h3 class="script-title md">The Ceremony</h3>
-            <p>
-              The wedding will take place at a charming garden venue just
-              outside central Madrid. Exact location and time will be shared
-              privately with confirmed guests.
-            </p>
-          </div>
-          <div class="info-block fade-up" style="transition-delay: 0.2s">
-            <div class="flower-icon" aria-hidden="true"></div>
-            <h3 class="script-title md">The Reception</h3>
-            <p>
-              Following the ceremony, we will gather for an intimate dinner with
-              tapas, music, and wine under the Spanish sky.
-            </p>
-          </div>
-          <div class="info-block fade-up" style="transition-delay: 0.3s">
-            <div class="flower-icon" aria-hidden="true"></div>
-            <h3 class="script-title md">Dress Code</h3>
-            <p>
-              Garden formal. Think soft fabrics, flowy dresses, and linen suits
-              comfortable enough for warm weather but elegant enough for photos.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="sec-travel bg-red flex-row reverse" id="itinerary">
-        <div class="img-col fade-up">
-          <img
-            src="https://images.unsplash.com/photo-1549666014-b8923dc10b99"
-            class="taped-photo large tilt-slight reveal-image"
-            alt="Garden"
-            loading="lazy"
-            decoding="async"
-          />
-          <h2 class="script-title lg overlay-text">Travel Details</h2>
-        </div>
-        <div class="text-col">
-          <div class="travel-block fade-up">
-            <h3 class="script-title md">Airfare</h3>
-            <p>
-              Guests are kindly asked to book their own flights. We recommend
-              arriving in Madrid no later than December 5 to allow time for rest
-              and sightseeing before the wedding.
-            </p>
-          </div>
-          <div class="travel-block fade-up">
-            <h3 class="script-title md">Accommodations</h3>
-            <p>
-              We have reserved a block of rooms at Hotel Maravillosa and will
-              provide discount codes via email. You are also welcome to stay
-              anywhere nearby; central Madrid and Retiro are great areas.
-            </p>
-          </div>
-          <div class="travel-block fade-up">
-            <h3 class="script-title md">Itinerary</h3>
-            <p>
-              A full itinerary will be emailed to confirmed guests. Expect a
-              welcome dinner, optional city tour, and of course, the wedding day
-              celebration.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="sec-registry bg-beige text-center">
-        <div class="flower-icon large fade-up" aria-hidden="true"></div>
-        <h2 class="script-title xl fade-up">
-          Your presence in Madrid is<br />the greatest gift of all.
-        </h2>
-        <p class="body-text narrow fade-up">
-          However, if you would like to contribute to our new chapter together,
-          we welcome gifts through our Sining Spaces registry. Email
-          hello@reallygreatsite.com with Registry No. 12345 as the subject line
-          for our updated gift list.
-        </p>
-        <p class="body-text narrow fade-up">
-          If you prefer to support us as we begin our married life, a
-          contribution to our future would mean so much. Email us at
-          hello@reallygreatsite.com for our details.
-        </p>
-      </section>
-
-      <section class="sec-faqs bg-red flex-row align-start">
-        <div class="text-col fade-up">
-          <h2 class="script-title xl leading-tight">
-            Frequently<br />Asked Qs
-          </h2>
-          <div class="flower-icon lg offset-flower" aria-hidden="true"></div>
-        </div>
-        <div class="faq-col">
-          <article class="faq-item fade-up is-open">
-            <button class="faq-trigger" type="button" aria-expanded="true">
-              DO I NEED A VISA TO TRAVEL TO SPAIN?
-              <span aria-hidden="true">+</span>
-            </button>
-            <div class="faq-answer">
-              <p>
-                Yes, Philippine passport holders will need a Schengen visa. We
-                recommend applying at least 3 months in advance. We will share a
-                guide to help with this.
-              </p>
-            </div>
           </article>
-          <article class="faq-item fade-up">
-            <button class="faq-trigger" type="button" aria-expanded="false">
-              CAN I BRING A PLUS ONE?
-              <span aria-hidden="true">+</span>
-            </button>
-            <div class="faq-answer">
-              <p>
-                This is an intimate destination wedding with limited seating.
-                Kindly note that only named guests in the invitation are
-                included.
-              </p>
-            </div>
-          </article>
-          <article class="faq-item fade-up">
-            <button class="faq-trigger" type="button" aria-expanded="false">
-              WILL TRANSPORTATION BE PROVIDED?
-              <span aria-hidden="true">+</span>
-            </button>
-            <div class="faq-answer">
-              <p>
-                Yes, for the wedding day, shuttle service will be arranged to
-                and from the venue for all guests staying at the partner hotel.
-                PWD assistance is also available. Please do not hesitate to
-                reach out to us so we can make arrangements for you.
-              </p>
-            </div>
-          </article>
+          <div class="faq-col">
+            <article class="faq-item fade-up is-open">
+              <button class="faq-trigger" type="button" aria-expanded="true">
+                Do I need a visa to travel to Spain?
+                <span aria-hidden="true">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>
+                  Yes. Philippine passport holders generally need a Schengen
+                  visa. We recommend applying at least 3 months in advance.
+                </p>
+              </div>
+            </article>
+            <article class="faq-item fade-up">
+              <button class="faq-trigger" type="button" aria-expanded="false">
+                Can I bring a plus one?
+                <span aria-hidden="true">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>
+                  This is a small destination celebration, so seating is limited
+                  to guests listed on the invitation.
+                </p>
+              </div>
+            </article>
+            <article class="faq-item fade-up">
+              <button class="faq-trigger" type="button" aria-expanded="false">
+                Will transportation be provided?
+                <span aria-hidden="true">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>
+                  Yes. Shuttle service will be arranged to and from the venue
+                  for guests staying at our partner hotel.
+                </p>
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="sec-rsvp bg-beige">
-        <div class="collage-container rsvp-collage">
-          <div class="collage-item r-card-red" data-speed="0.04">
-            <h3 class="script-title md">RSVP by</h3>
-            <p class="uppercase">OCTOBER 15, 2030</p>
+      <section class="sec-rsvp-modern bg-red">
+        <div class="section-shell rsvp-layout">
+          <div class="rsvp-collage-modern">
+            <figure class="rsvp-piece photo reveal-image" data-speed="0.04">
+              <img
+                src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1100&q=80"
+                alt="Couple portrait"
+                width="900"
+                height="1200"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+            <figure class="rsvp-piece envelope reveal-image" data-speed="-0.03">
+              <img
+                src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=800&q=80"
+                alt="Invitation envelope"
+                width="600"
+                height="430"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
           </div>
-          <img
-            src="https://images.unsplash.com/photo-1607344645866-009c320b63e0"
-            class="collage-item r-envelope"
-            data-speed="-0.03"
-            alt="Envelope"
-            loading="lazy"
-            decoding="async"
-          />
-          <img
-            src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8"
-            class="collage-item r-img"
-            data-speed="0.06"
-            alt="Couple"
-            loading="lazy"
-            decoding="async"
-          />
-          <div class="collage-item r-contact-card" data-speed="-0.02">
-            <p>Contact us for any<br />questions or concerns</p>
+          <article class="rsvp-info fade-up">
+            <h2 class="script-title lg">RSVP by October 15, 2030</h2>
+            <p>
+              Please confirm attendance early so we can finalize transportation,
+              seating, and guest welcome arrangements.
+            </p>
             <div class="divider"></div>
-            <p>Mobile Number<br />(123) 456-7890</p>
-            <div class="divider"></div>
-            <p>Email Address<br />hello@reallygreatsite.com</p>
-          </div>
+            <div class="contact-grid">
+              <div>
+                <span class="label-small">Mobile Number</span>
+                <p>(123) 456-7890</p>
+              </div>
+              <div>
+                <span class="label-small">Email Address</span>
+                <p>hello@reallygreatsite.com</p>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </main>
@@ -890,8 +1405,11 @@
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      const hasGsap = typeof window.gsap !== "undefined";
+      const hasScrollTrigger = typeof window.ScrollTrigger !== "undefined";
+      const hasLenis = typeof window.Lenis !== "undefined";
 
-      if (!prefersReducedMotion) {
+      if (!prefersReducedMotion && hasGsap && hasScrollTrigger && hasLenis) {
         const lenis = new Lenis({
           duration: 1.2,
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -913,7 +1431,9 @@
         gsap.ticker.lagSmoothing(0);
       }
 
-      gsap.registerPlugin(ScrollTrigger);
+      if (hasGsap && hasScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+      }
 
       document.addEventListener("DOMContentLoaded", () => {
         const faqItems = document.querySelectorAll(".faq-item");
@@ -965,10 +1485,14 @@
           });
         });
 
-        if (prefersReducedMotion) {
+        if (prefersReducedMotion || !hasGsap || !hasScrollTrigger) {
+          document.querySelectorAll(".fade-up, .fade-in").forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
           document
-            .querySelectorAll(".fade-up, .fade-in")
-            .forEach((el) => (el.style.opacity = "1"));
+            .querySelectorAll(".reveal-image")
+            .forEach((el) => (el.style.clipPath = "none"));
           return;
         }
 
