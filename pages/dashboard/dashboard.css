@@ -313,6 +313,17 @@ body.dash-body {
   background: rgba(0, 0, 0, 0.03);
 }
 
+.dash-btn-danger {
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.18);
+}
+
+.dash-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
 /* Bento Grid System */
 .bento-grid {
   display: grid;
@@ -459,8 +470,14 @@ body.dash-body {
   gap: 0.55rem;
 }
 
+.history-item-shell {
+  display: flex;
+  align-items: stretch;
+  gap: 0.45rem;
+}
+
 .history-item {
-  width: 100%;
+  flex: 1;
   text-align: left;
   border: 1px solid var(--dash-border);
   background: #fff;
@@ -468,14 +485,55 @@ body.dash-body {
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.45rem;
   cursor: pointer;
   transition: all 0.2s var(--ease);
+}
+
+.history-item-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.history-item-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.history-item-delete {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.history-item-delete:hover {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+.history-item-delete i {
+  font-size: 0.95rem;
 }
 
 .history-item:hover {
   border-color: rgba(31, 42, 55, 0.35);
   transform: translateY(-1px);
+}
+
+.history-item:disabled {
+  cursor: default;
+  opacity: 0.65;
 }
 
 .history-item.is-active {
@@ -755,9 +813,9 @@ body.dash-body {
     display: none; /* Hide headers for card layout */
   }
 
-  .ledger-table, 
-  .ledger-table tbody, 
-  .ledger-table tr, 
+  .ledger-table,
+  .ledger-table tbody,
+  .ledger-table tr,
   .ledger-table td {
     display: block;
     width: 100%;

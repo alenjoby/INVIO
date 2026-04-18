@@ -26,24 +26,27 @@
     <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
     <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
 
+    <!-- Fonts: Cardo for titles, Josefin Sans for paragraphs -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Josefin+Sans:wght@400;600&family=Pinyon+Script&display=swap"
       rel="stylesheet"
     />
 
     <style>
       :root {
-        --clr-red: #8b1538;
-        --clr-beige: #fff5eb;
-        --clr-text-light: #fff8f5;
-        --clr-text-dark: #2a2a2a;
+        /* Modern blue/gold/charcoal palette */
+        --clr-primary: oklch(65% 0.13 250); /* Muted blue */
+        --clr-primary-light: oklch(98% 0.01 60); /* Warm off-white */
+        --clr-accent: oklch(85% 0.08 80); /* Elegant gold/sand */
+        --clr-text-dark: oklch(22% 0.04 250); /* Deep navy/charcoal */
+        --clr-text-light: oklch(98% 0.01 60); /* Off-white for text on dark */
         --radius-card: 18px;
         --radius-frame: 22px;
       }
 
       html {
         box-sizing: border-box;
-        font-family: "Playfair Display", serif;
+        font-family: "Josefin Sans", Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
@@ -56,7 +59,11 @@
 
       body {
         margin: 0;
-        background: linear-gradient(180deg, var(--clr-beige) 0%, #fffcf8 100%);
+        background: linear-gradient(
+          180deg,
+          var(--clr-primary-light) 0%,
+          #f9f7f3 100%
+        );
         color: var(--clr-text-dark);
         -webkit-font-smoothing: antialiased;
       }
@@ -93,12 +100,12 @@
       }
 
       .bg-red {
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
       }
 
       .bg-beige {
-        background: var(--clr-beige);
+        background: var(--clr-primary-light);
         color: var(--clr-text-dark);
       }
 
@@ -118,16 +125,17 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
         padding: clamp(4rem, 8vw, 6rem);
         min-height: 100vh;
       }
 
       .script-title {
-        font-family: var(--font-script, "Pinyon Script"), cursive;
-        font-weight: 400;
+        font-family: "Cardo", serif;
+        font-weight: 700;
         line-height: 1.05;
+        letter-spacing: 0.5px;
       }
 
       .script-title.xl {
@@ -149,12 +157,16 @@
         font-size: 0.86rem;
         margin-bottom: -0.8rem;
         position: relative;
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 600;
       }
 
       p {
         font-size: clamp(1rem, 1.65vw, 1.12rem);
         line-height: 1.75;
         margin-bottom: 1rem;
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 400;
       }
 
       .text-center {
@@ -224,6 +236,38 @@
         border-radius: 2px;
       }
 
+      .hero-image-wrapper,
+      .story-note,
+      .story-photo,
+      .itinerary-step,
+      .madrid-card,
+      .madrid-photo,
+      .registry-panel,
+      .faq-item,
+      .rsvp-info,
+      .rsvp-piece,
+      .madrid-photo-wrap,
+      .rsvp-collage-modern {
+        transition:
+          transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+          background-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+
+      .story-note:hover,
+      .itinerary-step:hover,
+      .madrid-card:hover,
+      .registry-panel:hover,
+      .faq-item:hover,
+      .rsvp-info:hover,
+      .hero-image-wrapper:hover,
+      .madrid-photo-wrap:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 50px rgba(24, 8, 14, 0.16);
+      }
+
       .polaroid {
         width: clamp(220px, 33vw, 320px);
         height: clamp(300px, 44vw, 420px);
@@ -265,7 +309,7 @@
       .c-card-red {
         top: 15%;
         right: 20%;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
         padding: clamp(1.9rem, 4.4vw, 3rem) clamp(1.3rem, 2.2vw, 2rem);
         width: min(40vw, 290px);
@@ -288,7 +332,7 @@
       .c-monogram {
         bottom: 20%;
         left: 10%;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
         padding: 1.6rem clamp(1.4rem, 2vw, 3rem);
         transform: rotate(-5deg);
@@ -375,7 +419,8 @@
       }
 
       .info-block {
-        border: 1px solid rgba(74, 21, 21, 0.2);
+        border: 1px solid
+          color-mix(in srgb, var(--clr-accent) 45%, var(--clr-text-dark));
         background: rgba(255, 255, 255, 0.38);
         padding: clamp(1.3rem, 2vw, 2rem);
       }
@@ -443,7 +488,8 @@
 
       .faq-item {
         margin-bottom: 1rem;
-        border-bottom: 1px solid rgba(244, 236, 225, 0.4);
+        border-bottom: 1px solid
+          color-mix(in srgb, var(--clr-accent) 45%, transparent);
       }
 
       .faq-trigger {
@@ -455,7 +501,7 @@
         justify-content: space-between;
         align-items: center;
         text-align: left;
-        font-family: var(--font-serif, "Playfair Display");
+        font-family: "Cardo", serif;
         font-size: 1rem;
         font-weight: 500;
         letter-spacing: 1px;
@@ -490,6 +536,8 @@
       .footer-text {
         letter-spacing: 1px;
         text-transform: uppercase;
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 600;
       }
 
       .body-text {
@@ -537,12 +585,12 @@
       .r-card-red {
         top: 20%;
         left: 10%;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
         padding: clamp(1.6rem, 3.3vw, 3rem);
         transform: rotate(-4deg);
         z-index: 3;
-        border: 2px solid rgba(255, 255, 255, 0.5);
+        border: 2px solid color-mix(in srgb, var(--clr-accent) 72%, white);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       }
 
@@ -566,12 +614,12 @@
       .r-contact-card {
         bottom: 5%;
         right: 10%;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
         padding: clamp(1.4rem, 2vw, 3rem) clamp(1.2rem, 2vw, 2rem);
         width: min(40vw, 280px);
         text-align: center;
-        border: 2px solid rgba(255, 255, 255, 0.5);
+        border: 2px solid color-mix(in srgb, var(--clr-accent) 72%, white);
         z-index: 4;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       }
@@ -606,10 +654,12 @@
       }
 
       .story-note {
-        background: color-mix(in srgb, var(--clr-beige) 78%, white);
-        border: 1px solid rgba(139, 21, 56, 0.18);
+        background: color-mix(in srgb, var(--clr-primary-light) 82%, white);
+        border: 1px solid
+          color-mix(in srgb, var(--clr-primary) 18%, var(--clr-accent));
         padding: clamp(1.5rem, 4vw, 2.8rem);
-        box-shadow: 0 20px 45px rgba(113, 21, 47, 0.11);
+        box-shadow: 0 20px 45px
+          color-mix(in srgb, var(--clr-primary) 14%, transparent);
         border-radius: var(--radius-card);
       }
 
@@ -661,13 +711,15 @@
         position: absolute;
         right: 12%;
         top: 8%;
-        background: var(--clr-red);
+        background: var(--clr-primary);
         color: var(--clr-text-light);
-        border: 1px solid rgba(255, 248, 245, 0.55);
+        border: 1px solid color-mix(in srgb, var(--clr-accent) 70%, white);
         padding: 0.95rem 1.2rem;
         letter-spacing: 1px;
         transform: rotate(-8deg);
         border-radius: 999px;
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 600;
       }
 
       .sec-itinerary-redesigned {
@@ -686,15 +738,15 @@
       }
 
       .itinerary-track {
-        border-left: 1px solid rgba(255, 248, 245, 0.45);
+        border-left: 1px solid color-mix(in srgb, var(--clr-accent) 52%, white);
         padding-left: clamp(1rem, 2.6vw, 2rem);
         display: grid;
         gap: 1.25rem;
       }
 
       .itinerary-step {
-        background: rgba(255, 248, 245, 0.08);
-        border: 1px solid rgba(255, 248, 245, 0.28);
+        background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--clr-accent) 35%, white);
         padding: 1.15rem 1.2rem;
         border-radius: var(--radius-card);
       }
@@ -708,7 +760,7 @@
         display: inline-block;
         margin: 0;
         padding: 0.22rem 0.62rem;
-        border: 1px solid rgba(255, 248, 245, 0.4);
+        border: 1px solid color-mix(in srgb, var(--clr-accent) 65%, white);
         font-size: 0.84rem;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -733,8 +785,9 @@
       }
 
       .madrid-card {
-        border: 1px solid rgba(139, 21, 56, 0.2);
-        background: color-mix(in srgb, var(--clr-beige) 70%, white);
+        border: 1px solid
+          color-mix(in srgb, var(--clr-accent) 45%, var(--clr-primary));
+        background: color-mix(in srgb, var(--clr-primary-light) 75%, white);
         padding: 1.1rem 1.1rem 1.2rem;
         border-radius: var(--radius-card);
       }
@@ -750,16 +803,23 @@
       .madrid-photo-wrap {
         position: relative;
         min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(0.5rem, 2vw, 1.25rem);
+        overflow: visible;
       }
 
       .madrid-photo {
-        height: 100%;
+        width: min(100%, 520px);
+        aspect-ratio: 4 / 5;
         min-height: 360px;
         background: #fffdf9;
-        padding: 10px;
+        padding: 12px;
         box-shadow: 0 14px 30px rgba(82, 26, 45, 0.2);
         border-radius: var(--radius-frame);
         overflow: hidden;
+        margin-inline: auto;
       }
 
       .madrid-photo img {
@@ -770,15 +830,18 @@
 
       .madrid-caption {
         position: absolute;
-        left: -12px;
+        left: 50%;
         bottom: -18px;
-        background: var(--clr-red);
-        color: var(--clr-text-light);
+        transform: translateX(-50%);
+        background: var(--clr-accent);
+        color: var(--clr-text-dark);
         padding: 0.75rem 1rem;
         font-size: 0.86rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         border-radius: 999px;
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 600;
       }
 
       .sec-registry-modern {
@@ -793,12 +856,12 @@
       }
 
       .registry-copy p {
-        color: rgba(255, 248, 245, 0.9);
+        color: rgba(255, 248, 245, 0.92);
       }
 
       .registry-panel {
-        background: rgba(255, 248, 245, 0.1);
-        border: 1px solid rgba(255, 248, 245, 0.3);
+        background: rgba(255, 248, 245, 0.18);
+        border: 1px solid var(--clr-accent);
         padding: clamp(1.3rem, 3vw, 2rem);
         backdrop-filter: blur(1px);
         border-radius: var(--radius-card);
@@ -824,7 +887,8 @@
       }
 
       .sec-faq-modern .faq-item {
-        border-bottom: 1px solid rgba(139, 21, 56, 0.25);
+        border-bottom: 1px solid
+          color-mix(in srgb, var(--clr-accent) 40%, var(--clr-primary));
       }
 
       .sec-faq-modern .faq-trigger {
@@ -833,7 +897,7 @@
       }
 
       .sec-faq-modern .faq-answer p {
-        color: #4d2a34;
+        color: color-mix(in srgb, var(--clr-text-dark) 92%, var(--clr-primary));
       }
 
       .sec-rsvp-modern {
@@ -887,15 +951,15 @@
       }
 
       .rsvp-info {
-        border: 1px solid rgba(255, 248, 245, 0.35);
-        background: rgba(255, 248, 245, 0.1);
+        border: 1px solid var(--clr-accent);
+        background: rgba(255, 248, 245, 0.13);
         padding: clamp(1.4rem, 3.2vw, 2.2rem);
         border-radius: var(--radius-card);
       }
 
       .rsvp-info p {
         margin-bottom: 0.8rem;
-        color: rgba(255, 248, 245, 0.9);
+        color: rgba(255, 248, 245, 0.92);
       }
 
       .rsvp-info .divider {
@@ -914,7 +978,9 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        color: rgba(255, 248, 245, 0.72);
+        color: var(--clr-accent);
+        font-family: "Josefin Sans", Arial, sans-serif;
+        font-weight: 600;
       }
 
       @media (max-width: 900px) {
@@ -1048,13 +1114,21 @@
 
         .itinerary-track {
           border-left: none;
-          border-top: 1px solid rgba(255, 248, 245, 0.35);
+          border-top: 1px solid color-mix(in srgb, var(--clr-accent) 55%, white);
           padding-left: 0;
           padding-top: 1rem;
         }
 
         .contact-grid {
           grid-template-columns: 1fr;
+        }
+
+        .madrid-photo-wrap {
+          padding-inline: 0;
+        }
+
+        .madrid-caption {
+          bottom: -14px;
         }
       }
 
@@ -1127,7 +1201,7 @@
 
           <div class="hero-center-block">
             <a href="#itinerary" class="nav-link fade-in">ITINERARY</a>
-            <div class="hero-image-wrapper reveal-image">
+            <div class="hero-image-wrapper reveal-image fade-up">
               <img
                 src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80"
                 alt="Luis and Bianca"
@@ -1265,7 +1339,7 @@
             </article>
           </div>
           <div class="madrid-photo-wrap fade-up">
-            <div class="madrid-photo reveal-image" data-speed="0.05">
+            <div class="madrid-photo reveal-image">
               <img
                 src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1100&q=80"
                 alt="Madrid venue inspiration"
@@ -1354,7 +1428,7 @@
 
       <section class="sec-rsvp-modern bg-red">
         <div class="section-shell rsvp-layout">
-          <div class="rsvp-collage-modern">
+          <div class="rsvp-collage-modern fade-up">
             <figure class="rsvp-piece photo reveal-image" data-speed="0.04">
               <img
                 src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1100&q=80"
@@ -1436,6 +1510,66 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        if (prefersReducedMotion || !hasGsap) {
+          document.querySelectorAll(".fade-up, .fade-in").forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
+          document
+            .querySelectorAll(".reveal-image")
+            .forEach((el) => (el.style.clipPath = "none"));
+          return;
+        }
+
+        const heroTimeline = gsap.timeline({
+          defaults: { ease: "power3.out" },
+        });
+
+        heroTimeline
+          .from(".sec-hero .overline", {
+            y: 18,
+            opacity: 0,
+            duration: 0.65,
+          })
+          .from(
+            ".sec-hero h1",
+            {
+              y: 28,
+              opacity: 0,
+              duration: 0.9,
+            },
+            0.08,
+          )
+          .from(
+            ".sec-hero .hero-image-wrapper",
+            {
+              y: 24,
+              opacity: 0,
+              scale: 0.96,
+              duration: 0.85,
+            },
+            0.16,
+          )
+          .from(
+            ".sec-hero .nav-link",
+            {
+              y: 14,
+              opacity: 0,
+              duration: 0.55,
+              stagger: 0.12,
+            },
+            0.24,
+          )
+          .from(
+            ".sec-hero .footer-text",
+            {
+              y: 16,
+              opacity: 0,
+              duration: 0.7,
+            },
+            0.32,
+          );
+
         const faqItems = document.querySelectorAll(".faq-item");
 
         faqItems.forEach((item, index) => {
@@ -1484,17 +1618,6 @@
             }
           });
         });
-
-        if (prefersReducedMotion || !hasGsap || !hasScrollTrigger) {
-          document.querySelectorAll(".fade-up, .fade-in").forEach((el) => {
-            el.style.opacity = "1";
-            el.style.transform = "none";
-          });
-          document
-            .querySelectorAll(".reveal-image")
-            .forEach((el) => (el.style.clipPath = "none"));
-          return;
-        }
 
         const fadeUpElements = gsap.utils.toArray(".fade-up");
         fadeUpElements.forEach((elem) => {

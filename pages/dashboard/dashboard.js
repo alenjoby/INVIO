@@ -51,6 +51,7 @@ async function initDashboard() {
 
   renderTemplateHistory(state.invitations, activeInvitation?.id || null);
   setupHistorySelection();
+  setupDeleteAction();
 
   if (!activeInvitation) {
     renderEmptyState();
@@ -141,6 +142,57 @@ function configureCopyLinkButton(invitation) {
   };
 }
 
+function setupDeleteAction() {
+  const deleteBtn = document.getElementById("deleteInvitationBtn");
+  if (!deleteBtn) return;
+
+  deleteBtn.onclick = async () => {
+    if (!state.selectedInvitationId) {
+      alert("Select an invitation first.");
+      return;
+    }
+
+    const invitation = state.invitations.find(
+      (item) => item.id === state.selectedInvitationId,
+    );
+    const label = invitation?.title || "this invitation";
+    const confirmed = window.confirm(
+      `Delete ${label}? This will also remove it from template history and cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await invitationsApi.delete(state.selectedInvitationId);
+      state.invitations = state.invitations.filter(
+        (item) => item.id !== state.selectedInvitationId,
+      );
+      state.selectedInvitationId = null;
+
+      const nextActive = getCurrentPublishedInvitation(state.invitations);
+      renderTemplateHistory(state.invitations, nextActive?.id || null);
+
+      if (!nextActive) {
+        renderEmptyState();
+        return;
+      }
+
+      await selectInvitation(nextActive.id);
+    } catch (error) {
+      console.error("Delete invitation failed:", error);
+      alert(error.message || "Failed to delete invitation.");
+    }
+  };
+}
+
+function setDeleteButtonEnabled(isEnabled) {
+  const deleteBtn = document.getElementById("deleteInvitationBtn");
+  if (!deleteBtn) return;
+
+  deleteBtn.disabled = !isEnabled;
+  deleteBtn.setAttribute("aria-disabled", String(!isEnabled));
+}
+
 function renderPreview(templateId) {
   const previewFrame = document.getElementById("preview-frame");
   if (!previewFrame) return;
@@ -178,6 +230,7 @@ async function selectInvitation(invitationId) {
   renderInvitationHeader(invitation);
   configureStudioLink(invitation);
   configureCopyLinkButton(invitation);
+  setDeleteButtonEnabled(true);
   renderPreview(invitation.template_id);
 
   try {
@@ -263,11 +316,16 @@ function renderTemplateHistory(invitations = [], activeInvitationId = null) {
 
       return `
         <li>
-          <button class="history-item${isActive ? " is-active" : ""}" type="button" data-invitation-id="${escapeHtml(invitation.id)}">
-            <span class="history-item-title">${escapeHtml(invitation.title || "Untitled Invitation")}</span>
-            <span class="history-item-template">${escapeHtml(templateLabel)}</span>
-            <span class="history-meta">${escapeHtml(activeBadge)} • ${escapeHtml(dateLabel)}</span>
-          </button>
+          <div class="history-item-shell">
+            <button class="history-item${isActive ? " is-active" : ""}" type="button" data-invitation-id="${escapeHtml(invitation.id)}">
+              <span class="history-item-title">${escapeHtml(invitation.title || "Untitled Invitation")}</span>
+              <span class="history-item-template">${escapeHtml(templateLabel)}</span>
+              <span class="history-meta">${escapeHtml(activeBadge)} • ${escapeHtml(dateLabel)}</span>
+            </button>
+            <button class="history-item-delete" type="button" aria-label="Delete ${escapeHtml(invitation.title || "Untitled Invitation")}" data-delete-invitation-id="${escapeHtml(invitation.id)}">
+              <i class="ph ph-trash"></i>
+            </button>
+          </div>
         </li>
       `;
     })
@@ -281,6 +339,46 @@ function setupHistorySelection() {
   if (!historyList) return;
 
   historyList.addEventListener("click", async (event) => {
+    const deleteButton = event.target.closest(
+      "button[data-delete-invitation-id]",
+    );
+    if (deleteButton) {
+      event.stopPropagation();
+      const invitationId = deleteButton.dataset.deleteInvitationId;
+      const invitation = state.invitations.find(
+        (item) => item.id === invitationId,
+      );
+      const label = invitation?.title || "this invitation";
+      const confirmed = window.confirm(
+        `Delete ${label}? This will also remove it from template history and cannot be undone.`,
+      );
+
+      if (!confirmed) return;
+
+      try {
+        await invitationsApi.delete(invitationId);
+        state.invitations = state.invitations.filter(
+          (item) => item.id !== invitationId,
+        );
+
+        const nextActive = getCurrentPublishedInvitation(state.invitations);
+        state.selectedInvitationId = nextActive?.id || null;
+        renderTemplateHistory(state.invitations, state.selectedInvitationId);
+
+        if (!nextActive) {
+          renderEmptyState();
+          return;
+        }
+
+        await selectInvitation(nextActive.id);
+      } catch (error) {
+        console.error("Delete invitation failed:", error);
+        alert(error.message || "Failed to delete invitation.");
+      }
+
+      return;
+    }
+
     const button = event.target.closest("button[data-invitation-id]");
     if (!button) return;
 
@@ -386,6 +484,8 @@ function renderEmptyState() {
       window.location.href = "../../templates.html";
     };
   }
+
+  setDeleteButtonEnabled(false);
 }
 
 function setupStaticEnhancements() {
