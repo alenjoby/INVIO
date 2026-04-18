@@ -143,15 +143,18 @@ class ControlsManager {
       const token = localStorage.getItem("invio_token");
       if (!token) throw new Error("Authentication required");
 
-      const API_URL = typeof window.API_URL !== "undefined" ? window.API_URL : "http://localhost:4000";
-      
+      const API_URL =
+        typeof window.API_URL !== "undefined"
+          ? window.API_URL
+          : "http://localhost:4000";
+
       // 3. Upload to our API endpoint
       const response = await fetch(`${API_URL}/api/upload`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {

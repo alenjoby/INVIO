@@ -1470,3 +1470,11 @@ button {
     border-top: 1px solid rgba(0,0,0,0.05);
   }
 }
+
+/* Landing Page RSVP Stacking */
+@media (max-width: 768px) {
+  .rsvp-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

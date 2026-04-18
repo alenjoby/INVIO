@@ -1389,6 +1389,15 @@ class StudioEditor {
       .invio-map-iframe:hover { filter: none; }
       .invio-reveal { opacity: 0; transform: translateY(40px); transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
       .invio-reveal.active { opacity: 1; transform: translateY(0); }
+
+      @media (max-width: 768px) {
+        #__invio-interactions { padding: 60px 20px; }
+        .invio-card { padding: 40px 25px; margin: 30px auto; }
+        .invio-title { font-size: 2.5rem; margin-bottom: 20px; }
+        .invio-input { font-size: 1rem; padding: 12px; }
+        .invio-btn { padding: 15px 30px; font-size: 1rem; }
+        .invio-map-iframe { height: 300px; }
+      }
     `;
 
     container.innerHTML = "";
