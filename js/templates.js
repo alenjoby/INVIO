@@ -51,7 +51,6 @@ const TEMPLATE_CATALOG = [
     price: 38,
     image: "assets/images/birthday/template_2/hero.webp",
     templatePath: "templates/birthday/birthday_template_2.html",
-    design: "Luxury Celebration",
     layout: "wide",
     tags: ["gold", "milestone", "premium"],
     trending: true,
@@ -122,7 +121,6 @@ const TEMPLATE_CATALOG = [
     templatePath: "templates/wedding/wedding_template_2.html",
     design: "Modern Luxe",
     layout: "cinematic",
-    tags: ["minimal", "luxury", "editorial"],
   },
   {
     id: "wedding-3",
@@ -153,7 +151,6 @@ const TEMPLATE_CATALOG = [
     price: 60,
     image: "assets/images/wedding/wedding_template_5/couple-hero.png",
     templatePath: "templates/wedding/wedding_template_5.html",
-    design: "Storybook Luxury",
     layout: "square",
     tags: ["storybook", "premium", "collage"],
     isNew: true,
@@ -254,7 +251,7 @@ if (typeof window !== "undefined") {
 
 if (refs.templateGrid && refs.templateSearch && refs.categoryFilter) {
   // Use .then() because initialize is async but called from top-level in a non-module script
-  initialize().catch(err => console.error("Initialization failed:", err));
+  initialize().catch((err) => console.error("Initialization failed:", err));
 }
 
 async function initialize() {
@@ -428,7 +425,7 @@ function bindEvents() {
       const nextExpanded = !document.body.classList.contains("menu-open");
 
       menuToggle.setAttribute("aria-expanded", String(nextExpanded));
-      
+
       if (nextExpanded) {
         document.body.classList.add("menu-open");
         menuToggleIcon.className = "ph ph-x";

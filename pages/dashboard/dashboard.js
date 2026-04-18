@@ -419,12 +419,12 @@ function setupStaticEnhancements() {
 function setupMobileNav() {
   const menuToggle = document.getElementById("dashMenuToggle");
   const menuIcon = document.getElementById("dashMenuIcon");
-  
+
   if (menuToggle && menuIcon) {
     menuToggle.addEventListener("click", (e) => {
       e.stopPropagation();
       const nextExpanded = !document.body.classList.contains("menu-open");
-      
+
       menuToggle.setAttribute("aria-expanded", String(nextExpanded));
       if (nextExpanded) {
         document.body.classList.add("menu-open");
@@ -436,10 +436,12 @@ function setupMobileNav() {
     });
 
     // Close on navigation
-    document.addEventListener('click', (e) => {
-      if (document.body.classList.contains("menu-open") && 
-          !e.target.closest('.dash-nav') && 
-          !e.target.closest('#dashMenuToggle')) {
+    document.addEventListener("click", (e) => {
+      if (
+        document.body.classList.contains("menu-open") &&
+        !e.target.closest(".dash-nav") &&
+        !e.target.closest("#dashMenuToggle")
+      ) {
         document.body.classList.remove("menu-open");
         menuToggle.setAttribute("aria-expanded", "false");
         menuIcon.className = "ph ph-list";
