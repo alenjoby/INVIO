@@ -241,6 +241,9 @@ const refs = {
   authPromptLoginBtn: document.getElementById("authPromptLoginBtn"),
   authPromptSignupBtn: document.getElementById("authPromptSignupBtn"),
   navDashboardBtn: document.getElementById("navDashboardBtn"),
+  navDashboardButtons: Array.from(
+    document.querySelectorAll("[data-dashboard-gate='true']"),
+  ),
 };
 
 if (typeof window !== "undefined") {
@@ -287,13 +290,14 @@ function forceResetModals() {
 }
 
 function bindEvents() {
-  refs.navDashboardBtn?.addEventListener("click", (event) => {
-    event.preventDefault();
-    const dashboardPath = "/pages/dashboard/index.html";
-
-    window.location.href = isUserAuthenticated()
-      ? dashboardPath
-      : buildAuthUrl(false, dashboardPath);
+  const dashboardPath = "/pages/dashboard/index.html";
+  refs.navDashboardButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.href = isUserAuthenticated()
+        ? dashboardPath
+        : buildAuthUrl(false, dashboardPath);
+    });
   });
 
   refs.currencyButtons.forEach((button) => {

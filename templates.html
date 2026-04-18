@@ -4,13 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>INVIO | Template Marketplace</title>
-    
+
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
-    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/images/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/images/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/images/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
+    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
     <meta
       name="description"
       content="Explore the INVIO template marketplace and preview all invitation designs before customizing in the studio."
@@ -53,10 +67,15 @@
             <a href="/">Home</a>
             <a href="/templates.html" aria-current="page">Templates</a>
             <a href="/pages/auth/index.html">Studio</a>
-            
+
             <!-- Mobile Only Actions -->
             <div class="mobile-nav-actions">
-              <a class="button button--solid" href="/pages/dashboard/index.html">Dashboard</a>
+              <a
+                class="button button--solid"
+                data-dashboard-gate="true"
+                href="/pages/dashboard/index.html"
+                >Dashboard</a
+              >
             </div>
           </div>
 
@@ -64,6 +83,7 @@
             <a
               class="button button--solid"
               id="navDashboardBtn"
+              data-dashboard-gate="true"
               href="/pages/dashboard/index.html"
               >Dashboard</a
             >
