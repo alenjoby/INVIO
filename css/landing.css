@@ -1029,79 +1029,113 @@ button {
 }
 
 .site-footer {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr auto;
-  align-items: center;
-  gap: 1.4rem;
-  padding: 1.25rem 1.25rem 2.1rem;
-  border-top: 1px solid var(--line);
+  padding-block: clamp(4rem, 7vw, 6rem) 2rem;
+  border-top: 1px solid rgba(31, 42, 55, 0.08);
   color: var(--muted);
-  font-size: 0.92rem;
 }
 
-.footer-brand {
+.footer-frame {
   display: grid;
-  gap: 0.45rem;
-  max-width: 34ch;
+  grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.8fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
 }
 
-.footer-logo {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  letter-spacing: 0.12em;
-  font-weight: 700;
+.footer-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  padding-top: 0.35rem;
+}
+
+.footer-link-group {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.footer-link-group--wide {
+  justify-self: start;
+}
+
+.footer-group-label {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   color: var(--text);
 }
 
-.footer-brand p {
-  margin: 0;
-  line-height: 1.45;
+.footer-link-group a {
+  width: fit-content;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  transition:
+    color 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
 }
 
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  justify-content: center;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.74rem;
+.footer-link-group a:hover {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+.footer-brand-block {
+  display: grid;
+  justify-items: end;
+  align-content: start;
+  gap: 1.5rem;
+  padding-top: 0.2rem;
 }
 
 .footer-social {
   display: flex;
   justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .footer-social a {
+  width: 2.4rem;
+  height: 2.4rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  border: 1px solid rgba(31, 42, 55, 0.2);
-  background: rgba(255, 255, 255, 0.64);
-  border-radius: 999px;
-  padding: 0.55rem 0.9rem;
+  justify-content: center;
+  border-radius: 50%;
   color: var(--text);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   transition:
-    border-color 0.25s var(--ease-out),
     transform 0.25s var(--ease-out),
+    color 0.25s var(--ease-out),
     background 0.25s var(--ease-out);
 }
 
 .footer-social a:hover {
-  transform: translateY(-1px);
-  border-color: var(--accent);
-  background: #fff;
+  transform: translateY(-2px);
+  color: var(--accent);
+  background: rgba(31, 42, 55, 0.05);
 }
 
-.footer-social svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
+.footer-social i {
+  font-size: 1.4rem;
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.footer-logo img {
+  width: min(11.5rem, 100%);
+  height: auto;
+}
+
+.footer-brand-block p {
+  margin: 0;
+  max-width: 24ch;
+  text-align: right;
+  line-height: 1.55;
+  font-size: 0.95rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1295,7 +1329,7 @@ button {
     font-size: 0.95rem;
     height: 3.6rem;
     border-radius: 16px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   }
 
   .hero-copy h1 {
@@ -1342,7 +1376,9 @@ button {
     min-height: 18rem;
   }
 
-  .orb, .page-shell::before, .page-shell::after {
+  .orb,
+  .page-shell::before,
+  .page-shell::after {
     display: none; /* Hide expensive/overflow-prone glows on mobile */
   }
 
@@ -1378,72 +1414,86 @@ button {
   .site-footer {
     grid-template-columns: 1fr;
     gap: 2.5rem;
-    text-align: center;
-    padding-bottom: 4rem;
+    padding-bottom: 3rem;
+  }
+
+  .footer-frame {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .footer-links-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-link-group--wide {
+    grid-column: 1 / -1;
+  }
+
+  .footer-brand-block {
+    justify-items: start;
   }
 
   .footer-social {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+    justify-content: flex-start;
   }
 
-  .footer-social a {
-    justify-content: center;
+  .footer-brand-block p {
+    text-align: left;
   }
 
-@media (max-width: 480px) {
-  .hero-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+  @media (max-width: 480px) {
+    .hero-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
 
-  .hero-actions .button {
-    width: 100%;
-    justify-content: center;
-  }
+    .hero-actions .button {
+      width: 100%;
+      justify-content: center;
+    }
 
-  .phone-mockup {
-    width: 100%;
-    padding: 0.6rem;
-  }
+    .phone-mockup {
+      width: 100%;
+      padding: 0.6rem;
+    }
 
-  .phone-screen {
-    min-height: 32rem;
-  }
+    .phone-screen {
+      min-height: 32rem;
+    }
 
-  .phone-overlay h2 {
-    font-size: 2.2rem;
-  }
+    .phone-overlay h2 {
+      font-size: 2.2rem;
+    }
 
-  .final-cta-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-    margin-top: 2rem;
-  }
+    .final-cta-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 2rem;
+    }
 
-  .final-cta-actions .button {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
+    .final-cta-actions .button {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+    }
 
-  .final-cta-trust {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.6rem;
-    margin-top: 2.5rem;
-  }
+    .final-cta-trust {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 2.5rem;
+    }
 
-  .final-cta-trust span {
-    font-size: 0.72rem;
-    padding: 0.5rem 0.8rem;
-    white-space: nowrap;
+    .final-cta-trust span {
+      font-size: 0.72rem;
+      padding: 0.5rem 0.8rem;
+      white-space: nowrap;
+    }
   }
-}
 }
 
 /* Responsive Navigation Utilities */
@@ -1459,7 +1509,7 @@ button {
   .desktop-only {
     display: none !important;
   }
-  
+
   .mobile-nav-actions {
     display: flex !important;
     flex-direction: column;
@@ -1467,7 +1517,7 @@ button {
     width: 100%;
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
   }
 }
 

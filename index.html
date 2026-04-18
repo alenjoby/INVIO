@@ -11,11 +11,25 @@
     <meta name="theme-color" content="#1f2a37" />
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
-    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/images/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/images/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/images/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
+    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,11 +54,15 @@
             <a href="#story">How It Works</a>
             <a href="/templates.html?authPrompt=1">Template Marketplace</a>
             <a href="#signature">Why INVIO</a>
-            
+
             <!-- Mobile Only Actions -->
             <div class="mobile-nav-actions">
-              <a class="button button--ghost" href="/pages/auth/index.html">Login</a>
-              <a class="button button--solid" href="/pages/auth/index.html">Sign up</a>
+              <a class="button button--ghost" href="/pages/auth/index.html"
+                >Login</a
+              >
+              <a class="button button--solid" href="/pages/auth/index.html"
+                >Sign up</a
+              >
             </div>
           </div>
 
@@ -61,7 +79,11 @@
             >
           </div>
 
-          <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <button
+            class="menu-toggle"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+          >
             <i class="ph ph-list"></i>
           </button>
         </nav>
@@ -589,35 +611,45 @@
         </section>
       </main>
 
-      <footer class="site-footer container">
-        <div class="footer-brand">
-          <a href="/" class="footer-logo" aria-label="INVIO home">INVIO</a>
-          <p>
-            Story-driven digital invitations with live RSVP, rich visuals, and
-            instant sharing.
-          </p>
-        </div>
+      <footer class="site-footer">
+        <div class="container footer-frame">
+          <div class="footer-links-grid" aria-label="Footer links">
+            <div class="footer-link-group">
+              <p class="footer-group-label">Explore</p>
+              <a href="/templates.html?authPrompt=1">Template Marketplace</a>
+              <a href="#story">How It Works</a>
+              <a href="#signature">Why INVIO</a>
+            </div>
 
-        <div class="footer-links" aria-label="Footer links">
-          <a href="/templates.html?authPrompt=1">Template Marketplace</a>
-          <a href="/pages/auth/index.html">Login</a>
-          <a href="#top">Back to top</a>
-        </div>
+            <div class="footer-link-group">
+              <p class="footer-group-label">Account</p>
+              <a href="/pages/auth/index.html">Login</a>
+              <a href="/pages/auth/index.html">Sign Up</a>
+              <a href="#top">Back to Top</a>
+            </div>
+          </div>
 
-        <div class="footer-social" aria-label="Social links">
-          <a
-            href="https://instagram.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Follow INVIO on Instagram"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path
-                d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5Zm9.25 1.25a1 1 0 1 1 0 2 1 1 0 0 1 0-2ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"
-              />
-            </svg>
-            <span>Instagram</span>
-          </a>
+          <div class="footer-brand-block">
+            <div class="footer-social" aria-label="Social links">
+              <a
+                href="https://instagram.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow INVIO on Instagram"
+              >
+                <i class="ph ph-instagram-logo" aria-hidden="true"></i>
+              </a>
+            </div>
+
+            <a href="/" class="footer-logo" aria-label="INVIO home">
+              <img src="/assets/images/logo.png" alt="INVIO logo" />
+            </a>
+
+            <p>
+              Story-driven digital invitations with live RSVP, rich visuals, and
+              instant sharing.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
