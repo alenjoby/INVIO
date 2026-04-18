@@ -123,6 +123,14 @@ button {
   font-size: clamp(1.8rem, 2vw, 2.1rem);
   letter-spacing: 0.2em;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.brand img {
+  height: clamp(1.6rem, 2.5vw, 2.2rem);
+  width: auto;
+  display: block;
 }
 
 .nav-links {
