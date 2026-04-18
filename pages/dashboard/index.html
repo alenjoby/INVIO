@@ -42,40 +42,44 @@
       <div class="dash-nav-brand">
         <img src="/assets/images/logo.png" alt="INVIO logo" style="height: 1.8rem;" />
       </div>
-      <div class="dash-nav-links">
-        <a href="/pages/studio/index.html" class="nav-item">
-          <i class="ph ph-paint-brush"></i>
-          <span>Studio</span>
-        </a>
-        <a href="#" class="nav-item active">
-          <i class="ph ph-squares-four"></i>
-          <span>Dashboard</span>
-        </a>
-      </div>
-      <section class="dash-history-panel" aria-label="Template history">
-        <div class="dash-history-header">
-          <i class="ph ph-clock-counter-clockwise"></i>
-          <span>Template History</span>
+      <button class="menu-toggle" aria-label="Toggle Menu" aria-expanded="false" id="dashMenuToggle">
+        <i class="ph ph-list" id="dashMenuIcon"></i>
+      </button>
+      <div class="dash-nav-drawer" id="dashNavDrawer">
+        <div class="dash-nav-links">
+          <a href="/pages/studio/index.html" class="nav-item">
+            <i class="ph ph-paint-brush"></i>
+            <span>Studio</span>
+          </a>
+          <a href="#" class="nav-item active">
+            <i class="ph ph-squares-four"></i>
+            <span>Dashboard</span>
+          </a>
         </div>
-        <div class="dash-history-scroll">
-          <ul class="template-history-list" id="template-history-list">
-            <!-- Injected via JS -->
-          </ul>
-        </div>
-      </section>
-      <div class="dash-nav-bottom">
-        <div class="user-profile">
-          <div class="user-avatar" id="user-avatar">--</div>
-          <div class="user-info">
-            <span class="welcome-text">Welcome,</span>
-            <span class="user-name" id="user-name">Loading...</span>
+        <section class="dash-history-panel" aria-label="Template history">
+          <div class="dash-history-header">
+            <i class="ph ph-clock-counter-clockwise"></i>
+            <span>Template History</span>
           </div>
+          <div class="dash-history-scroll">
+            <ul class="template-history-list" id="template-history-list">
+              <!-- Injected via JS -->
+            </ul>
+          </div>
+        </section>
+        <div class="dash-nav-bottom">
+          <div class="user-profile">
+            <div class="user-avatar" id="user-avatar">--</div>
+            <div class="user-info">
+              <span class="welcome-text">Welcome,</span>
+              <span class="user-name" id="user-name">Loading...</span>
+            </div>
+          </div>
+          <a href="/" class="logout-item" id="logout-link">
+            <i class="ph ph-sign-out"></i>
+            <span>Logout</span>
+          </a>
         </div>
-        <div class="nav-divider"></div>
-        <a href="/" class="nav-item" id="logout-link">
-          <i class="ph ph-sign-out"></i>
-          <span>Logout</span>
-        </a>
       </div>
     </nav>
 

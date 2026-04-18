@@ -24,6 +24,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <link rel="stylesheet" href="/css/landing.css" />
   </head>
@@ -39,9 +40,15 @@
             <a href="#story">How It Works</a>
             <a href="/templates.html?authPrompt=1">Template Marketplace</a>
             <a href="#signature">Why INVIO</a>
+            
+            <!-- Mobile Only Actions -->
+            <div class="mobile-nav-actions">
+              <a class="button button--ghost" href="/pages/auth/index.html">Login</a>
+              <a class="button button--solid" href="/pages/auth/index.html">Sign up</a>
+            </div>
           </div>
 
-          <div class="nav-actions" aria-label="Account actions">
+          <div class="nav-actions desktop-only" aria-label="Account actions">
             <a
               class="button button--ghost button--nav"
               href="/pages/auth/index.html"
@@ -54,11 +61,7 @@
             >
           </div>
 
-          <button
-            class="menu-toggle"
-            aria-label="Toggle Menu"
-            aria-expanded="false"
-          >
+          <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
             <i class="ph ph-list"></i>
           </button>
         </nav>

@@ -135,6 +135,14 @@ body.dash-body {
   padding-top: 1rem;
 }
 
+/* Navigation Drawer & Containers */
+.dash-nav-drawer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 /* User Profile Nav */
 .user-profile {
   display: flex;
@@ -177,10 +185,31 @@ body.dash-body {
   color: var(--dash-text);
 }
 
-.nav-divider {
-  height: 1px;
-  background: var(--dash-border);
-  margin: 0.5rem 0;
+/* Logout Button Premium Style */
+.logout-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  text-decoration: none;
+  color: var(--dash-text-muted);
+  font-weight: 600;
+  border-radius: 12px;
+  background: rgba(31, 42, 55, 0.03);
+  border: 1px solid var(--dash-border);
+  transition: all 0.2s var(--ease);
+  margin-top: 0.5rem;
+}
+
+.logout-item i {
+  font-size: 1.2rem;
+}
+
+.logout-item:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
 }
 
 /* Main Area */
@@ -567,54 +596,215 @@ body.dash-body {
   color: #991b1b;
 }
 
-/* Responsiveness */
-@media (max-width: 1200px) {
-  .bento-grid {
-    grid-template-columns: repeat(8, 1fr);
+/* Premium Mobile Responsiveness Overhaul */
+@media (max-width: 900px) {
+  body.dash-body {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
   }
-  .preview-card {
-    grid-column: span 8;
+
+  /* Sticky Mobile Header */
+  .dash-nav {
+    width: 100%;
+    height: 70px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--dash-border);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+  }
+
+  .dash-nav-brand {
+    margin-bottom: 0;
+    font-size: 1.5rem;
+  }
+
+  .back-circle-btn {
+    margin-bottom: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+
+  /* Mobile Drawer */
+  .dash-nav-drawer {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 70px);
+    background: var(--dash-surface);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    z-index: 999;
+    transform: translateX(100%);
+    transition: transform 0.4s var(--ease);
+    overflow-y: auto;
+  }
+
+  /* Specific drawer sections */
+  .dash-nav-links,
+  .dash-history-panel {
+    position: static;
+    transform: none;
+    height: auto;
+    width: 100%;
+    padding: 0;
+  }
+
+  .dash-history-panel {
+    margin-top: 2rem;
+    display: flex !important;
+    border-top: 1px solid var(--dash-border);
+    padding-top: 1.5rem;
+  }
+
+  .dash-nav-bottom {
+    position: static;
+    transform: none;
+    margin-top: auto;
+    padding-top: 2rem;
+    border-top: 1px solid var(--dash-border);
+    width: 100%;
+  }
+
+  /* Menu Open State */
+  body.menu-open .dash-nav-drawer {
+    transform: translateX(0);
+  }
+
+  /* Main Area Tweaks */
+  .dash-main {
+    padding: 1.5rem 1rem;
+    gap: 1rem;
+    overflow-y: visible;
+  }
+
+  .dash-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .event-title {
+    font-size: 2rem;
+  }
+
+  .header-actions {
+    display: flex !important; /* RESTORED actions on mobile */
+    width: 100%;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .header-actions .dash-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  /* Bento Stat Cards */
+  .bento-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 2.8rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Ledger Table -> Cards Conversion */
+  .ledger-table-wrapper {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .ledger-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .ledger-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .ledger-filters .dash-input {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .ledger-table thead {
+    display: none; /* Hide headers for card layout */
+  }
+
+  .ledger-table, 
+  .ledger-table tbody, 
+  .ledger-table tr, 
+  .ledger-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .ledger-table tr {
+    background: rgba(31, 42, 55, 0.02);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--dash-border);
+  }
+
+  .ledger-table td {
+    padding: 0.4rem 0;
+    border-bottom: none;
+  }
+
+  .ledger-table td:first-child {
+    font-size: 1.1rem;
+    color: var(--dash-text);
+    margin-bottom: 0.2rem;
+  }
+
+  .ledger-table td:nth-child(2) {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Mobile Nav Toggle Styling */
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--dash-text);
+    cursor: pointer;
+    z-index: 1001;
   }
 }
 
-@media (max-width: 768px) {
-  .dash-body {
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .dash-nav {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--dash-border);
-    flex-direction: row;
-    align-items: center;
-    padding: 1rem;
-  }
-  .dash-nav-brand {
-    margin-bottom: 0;
-    margin-right: 2rem;
-  }
-  .dash-nav-links {
-    flex-direction: row;
-  }
-  .dash-history-panel {
+/* Hide toggle on desktop */
+@media (min-width: 901px) {
+  .menu-toggle {
     display: none;
-  }
-  .dash-nav-bottom {
-    border-top: none;
-    border-left: 1px solid var(--dash-border);
-    padding-top: 0;
-    padding-left: 1rem;
-  }
-  .bento-grid {
-    grid-template-columns: 1fr;
-    display: flex;
-    flex-direction: column;
-  }
-  .dash-main {
-    padding: 1rem;
-  }
-  .header-actions {
-    display: none; /* Hide on mobile to save space */
   }
 }

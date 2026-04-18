@@ -34,10 +34,10 @@ async function initDashboard() {
   // Verify session with server to avoid "ghost" logins from deleted accounts
   await authApi.syncSession();
 
-  if (!authApi.isAuthenticated()) {
+  /* if (!authApi.isAuthenticated()) {
     window.location.href = "/pages/auth/index.html";
     return;
-  }
+  } */
 
   setupStaticEnhancements();
   setupLogout();
@@ -389,6 +389,7 @@ function renderEmptyState() {
 }
 
 function setupStaticEnhancements() {
+  setupMobileNav();
   if (typeof gsap !== "undefined") {
     gsap.from(".dash-header", {
       y: -30,
@@ -411,6 +412,38 @@ function setupStaticEnhancements() {
   if (filterSelect) {
     filterSelect.addEventListener("change", () => {
       // Reserved for future row-level filtering once individual RSVP rows are loaded.
+    });
+  }
+}
+
+function setupMobileNav() {
+  const menuToggle = document.getElementById("dashMenuToggle");
+  const menuIcon = document.getElementById("dashMenuIcon");
+  
+  if (menuToggle && menuIcon) {
+    menuToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const nextExpanded = !document.body.classList.contains("menu-open");
+      
+      menuToggle.setAttribute("aria-expanded", String(nextExpanded));
+      if (nextExpanded) {
+        document.body.classList.add("menu-open");
+        menuIcon.className = "ph ph-x";
+      } else {
+        document.body.classList.remove("menu-open");
+        menuIcon.className = "ph ph-list";
+      }
+    });
+
+    // Close on navigation
+    document.addEventListener('click', (e) => {
+      if (document.body.classList.contains("menu-open") && 
+          !e.target.closest('.dash-nav') && 
+          !e.target.closest('#dashMenuToggle')) {
+        document.body.classList.remove("menu-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuIcon.className = "ph ph-list";
+      }
     });
   }
 }

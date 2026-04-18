@@ -142,11 +142,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (menuToggle && navLinks) {
+    const icon = menuToggle.querySelector("i");
     menuToggle.addEventListener("click", () => {
       const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
       menuToggle.setAttribute("aria-expanded", !isExpanded);
       navLinks.classList.toggle("is-open");
       siteNav.classList.toggle("menu-open");
+
+      if (icon) {
+        icon.className = isExpanded ? "ph ph-list" : "ph ph-x";
+      }
     });
   }
 });

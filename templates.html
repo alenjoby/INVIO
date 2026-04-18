@@ -31,31 +31,43 @@
   <body id="top">
     <div class="page-shell">
       <header class="site-header">
-        <nav class="site-nav container" aria-label="Primary">
-          <a href="/" class="back-circle-btn" aria-label="Back to home">
-            <i class="ph ph-arrow-left" aria-hidden="true"></i>
-          </a>
-          <a href="/" class="brand" aria-label="INVIO home">
-            <img src="/assets/images/logo.png" alt="INVIO logo" />
-          </a>
-          <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/templates.html" aria-current="page">Templates</a>
-            <a href="/pages/auth/index.html">Studio</a>
+        <nav class="site-nav container" aria-label="Primary navigation">
+          <div class="nav-left">
+            <a href="/" class="back-circle-btn" aria-label="Back to home">
+              <i class="ph ph-arrow-left" aria-hidden="true"></i>
+            </a>
+            <a href="/" class="brand" aria-label="INVIO home">
+              <img src="/assets/images/logo.png" alt="INVIO logo" />
+            </a>
           </div>
-          <a
-            class="button button--solid"
-            id="navDashboardBtn"
-            href="/pages/dashboard/index.html"
-            >Dashboard</a
-          >
+
           <button
             class="menu-toggle"
             aria-label="Toggle Menu"
             aria-expanded="false"
           >
-            <i class="ph ph-list"></i>
+            <i class="ph ph-list" id="menuToggleIcon"></i>
           </button>
+
+          <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/templates.html" aria-current="page">Templates</a>
+            <a href="/pages/auth/index.html">Studio</a>
+            
+            <!-- Mobile Only Actions -->
+            <div class="mobile-nav-actions">
+              <a class="button button--solid" href="/pages/dashboard/index.html">Dashboard</a>
+            </div>
+          </div>
+
+          <div class="nav-actions desktop-only">
+            <a
+              class="button button--solid"
+              id="navDashboardBtn"
+              href="/pages/dashboard/index.html"
+              >Dashboard</a
+            >
+          </div>
         </nav>
       </header>
 

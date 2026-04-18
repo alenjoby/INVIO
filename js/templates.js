@@ -417,6 +417,28 @@ function bindEvents() {
     window.location.href = studioPath;
   });
 
+  // Mobile Menu Icon Toggle Logic
+  const menuToggle = document.querySelector(".menu-toggle");
+  const navLinks = document.querySelector(".nav-links");
+  const menuToggleIcon = document.getElementById("menuToggleIcon");
+
+  if (menuToggle && menuToggleIcon) {
+    menuToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const nextExpanded = !document.body.classList.contains("menu-open");
+
+      menuToggle.setAttribute("aria-expanded", String(nextExpanded));
+      
+      if (nextExpanded) {
+        document.body.classList.add("menu-open");
+        menuToggleIcon.className = "ph ph-x";
+      } else {
+        document.body.classList.remove("menu-open");
+        menuToggleIcon.className = "ph ph-list";
+      }
+    });
+  }
+
   document.addEventListener("keydown", (event) => {
     if (
       event.key === "Escape" &&
