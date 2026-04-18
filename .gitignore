@@ -38,6 +38,12 @@ build/
 *.swo
 
 # Project specific ignores
+
+# Graphify outputs
+graphify-out/
+.graphify_*.json
+.graphify_python
 .gemini/
 .antigravity/
 .antigravityignore
+.venv
