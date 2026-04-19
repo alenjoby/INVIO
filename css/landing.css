@@ -821,16 +821,21 @@ button { font: inherit; cursor: pointer; }
 }
 
 .signature-phone img {
+  display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
+  height: auto;
 }
 
 .signature-phone-overlay {
   position: absolute;
   inset: auto 0 0;
-  padding: 2rem;
-  background: linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 100%);
+  padding: 2.5rem 2rem;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    transparent 100%
+  );
 }
 
 .signature-phone-kicker {
