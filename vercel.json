@@ -4,11 +4,12 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/admin", "destination": "/pages/admin/index.html" },
+    { "source": "/admin/", "destination": "/pages/admin/index.html" },
     {
       "source": "/api/(.*)",
       "destination": "https://invio-backend-znac.onrender.com/api/$1"
     },
-    { "source": "/admin", "destination": "/pages/admin/index.html" },
     { "source": "/invite", "destination": "/invite.html" },
     { "source": "/templates", "destination": "/templates.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
