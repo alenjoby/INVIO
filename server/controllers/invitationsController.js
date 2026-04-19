@@ -297,15 +297,25 @@ export const purchaseInvitation = async (req, res) => {
     try {
       const amount = parseFloat(req.body.amount || 0);
       const templateId = publishedData.template_id || req.body.templateId || "unknown";
-      const templateName = req.body.templateName || "";
+      const customerName = req.body.customerName || "";
+      const currency = req.body.currency || "AED";
 
+      // 1. Update User's Profile Name (if provided)
+      if (customerName) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ username: customerName })
+          .eq("id", req.user.id);
+      }
+
+      // 2. Record the sale
       await supabaseAdmin.from("sales").insert({
         user_id: req.user.id,
         invitation_id: publishedData.id,
         template_id: templateId,
         template_name: templateName,
         amount: amount,
-        currency: req.body.currency || "AED",
+        currency: currency,
       });
 
       console.log(`[SALES] Recorded sale: ${templateId} — $${amount}`);

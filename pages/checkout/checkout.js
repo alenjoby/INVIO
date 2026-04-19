@@ -31,6 +31,7 @@ const refs = {
   // Input refs
   cardNumber: document.getElementById("cardNumber"),
   expiry: document.getElementById("expiry"),
+  fullName: document.getElementById("fullName"),
 };
 
 // Entry Point
@@ -149,6 +150,7 @@ async function handleSuccess() {
         body: JSON.stringify({
           amount: checkoutState.template.price,
           templateName: checkoutState.template.name,
+          customerName: refs.fullName.value || "",
           currency: "AED" // Standardized for the new dashboard
         })
       },
