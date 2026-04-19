@@ -244,8 +244,11 @@
 
       .hero-couple {
         width: 100%;
+        height: auto;
+        display: block;
         aspect-ratio: 481 / 959;
-        background: var(--couple-asset) center bottom / contain no-repeat;
+        object-fit: contain;
+        object-position: center bottom;
         filter: drop-shadow(0 18px 30px rgba(104, 73, 43, 0.25));
       }
 
@@ -639,7 +642,13 @@
           </div>
 
           <div class="hero-visual" data-reveal>
-            <div class="hero-couple" aria-hidden="true"></div>
+            <img
+              class="hero-couple"
+              src="../../assets/images/wedding/wedding_template_1/bride_groom.png"
+              alt="Bride and Groom"
+              data-edit="image"
+              data-id="hero-couple-image"
+            />
           </div>
         </div>
 
