@@ -33,13 +33,19 @@ class AuthAPI {
   }
 
   /**
-   * Get auth token
+   * Get auth token (with fallback to localStorage if instance property is out of sync)
    */
   getToken() {
+    if (!this.token) {
+      this.token = localStorage.getItem("authToken");
+    }
     return this.token;
   }
 
   getRefreshToken() {
+    if (!this.refreshTokenValue) {
+      this.refreshTokenValue = localStorage.getItem("authRefreshToken");
+    }
     return this.refreshTokenValue;
   }
 
@@ -79,8 +85,9 @@ class AuthAPI {
       ...options.headers,
     };
 
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
+    const token = this.getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {

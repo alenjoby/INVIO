@@ -26,13 +26,22 @@ const state = {
 document.addEventListener("DOMContentLoaded", () => {
   initDashboard().catch((err) => {
     console.error("Dashboard init failed:", err);
-    alert(`Failed to load dashboard: ${err.message}`);
+    // If it's an auth error, redirect to login instead of alerting
+    if (err.message.includes("token") || err.message.includes("Unauthorized")) {
+      window.location.href = "/pages/auth/index.html";
+    } else {
+      alert(`Oops! Something went wrong: ${err.message}`);
+    }
   });
 });
 
 async function initDashboard() {
-  // Verify session with server to avoid "ghost" logins from deleted accounts
-  await authApi.syncSession();
+  const session = await authApi.syncSession();
+  
+  if (!session) {
+    window.location.href = "/pages/auth/index.html";
+    return;
+  }
 
   /* if (!authApi.isAuthenticated()) {
     window.location.href = "/pages/auth/index.html";

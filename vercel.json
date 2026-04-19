@@ -12,7 +12,7 @@
     },
     { "source": "/invite", "destination": "/invite.html" },
     { "source": "/templates", "destination": "/templates.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/dashboard", "destination": "/pages/dashboard/index.html" },
     {
       "source": "/checkout/index",
       "destination": "/pages/checkout/index.html"

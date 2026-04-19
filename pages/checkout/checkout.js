@@ -168,8 +168,7 @@ async function handleSuccess() {
 
   // Redirect to Dashboard
   setTimeout(() => {
-    // FIX: Replaced "/dashboard" with the exact HTML file path!
-    window.location.href = "/pages/dashboard/index.html";
+    window.location.href = "/dashboard";
   }, 2500);
 }
 
