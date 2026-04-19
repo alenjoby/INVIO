@@ -669,6 +669,18 @@
     }
 
     @media (max-width: 640px) {
+      .site-nav {
+        padding: 1rem 1.5rem;
+      }
+
+      .header-actions {
+        gap: 1rem;
+      }
+
+      .status-indicator {
+        font-size: 0.65rem;
+      }
+
       .kpi-grid {
         grid-template-columns: 1fr;
         border-right: none;
@@ -696,13 +708,22 @@
         align-items: stretch;
       }
 
+      .filter-bar input[type="text"],
+      .filter-bar input[type="month"],
+      .filter-bar select {
+        width: 100%;
+        min-width: 100%;
+      }
+
       .filter-bar .filter-actions {
         margin-left: 0;
-        justify-content: stretch;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
       }
 
       .btn-export, .btn-clear {
-        flex: 1;
+        width: 100%;
         justify-content: center;
       }
     }
