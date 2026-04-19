@@ -364,6 +364,15 @@ button { font: inherit; cursor: pointer; }
   color: var(--warm);
 }
 
+.manifesto-text .inline-logo {
+  height: 1.2em;
+  width: auto;
+  vertical-align: baseline;
+  margin: 0 0.1em;
+  position: relative;
+  top: 0.15em;
+}
+
 /* ─────────────────────────────────────────────────────────────────────
    PROCESS - How It Works
    ───────────────────────────────────────────────────────────────────── */
