@@ -1391,23 +1391,23 @@
       document.getElementById("kpiGrid").innerHTML = `
         <div class="kpi-block">
           <div class="kpi-label">Gross Volume</div>
-          <div class="kpi-value">AED ${overview.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
-          <div class="kpi-context">${overview.totalSales} acquisitions</div>
+          <div class="kpi-value">AED ${parseFloat(overview.totalRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-context">${overview.totalSales || 0} acquisitions</div>
         </div>
         <div class="kpi-block">
           <div class="kpi-label">Revenue (${new Date().toLocaleString("en-US", { month: "short" })})</div>
-          <div class="kpi-value">AED ${overview.thisMonthRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
-          <div class="kpi-context kpi-change ${growthClass}">${growthPrefix}${overview.momGrowth}% vs previous</div>
+          <div class="kpi-value">AED ${parseFloat(overview.thisMonthRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-context kpi-change ${growthClass}">${growthPrefix}${overview.momGrowth || 0}% vs previous</div>
         </div>
         <div class="kpi-block">
           <div class="kpi-label">Average Order</div>
-          <div class="kpi-value">AED ${overview.avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-value">AED ${parseFloat(overview.avgOrderValue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
           <div class="kpi-context">Per transaction</div>
         </div>
         <div class="kpi-block">
           <div class="kpi-label">Total Customers</div>
-          <div class="kpi-value">${overview.totalUsers}</div>
-          <div class="kpi-context">${overview.totalInvitations} creations hosted</div>
+          <div class="kpi-value">${overview.totalUsers || 0}</div>
+          <div class="kpi-context">${overview.totalInvitations || 0} creations hosted</div>
         </div>
       `;
     }
@@ -1558,8 +1558,8 @@
           <tr>
             <td class="td-date">${dateStr}</td>
             <td>
-              <div style="font-weight: 600;">${escapeHtml(sale.username || "Unknown")}</div>
-              <div style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(sale.user_email || "")}</div>
+              <div style="font-weight: 600; color: var(--ink);">${escapeHtml(sale.username || "Customer")}</div>
+              <div style="font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em;">${escapeHtml(sale.user_email || "No Email")}</div>
             </td>
             <td>${escapeHtml(sale.template_name || sale.template_id || "—")}</td>
             <td class="td-amount">AED ${parseFloat(sale.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
