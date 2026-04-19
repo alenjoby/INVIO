@@ -154,4 +154,44 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // ════════════════════════════════════════════════════════
+  // PREMIUM SCROLL REVEAL (GSAP + SPLIT-TYPE)
+  // ════════════════════════════════════════════════════════
+  const initScrollReveal = () => {
+    const textElement = document.querySelector(".scroll-highlight");
+    if (!textElement || typeof SplitType === "undefined" || typeof gsap === "undefined") {
+      return;
+    }
+
+    // Register ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Split text into characters and words
+    const splitText = new SplitType(textElement, {
+      types: "chars, words",
+      tagName: "span",
+    });
+
+    // Create the "scrub" reveal animation
+    gsap.fromTo(
+      splitText.chars,
+      { opacity: 0.2 },
+      {
+        opacity: 1,
+        stagger: 0.1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: textElement,
+          start: "top 80%",
+          end: "top 20%",
+          scrub: true,
+          // markers: true, // Uncomment for debugging
+        },
+      }
+    );
+  };
+
+  // Initialize scroll reveal
+  initScrollReveal();
 });

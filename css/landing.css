@@ -354,7 +354,7 @@ button { font: inherit; cursor: pointer; }
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3.2vw, 2.6rem);
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.45;
   color: var(--ink);
   letter-spacing: -0.01em;
 }
@@ -362,24 +362,6 @@ button { font: inherit; cursor: pointer; }
 .manifesto-text em {
   font-style: italic;
   color: var(--warm);
-}
-
-.manifesto-text .inline-logo {
-  height: 1.35em;
-  width: auto;
-  vertical-align: middle;
-  margin: 0 0.8rem;
-  display: inline-block;
-  transition: all 0.6s var(--ease);
-}
-
-.manifesto-text .inline-logo.logo-animate {
-  animation-duration: 1.2s; /* Snappier for content flow */
-  transform: translateX(-8px);
-}
-
-.manifesto-text .inline-logo:hover {
-  transform: scale(1.05) translateY(-2px);
 }
 
 /* ─────────────────────────────────────────────────────────────────────
