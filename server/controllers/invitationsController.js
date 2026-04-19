@@ -305,7 +305,7 @@ export const purchaseInvitation = async (req, res) => {
         template_id: templateId,
         template_name: templateName,
         amount: amount,
-        currency: req.body.currency || "USD",
+        currency: req.body.currency || "AED",
       });
 
       console.log(`[SALES] Recorded sale: ${templateId} — $${amount}`);
