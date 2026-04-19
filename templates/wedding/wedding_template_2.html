@@ -72,6 +72,7 @@
         font-weight: 400;
       }
 
+      .script-font {
         font-family: "Symphony", cursive;
       }
 
@@ -142,9 +143,12 @@
       }
 
       .hero-title {
-        font-size: clamp(3rem, 10vw, 8rem);
-        line-height: 0.8;
+        font-family: "Symphony", cursive;
+        font-size: clamp(4rem, 12vw, 9rem);
+        line-height: 1.1;
         margin-bottom: 20px;
+        color: var(--white);
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       }
 
       .hero-date {
@@ -606,9 +610,8 @@
         />
         <div class="hero-content">
           <p class="hero-date">Join us to celebrate</p>
-            <span data-edit="text" data-id="couple-names-hero"
-              >Alex & Josh</span
-            >
+          <h1 class="hero-title">
+            <span data-edit="text" data-id="couple-names-hero">Alex & Josh</span>
           </h1>
           <p class="hero-date">
             <span data-edit="text" data-id="venue-hero"
