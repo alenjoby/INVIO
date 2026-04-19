@@ -40,7 +40,28 @@ CREATE TABLE rsvp_responses (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Create indexes for performance
+-- 4. Create sales table (tracks purchases / revenue)
+CREATE TABLE sales (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  invitation_id UUID REFERENCES invitations(id) ON DELETE SET NULL,
+  template_id TEXT NOT NULL,
+  template_name TEXT,
+  amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT 'USD',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS on sales
+ALTER TABLE sales ENABLE ROW LEVEL SECURITY;
+
+-- Only the service role (admin) can read sales — no user-facing policy needed
+CREATE POLICY "Service role full access on sales"
+  ON sales FOR ALL
+  USING (true)
+  WITH CHECK (true);
+
+-- 5. Create indexes for performance
 CREATE INDEX idx_invitations_user_id ON invitations(user_id);
 CREATE INDEX idx_invitations_slug ON invitations(slug);
 CREATE INDEX idx_invitations_status ON invitations(status);

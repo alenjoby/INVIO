@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import invitationsRoutes from "./routes/invitations.js";
 import uploadRoutes from "./routes/upload.js";
+import adminRoutes from "./routes/admin.js";
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ app.get("/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/invitations", invitationsRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/admin", adminRoutes);
 
 // 404 handler
 app.use((req, res) => {

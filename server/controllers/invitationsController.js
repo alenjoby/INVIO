@@ -274,12 +274,46 @@ export const publishInvitation = async (req, res) => {
 };
 
 /**
- * Purchase invitation (alias for publish, to be used by checkout flow)
+ * Purchase invitation (publishes + records a sale for revenue tracking).
+ * The sale recording is wrapped in try-catch so it NEVER blocks the
+ * existing publish flow — if the sales insert fails, the user still
+ * gets their published invitation.
  */
 export const purchaseInvitation = async (req, res) => {
-  // Currently, purchasing just publishes it.
-  // In a real billing scenario, you might mark paid = true on a different table.
-  return publishInvitation(req, res);
+  // Store the original res.json so we can intercept the response
+  const originalJson = res.json.bind(res);
+  let publishedData = null;
+
+  res.json = (data) => {
+    publishedData = data;
+    return originalJson(data);
+  };
+
+  // Run the existing publish flow first
+  await publishInvitation(req, res);
+
+  // After publishing succeeds, record the sale (fire-and-forget, never blocks)
+  if (publishedData && publishedData.id && res.statusCode < 400) {
+    try {
+      const amount = parseFloat(req.body.amount || 0);
+      const templateId = publishedData.template_id || req.body.templateId || "unknown";
+      const templateName = req.body.templateName || "";
+
+      await supabaseAdmin.from("sales").insert({
+        user_id: req.user.id,
+        invitation_id: publishedData.id,
+        template_id: templateId,
+        template_name: templateName,
+        amount: amount,
+        currency: req.body.currency || "USD",
+      });
+
+      console.log(`[SALES] Recorded sale: ${templateId} — $${amount}`);
+    } catch (saleErr) {
+      // Log but never crash the response
+      console.error("[SALES] Failed to record sale (non-blocking):", saleErr.message);
+    }
+  }
 };
 
 /**
