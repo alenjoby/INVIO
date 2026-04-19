@@ -1085,6 +1085,8 @@ img { display: block; max-width: 100%; }
 
 .footer-brand img {
   height: 4rem;
+  width: auto;
+  object-fit: contain;
   filter: brightness(0) invert(1);
   opacity: 0.8;
   transition: opacity 0.5s var(--ease);
