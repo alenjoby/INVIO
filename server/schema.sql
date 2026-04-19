@@ -48,7 +48,7 @@ CREATE TABLE sales (
   template_id TEXT NOT NULL,
   template_name TEXT,
   amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
-  currency TEXT NOT NULL DEFAULT 'USD',
+  currency TEXT NOT NULL DEFAULT 'AED',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

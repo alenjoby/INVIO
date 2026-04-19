@@ -91,4 +91,13 @@
       window.location.href = nextUrl;
     }, 170);
   });
+
+  // ─── Global Shortcut: Ctrl + Alt + D (Admin Dashboard) ───
+  window.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "d") {
+      event.preventDefault();
+      // Use the direct path for safety across all environments
+      window.location.href = "/pages/admin/index.html";
+    }
+  });
 })();

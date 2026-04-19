@@ -1,50 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>INVIO — Admin Dashboard</title>
+  <title>INVIO — Finance Dashboard</title>
   <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png" />
+  <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
+  <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
   <style>
+    /* ─────────────────────────────────────────────────────────────────────
+       DESIGN TOKENS — Editorial Luxury
+       ───────────────────────────────────────────────────────────────────── */
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-card: #16161f;
-      --bg-card-hover: #1c1c28;
-      --border: #23233055;
-      --border-focus: #6366f1;
-      --text-primary: #f0f0f5;
-      --text-secondary: #8888a0;
-      --text-muted: #55556a;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.15);
-      --green: #22c55e;
-      --green-bg: rgba(34, 197, 94, 0.1);
-      --red: #ef4444;
-      --red-bg: rgba(239, 68, 68, 0.1);
-      --yellow: #f59e0b;
-      --yellow-bg: rgba(245, 158, 11, 0.1);
-      --radius: 14px;
-      --radius-sm: 8px;
-      --font-body: "Inter", system-ui, sans-serif;
-      --font-heading: "Outfit", system-ui, sans-serif;
+      --bg: #f4f4f2;
+      --bg-warm: #eae5dc;
+      --surface: #ffffff;
+      --ink: #0f0f0f;
+      --muted: #888888;
+      --accent: #1f2a37;
+      /* Midnight Navy */
+      --warm: #8c7a63;
+      --warm-light: #b5a68f;
+      --line: rgba(15, 15, 15, 0.12);
+      --line-faint: rgba(15, 15, 15, 0.06);
+
+      --font-display: "Cormorant Garamond", "Georgia", serif;
+      --font-body: "Manrope", "Helvetica Neue", sans-serif;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: var(--font-body);
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      background: var(--bg);
+      color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
     }
 
-    /* ───── LOGIN SCREEN ───── */
+    /* ─────────────────────────────────────────────────────────────────────
+       TYPOGRAPHY & UTILS
+       ───────────────────────────────────────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--warm);
+    }
+
+    .editorial-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────
+       LOGIN SCREEN
+       ───────────────────────────────────────────────────────────────────── */
     .login-screen {
       display: flex;
       justify-content: center;
@@ -53,445 +95,702 @@
       padding: 24px;
     }
 
-    .login-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 40px;
-      max-width: 420px;
+    .login-wrapper {
+      max-width: 400px;
       width: 100%;
       text-align: center;
+      /* Fallback visibility if AOS fails */
+      opacity: 1 !important;
     }
 
-    .login-card .logo {
-      font-family: var(--font-heading);
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--text-primary);
-      margin-bottom: 8px;
+    [data-aos] {
+      opacity: 0;
+      transition-property: transform, opacity;
     }
 
-    .login-card .subtitle {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 32px;
-      letter-spacing: 1px;
+    [data-aos].aos-animate {
+      opacity: 1;
     }
 
-    .login-card input {
+    .login-wrapper .brand-logo {
+      height: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .login-wrapper .editorial-title {
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+    }
+
+    .login-wrapper .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
+
+    .login-wrapper input {
       width: 100%;
-      padding: 14px 18px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-size: 0.95rem;
+      padding: 1rem 0;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
       font-family: var(--font-body);
+      font-size: 1rem;
       outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 16px;
+      transition: border-color 0.3s var(--ease);
+      text-align: center;
+      margin-bottom: 2rem;
     }
 
-    .login-card input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+    .login-wrapper input:focus {
+      border-bottom-color: var(--accent);
     }
 
-    .login-card button {
-      width: 100%;
-      padding: 14px;
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 2rem;
       background: var(--accent);
       color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
+      border: 1px solid var(--accent);
       font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
+      transition: all 0.4s var(--ease);
+      width: 100%;
     }
 
-    .login-card button:hover { opacity: 0.9; transform: translateY(-1px); }
-    .login-card button:active { transform: scale(0.98); }
-    .login-card button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary:hover {
+      background: #111;
+      border-color: #111;
+    }
 
     .login-error {
-      color: var(--red);
-      font-size: 0.82rem;
-      margin-bottom: 12px;
+      color: #d32f2f;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
       display: none;
     }
 
-    /* ───── DASHBOARD SHELL ───── */
-    .dashboard { display: none; }
-    .dashboard.active { display: block; }
+    /* ─────────────────────────────────────────────────────────────────────
+       DASHBOARD SHELL
+       ───────────────────────────────────────────────────────────────────── */
+    .dashboard {
+      display: none;
+    }
 
-    .dash-header {
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
-      padding: 20px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .dashboard.active {
+      display: block;
+    }
+
+    /* Header */
+    .site-header {
       position: sticky;
       top: 0;
       z-index: 50;
+      background: rgba(244, 244, 242, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line-faint);
     }
 
-    .dash-header .logo {
-      font-family: var(--font-heading);
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 2px;
+    .site-nav {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 3vw, 3rem);
+      min-height: 4.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .site-nav img {
+      height: 1.4rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
     }
 
-    .dash-header .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .dash-header .status-dot {
-      width: 8px;
-      height: 8px;
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--warm);
       border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2s ease-in-out infinite;
+      animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
     }
 
-    .dash-header .status-text {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    .btn-logout {
-      padding: 8px 16px;
+    .btn-nav-ghost {
       background: transparent;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-secondary);
-      font-size: 0.78rem;
+      border: none;
       font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
       cursor: pointer;
-      transition: all 0.2s;
+      position: relative;
     }
 
-    .btn-logout:hover {
-      border-color: var(--red);
-      color: var(--red);
+    .btn-nav-ghost::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--ink);
+      transition: width 0.4s var(--ease);
     }
 
+    .btn-nav-ghost:hover::after {
+      width: 100%;
+    }
+
+    /* Main Body */
     .dash-body {
-      max-width: 1320px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 32px;
+      padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 3vw, 3rem);
     }
 
-    .dash-body h1 {
-      font-family: var(--font-heading);
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
+    .dash-intro {
+      margin-bottom: 4rem;
+      max-width: 600px;
     }
 
-    .dash-body .page-subtitle {
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      margin-bottom: 32px;
+    .dash-intro .section-label {
+      margin-bottom: 1rem;
+      display: block;
     }
 
-    /* ───── KPI CARDS ───── */
+    .dash-intro .editorial-title {
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────
+       KPI SPREADS (Data Blocks)
+       ───────────────────────────────────────────────────────────────────── */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-bottom: 32px;
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 5rem;
     }
 
-    .kpi-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      transition: border-color 0.25s, transform 0.2s;
+    .kpi-block {
+      padding: 2.5rem 2rem;
+      border-right: 1px solid var(--line);
+      position: relative;
     }
 
-    .kpi-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
+    .kpi-block:last-child {
+      border-right: none;
     }
 
     .kpi-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 10px;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
     }
 
     .kpi-value {
-      font-family: var(--font-heading);
-      font-size: 1.7rem;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 400;
       line-height: 1;
+      margin-bottom: 0.8rem;
     }
 
-    .kpi-change {
-      font-size: 0.78rem;
-      font-weight: 500;
+    .kpi-context {
+      font-size: 0.85rem;
+      color: var(--muted);
     }
 
-    .kpi-change.positive { color: var(--green); }
-    .kpi-change.negative { color: var(--red); }
-    .kpi-change.neutral { color: var(--text-muted); }
+    .kpi-change.positive {
+      color: #2e7d32;
+    }
 
-    /* ───── CHART SECTION ───── */
+    .kpi-change.negative {
+      color: #c62828;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────
+       CHARTS
+       ───────────────────────────────────────────────────────────────────── */
     .charts-row {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 20px;
-      margin-bottom: 32px;
+      gap: 3rem;
+      margin-bottom: 5rem;
     }
 
-    .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
+    .chart-panel {
+      background: var(--surface);
+      padding: 3rem;
+      border: 1px solid var(--line-faint);
     }
 
-    .chart-card h3 {
-      font-family: var(--font-heading);
-      font-size: 1rem;
-      font-weight: 500;
-      margin-bottom: 20px;
-      color: var(--text-secondary);
+    .chart-panel h3 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 2rem;
+      letter-spacing: -0.01em;
     }
 
-    .chart-container {
+    .chart-wrapper {
       position: relative;
       width: 100%;
     }
 
-    .chart-container.line-chart { height: 300px; }
-    .chart-container.donut-chart { height: 280px; }
+    .chart-wrapper.line-format {
+      height: 320px;
+    }
 
-    /* ───── INSIGHTS ROW ───── */
-    .insights-row {
+    .chart-wrapper.donut-format {
+      height: 320px;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────
+       SIGNATURE INSIGHTS (Dark Midnight Navy Block)
+       ───────────────────────────────────────────────────────────────────── */
+    .insights-band {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 4rem 3rem;
+      margin-bottom: 5rem;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 32px;
+      gap: 3rem;
     }
 
-    .insight-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
+    .insight-block .kpi-label {
+      color: rgba(244, 244, 242, 0.4);
     }
 
-    .insight-card h4 {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 12px;
+    .insight-block .kpi-value {
+      color: #fff;
     }
 
-    .insight-card .insight-value {
-      font-family: var(--font-heading);
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 4px;
+    .insight-block .kpi-context {
+      color: rgba(244, 244, 242, 0.6);
     }
 
-    .insight-card .insight-detail {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-
-    /* ───── SALES LEDGER ───── */
-    .ledger-section { margin-bottom: 48px; }
-
+    /* ─────────────────────────────────────────────────────────────────────
+       LEDGER (Tables)
+       ───────────────────────────────────────────────────────────────────── */
     .ledger-section h2 {
-      font-family: var(--font-heading);
-      font-size: 1.15rem;
-      font-weight: 500;
-      margin-bottom: 16px;
-      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 400;
+      margin-bottom: 2rem;
     }
 
-    .ledger-wrapper {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+    .ledger-table-wrap {
+      width: 100%;
+      overflow-x: auto;
     }
 
     .ledger-table {
       width: 100%;
       border-collapse: collapse;
+      text-align: left;
     }
 
     .ledger-table th {
-      font-size: 0.7rem;
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      padding: 14px 20px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-secondary);
+      letter-spacing: 0.15em;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
     }
 
     .ledger-table td {
-      font-size: 0.85rem;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-secondary);
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--line-faint);
+      font-size: 0.95rem;
     }
 
-    .ledger-table tr:last-child td { border-bottom: none; }
-    .ledger-table tr:hover td { background: var(--bg-card-hover); }
+    .ledger-table tr:hover td {
+      background: rgba(255, 255, 255, 0.4);
+    }
 
-    .ledger-table .amount { color: var(--green); font-weight: 600; }
+    .td-date {
+      color: var(--muted);
+      font-size: 0.85rem !important;
+    }
 
-    .ledger-empty {
-      padding: 48px;
+    .td-amount {
+      font-family: var(--font-display);
+      font-size: 1.2rem !important;
+    }
+
+    .empty-ledger {
       text-align: center;
-      color: var(--text-muted);
-      font-size: 0.88rem;
+      padding: 4rem 0;
+      color: var(--muted);
+      font-style: italic;
+      font-family: var(--font-display);
+      font-size: 1.2rem;
     }
 
-    /* ───── LOADING STATES ───── */
-    .loading-skeleton {
-      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
-      background-size: 200% 100%;
-      animation: skeleton-shimmer 1.4s ease-in-out infinite;
-      border-radius: var(--radius-sm);
+    /* ─────────────────────────────────────────────────────────────────────
+       FILTER BAR
+       ───────────────────────────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      border: 1px solid var(--line-faint);
     }
 
-    @keyframes skeleton-shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+    .filter-bar .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
-    .skeleton-kpi { height: 110px; }
-    .skeleton-chart { height: 360px; }
+    .filter-bar .filter-group label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
 
-    /* ───── RESPONSIVE ───── */
+    .filter-bar input[type="text"],
+    .filter-bar input[type="date"],
+    .filter-bar select {
+      padding: 0.6rem 0.8rem;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.3s var(--ease);
+      min-width: 160px;
+    }
+
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-bar .filter-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.8rem;
+    }
+
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.6rem;
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.4s var(--ease);
+      white-space: nowrap;
+    }
+
+    .btn-export:hover {
+      background: #111;
+      border-color: #111;
+    }
+
+    .btn-export:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-clear {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.65rem 1.2rem;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+
+    .btn-clear:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .filter-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.5rem 0;
+      margin-bottom: 1rem;
+    }
+
+    .filter-count strong {
+      color: var(--ink);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────
+       RESPONSIVE
+       ───────────────────────────────────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-row { grid-template-columns: 1fr; }
-      .insights-row { grid-template-columns: 1fr; }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .kpi-block:nth-child(2) {
+        border-right: none;
+      }
+
+      .kpi-block:nth-child(1),
+      .kpi-block:nth-child(2) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+
+      .insights-band {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
     }
 
-    @media (max-width: 768px) {
-      .dash-body { padding: 20px 16px; }
-      .dash-header { padding: 16px; }
-      .kpi-grid { grid-template-columns: 1fr; }
-      .ledger-wrapper { overflow-x: auto; }
-      .ledger-table { min-width: 600px; }
+    @media (max-width: 640px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+        border-right: none;
+      }
+
+      .kpi-block {
+        border-right: none !important;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .kpi-block:last-child {
+        border-bottom: none;
+      }
+
+      .chart-panel {
+        padding: 1.5rem;
+      }
+
+      .insights-band {
+        padding: 2.5rem 1.5rem;
+      }
+
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-bar .filter-actions {
+        margin-left: 0;
+        justify-content: stretch;
+      }
+
+      .btn-export, .btn-clear {
+        flex: 1;
+        justify-content: center;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- ─── LOGIN GATE ─── -->
+  <!-- ─── LOGIN SCREEN ─── -->
   <div class="login-screen" id="loginScreen">
-    <div class="login-card">
-      <div class="logo">INVIO</div>
-      <div class="subtitle">Admin Dashboard</div>
-      <p class="login-error" id="loginError">Invalid password. Try again.</p>
-      <input
-        type="password"
-        id="adminPassword"
-        placeholder="Enter admin password"
-        autocomplete="off"
-        autofocus
-      />
-      <button type="button" id="loginBtn">Access Dashboard</button>
+    <div class="login-wrapper" data-aos="fade-up" data-aos-duration="1000">
+      <img src="/assets/images/logo.png" alt="INVIO Logo" class="brand-logo" />
+      <h1 class="editorial-title">Finance Dashboard</h1>
+      <p class="subtitle">Enter your password to access analytics and records.</p>
+
+      <p class="login-error" id="loginError">Invalid password. Please try again.</p>
+
+      <input type="password" id="adminPassword" placeholder="Password" autocomplete="off" autofocus />
+      <button type="button" class="btn-primary" id="loginBtn">Login</button>
     </div>
   </div>
 
   <!-- ─── DASHBOARD ─── -->
   <div class="dashboard" id="dashboard">
-    <header class="dash-header">
-      <span class="logo">INVIO Admin</span>
-      <div class="header-right">
-        <span class="status-dot"></span>
-        <span class="status-text">Live</span>
-        <button class="btn-logout" id="logoutBtn">Sign Out</button>
+    <header class="site-header">
+      <div class="site-nav">
+        <img src="/assets/images/logo.png" alt="INVIO logo" />
+        <div class="header-actions">
+          <div class="status-indicator">
+            <span class="status-dot"></span> Live
+          </div>
+          <button class="btn-nav-ghost" id="logoutBtn">Logout</button>
+        </div>
       </div>
     </header>
 
     <main class="dash-body">
-      <h1>Revenue Dashboard</h1>
-      <p class="page-subtitle">Real-time overview of platform performance and sales analytics.</p>
 
-      <!-- KPIs -->
-      <div class="kpi-grid" id="kpiGrid">
-        <div class="kpi-card loading-skeleton skeleton-kpi"></div>
-        <div class="kpi-card loading-skeleton skeleton-kpi"></div>
-        <div class="kpi-card loading-skeleton skeleton-kpi"></div>
-        <div class="kpi-card loading-skeleton skeleton-kpi"></div>
-      </div>
+      <!-- Intro -->
+      <section class="dash-intro" data-aos="fade-up" data-aos-duration="800">
+        <span class="section-label">Performance Overview</span>
+        <h1 class="editorial-title">Financial Performance & Analytics</h1>
+      </section>
 
-      <!-- Charts -->
-      <div class="charts-row" id="chartsRow">
-        <div class="chart-card">
-          <h3>Monthly Revenue Trend</h3>
-          <div class="chart-container line-chart">
+      <!-- KPI Spreads -->
+      <section class="kpi-grid" id="kpiGrid" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
+        <div class="kpi-block">
+          <div class="kpi-label">Gross Volume</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">Loading data</div>
+        </div>
+        <div class="kpi-block">
+          <div class="kpi-label">Monthly Revenue</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">Loading data</div>
+        </div>
+        <div class="kpi-block">
+          <div class="kpi-label">Average Order</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">Loading data</div>
+        </div>
+        <div class="kpi-block">
+          <div class="kpi-label">Total Users</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">Loading data</div>
+        </div>
+      </section>
+
+      <!-- Charts Data -->
+      <section class="charts-row" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+        <div class="chart-panel">
+          <h3>Revenue Overview</h3>
+          <div class="chart-wrapper line-format">
             <canvas id="revenueChart"></canvas>
           </div>
         </div>
-        <div class="chart-card">
-          <h3>Sales by Category</h3>
-          <div class="chart-container donut-chart">
+        <div class="chart-panel">
+          <h3>Category Analysis</h3>
+          <div class="chart-wrapper donut-format">
             <canvas id="categoryChart"></canvas>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Insights -->
-      <div class="insights-row" id="insightsRow">
-        <div class="insight-card" id="insightBest">
-          <h4>Best Month</h4>
-          <div class="insight-value">—</div>
-          <div class="insight-detail">No data yet</div>
+      <!-- Insights (Midnight Navy) -->
+      <section class="insights-band" id="insightsRow" data-aos="fade-up" data-aos-duration="1000">
+        <div class="insight-block" id="insightBest">
+          <div class="kpi-label">Highest Performing</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">...</div>
         </div>
-        <div class="insight-card" id="insightWorst">
-          <h4>Weakest Month</h4>
-          <div class="insight-value">—</div>
-          <div class="insight-detail">No data yet</div>
+        <div class="insight-block" id="insightWorst">
+          <div class="kpi-label">Areas for Growth</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">...</div>
         </div>
-        <div class="insight-card" id="insightPlatform">
-          <h4>Platform Stats</h4>
-          <div class="insight-value">—</div>
-          <div class="insight-detail">No data yet</div>
+        <div class="insight-block" id="insightPlatform">
+          <div class="kpi-label">Global Imprint</div>
+          <div class="kpi-value">...</div>
+          <div class="kpi-context">...</div>
         </div>
-      </div>
+      </section>
 
-      <!-- Sales Ledger -->
-      <section class="ledger-section">
-        <h2>Recent Transactions</h2>
-        <div class="ledger-wrapper">
-          <table class="ledger-table" id="ledgerTable">
+      <!-- Ledger -->
+      <section class="ledger-section" data-aos="fade-up" data-aos-duration="1000">
+        <h2>Transaction History</h2>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar" id="filterBar">
+          <div class="filter-group">
+            <label for="filterMonth">Month</label>
+            <input type="month" id="filterMonth" />
+          </div>
+          <div class="filter-group">
+            <label for="filterSearch">Search</label>
+            <input type="text" id="filterSearch" placeholder="Name, email, template..." />
+          </div>
+          <div class="filter-group">
+            <label for="filterCategory">Category</label>
+            <select id="filterCategory">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="filter-actions">
+            <button class="btn-clear" id="clearFiltersBtn" type="button">Clear</button>
+            <button class="btn-export" id="exportBtn" type="button">
+              <i class="ph ph-download-simple"></i> Monthly Report
+            </button>
+            <button class="btn-export" id="exportAllBtn" type="button" style="background: #8c7a63; border-color: #8c7a63;">
+              <i class="ph ph-file-arrow-down"></i> All-Time Report
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-count" id="filterCount"></div>
+
+        <div class="ledger-table-wrap">
+          <table class="ledger-table">
             <thead>
               <tr>
                 <th>Date</th>
-                <th>User</th>
+                <th>Customer</th>
                 <th>Template</th>
                 <th>Amount</th>
                 <th>Currency</th>
@@ -499,24 +798,38 @@
             </thead>
             <tbody id="ledgerBody">
               <tr>
-                <td colspan="5" class="ledger-empty">Loading transactions...</td>
+                <td colspan="5" class="empty-ledger">Retrieving archives...</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+
     </main>
   </div>
+
+  <script>
+    // Initialize AOS immediately as a fallback
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof AOS !== 'undefined') {
+        AOS.init({ once: true, offset: 50 });
+      }
+    });
+  </script>
 
   <script type="module">
     import { API_URL } from "/js/env.js";
 
-    // ─── State ───
     let adminToken = null;
     let revenueChartInstance = null;
     let categoryChartInstance = null;
 
-    // ─── Refs ───
+    // Master data stores
+    let masterSalesList = [];
+    let filteredSales = [];
+    let masterStats = null;
+
+    // DOM refs
     const loginScreen = document.getElementById("loginScreen");
     const dashboard = document.getElementById("dashboard");
     const loginBtn = document.getElementById("loginBtn");
@@ -524,7 +837,16 @@
     const passwordInput = document.getElementById("adminPassword");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // ─── Login Flow ───
+    // Filter refs
+    const filterMonth = document.getElementById("filterMonth");
+    const filterSearch = document.getElementById("filterSearch");
+    const filterCategory = document.getElementById("filterCategory");
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const exportAllBtn = document.getElementById("exportAllBtn");
+    const filterCountEl = document.getElementById("filterCount");
+
+    // ─── Auth Events ───
     loginBtn.addEventListener("click", handleLogin);
     passwordInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleLogin();
@@ -536,6 +858,14 @@
       passwordInput.value = "";
       loginError.style.display = "none";
     });
+
+    // ─── Filter Events ───
+    filterMonth.addEventListener("change", applyFilters);
+    filterSearch.addEventListener("input", applyFilters);
+    filterCategory.addEventListener("change", applyFilters);
+    clearFiltersBtn.addEventListener("click", clearFilters);
+    exportBtn.addEventListener("click", exportToExcel);
+    exportAllBtn.addEventListener("click", exportAllTimeReport);
 
     async function handleLogin() {
       const password = passwordInput.value.trim();
@@ -552,9 +882,7 @@
           body: JSON.stringify({ password }),
         });
 
-        if (!res.ok) {
-          throw new Error("Invalid password");
-        }
+        if (!res.ok) throw new Error("Invalid password");
 
         const data = await res.json();
         adminToken = data.token;
@@ -562,6 +890,7 @@
         loginScreen.style.display = "none";
         dashboard.classList.add("active");
 
+        setTimeout(() => AOS.refresh(), 100);
         loadDashboard();
       } catch (err) {
         loginError.textContent = err.message || "Invalid password. Try again.";
@@ -569,95 +898,457 @@
         passwordInput.select();
       } finally {
         loginBtn.disabled = false;
-        loginBtn.textContent = "Access Dashboard";
+        loginBtn.textContent = "Login";
       }
     }
 
-    // ─── Dashboard Data ───
     async function loadDashboard() {
       try {
         const [statsRes, salesRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/stats`, {
-            headers: { "X-Admin-Token": adminToken },
-          }),
-          fetch(`${API_URL}/api/admin/sales`, {
-            headers: { "X-Admin-Token": adminToken },
-          }),
+          fetch(`${API_URL}/api/admin/stats`, { headers: { "X-Admin-Token": adminToken } }),
+          fetch(`${API_URL}/api/admin/sales`, { headers: { "X-Admin-Token": adminToken } })
         ]);
 
         if (!statsRes.ok || !salesRes.ok) throw new Error("Failed to fetch data");
 
-        const stats = await statsRes.json();
-        const sales = await salesRes.json();
+        masterStats = await statsRes.json();
+        masterSalesList = await salesRes.json();
 
-        renderKPIs(stats.overview);
-        renderRevenueChart(stats.monthlyRevenue);
-        renderCategoryChart(stats.categoryBreakdown);
-        renderInsights(stats);
-        renderLedger(sales);
+        // Populate the category dropdown from actual data
+        populateCategoryFilter(masterSalesList);
+
+        // Render everything with full data
+        renderKPIs(masterStats.overview);
+        renderRevenueChart(masterStats.monthlyRevenue);
+        renderCategoryChart(masterStats.categoryBreakdown);
+        renderInsights(masterStats);
+        filteredSales = [...masterSalesList];
+
+        // Default month picker to current month
+        const now = new Date();
+        filterMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        // Apply the default month filter
+        applyFilters();
       } catch (err) {
-        console.error("Dashboard load error:", err);
+        console.error("Dashboard error:", err);
       }
     }
 
-    // ─── KPIs ───
+    // ─── FILTER LOGIC ───
+    function populateCategoryFilter(sales) {
+      const categories = new Set();
+      sales.forEach(s => {
+        const name = s.template_name || s.template_id || "";
+        // Extract category from template name (e.g., "Wedding Template 1" → "Wedding")
+        const cat = name.split(/\s+/)[0];
+        if (cat) categories.add(cat);
+      });
+
+      filterCategory.innerHTML = '<option value="">All Categories</option>';
+      [...categories].sort().forEach(cat => {
+        filterCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+    }
+
+    function applyFilters() {
+      const searchTerm = filterSearch.value.toLowerCase().trim();
+      const selectedMonth = filterMonth.value; // e.g. "2026-04"
+      const category = filterCategory.value.toLowerCase();
+
+      filteredSales = masterSalesList.filter(sale => {
+        // Search filter
+        if (searchTerm) {
+          const hay = [
+            sale.username || "",
+            sale.user_email || "",
+            sale.template_name || sale.template_id || ""
+          ].join(" ").toLowerCase();
+          if (!hay.includes(searchTerm)) return false;
+        }
+
+        // Month filter
+        if (selectedMonth) {
+          const saleDate = new Date(sale.created_at);
+          const saleMonth = `${saleDate.getFullYear()}-${String(saleDate.getMonth() + 1).padStart(2, '0')}`;
+          if (saleMonth !== selectedMonth) return false;
+        }
+
+        // Category
+        if (category) {
+          const name = (sale.template_name || sale.template_id || "").toLowerCase();
+          if (!name.startsWith(category)) return false;
+        }
+
+        return true;
+      });
+
+      renderLedger(filteredSales);
+      updateFilterCount();
+    }
+
+    function clearFilters() {
+      filterSearch.value = "";
+      filterMonth.value = "";
+      filterCategory.value = "";
+      filteredSales = [...masterSalesList];
+      renderLedger(filteredSales);
+      updateFilterCount();
+    }
+
+    function updateFilterCount() {
+      const total = masterSalesList.length;
+      const shown = filteredSales.length;
+      if (total === 0) {
+        filterCountEl.textContent = "";
+      } else if (shown === total) {
+        filterCountEl.innerHTML = `Showing all <strong>${total}</strong> transactions`;
+      } else {
+        filterCountEl.innerHTML = `Showing <strong>${shown}</strong> of <strong>${total}</strong> transactions`;
+      }
+    }
+
+    // ─── STYLED EXCEL EXPORT ───
+    async function exportToExcel() {
+      if (!filteredSales || filteredSales.length === 0) {
+        alert("No transactions to export.");
+        return;
+      }
+
+      exportBtn.disabled = true;
+      exportBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+
+      try {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "INVIO Finance Dashboard";
+        workbook.created = new Date();
+
+        const sheet = workbook.addWorksheet("Transaction Report", {
+          properties: { defaultColWidth: 18 }
+        });
+
+        // ── Brand Colors ──
+        const navyFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2A37" } };
+        const ivoryFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF4F4F2" } };
+        const whiteFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
+        const warmFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF8C7A63" } };
+        const headerFont = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        const bodyFont = { name: "Calibri", size: 10, color: { argb: "FF0F0F0F" } };
+        const mutedFont = { name: "Calibri", size: 10, color: { argb: "FF888888" } };
+        const thinBorder = {
+          bottom: { style: "thin", color: { argb: "FFE0E0E0" } }
+        };
+
+        // ── Title Row ──
+        // Determine report month label
+        const selectedMonth = filterMonth.value;
+        let monthLabel = "All Time";
+        if (selectedMonth) {
+          const [y, m] = selectedMonth.split("-");
+          const d = new Date(parseInt(y), parseInt(m) - 1);
+          monthLabel = d.toLocaleDateString("en-US", { year: "numeric", month: "long" });
+        }
+
+        sheet.mergeCells("A1:F1");
+        const titleCell = sheet.getCell("A1");
+        titleCell.value = `INVIO — Monthly Report: ${monthLabel}`;
+        titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
+        titleCell.alignment = { vertical: "middle" };
+        sheet.getRow(1).height = 36;
+
+        // ── Subtitle Row ──
+        sheet.mergeCells("A2:F2");
+        const subtitleCell = sheet.getCell("A2");
+        const now = new Date();
+        const dateLabel = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+        subtitleCell.value = `Generated on ${dateLabel}  •  ${filteredSales.length} transaction(s)`;
+        subtitleCell.font = mutedFont;
+        subtitleCell.alignment = { vertical: "middle" };
+        sheet.getRow(2).height = 22;
+
+        // ── Spacer ──
+        sheet.getRow(3).height = 8;
+
+        // ── Header Row ──
+        const headers = ["Date", "Customer", "Email", "Template", "Amount (AED)", "Currency"];
+        const headerRow = sheet.getRow(4);
+        headerRow.values = headers;
+        headerRow.height = 30;
+        headerRow.eachCell((cell, colNumber) => {
+          cell.fill = navyFill;
+          cell.font = headerFont;
+          cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+        });
+
+        // ── Data Rows ──
+        filteredSales.forEach((sale, i) => {
+          const d = new Date(sale.created_at);
+          const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          const row = sheet.addRow([
+            dateStr,
+            sale.username || "Unknown",
+            sale.user_email || "",
+            sale.template_name || sale.template_id || "—",
+            parseFloat(sale.amount || 0),
+            sale.currency || "AED"
+          ]);
+
+          row.height = 26;
+          const isEven = i % 2 === 0;
+          row.eachCell((cell, colNumber) => {
+            cell.fill = isEven ? whiteFill : ivoryFill;
+            cell.font = bodyFont;
+            cell.border = thinBorder;
+            cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+
+            // Format amount column
+            if (colNumber === 5) {
+              cell.numFmt = '#,##0.00';
+            }
+          });
+        });
+
+        // ── Summary Footer ──
+        const footerRowNum = sheet.lastRow.number + 2;
+        sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+        const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
+        totalLabelCell.value = "Total";
+        totalLabelCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalLabelCell.fill = warmFill;
+        totalLabelCell.alignment = { vertical: "middle" };
+        // Total cells D fill
+        ["B", "C", "D"].forEach(col => {
+          const c = sheet.getCell(`${col}${footerRowNum}`);
+          c.fill = warmFill;
+        });
+
+        const totalValueCell = sheet.getCell(`E${footerRowNum}`);
+        const totalAmt = filteredSales.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        totalValueCell.value = totalAmt;
+        totalValueCell.numFmt = '#,##0.00';
+        totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalValueCell.fill = warmFill;
+        totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
+
+        const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
+        totalCurrCell.value = "AED";
+        totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalCurrCell.fill = warmFill;
+        totalCurrCell.alignment = { vertical: "middle" };
+
+        sheet.getRow(footerRowNum).height = 30;
+
+        // ── Column Widths ──
+        sheet.getColumn(1).width = 18;  // Date
+        sheet.getColumn(2).width = 22;  // Customer
+        sheet.getColumn(3).width = 28;  // Email
+        sheet.getColumn(4).width = 24;  // Template
+        sheet.getColumn(5).width = 18;  // Amount
+        sheet.getColumn(6).width = 12;  // Currency
+
+        // ── Download ──
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        // Use selected month in filename, or date if no month selected
+        const fileLabel = selectedMonth ? selectedMonth : new Date().toISOString().slice(0, 10);
+        a.download = `INVIO_Monthly_Report_${fileLabel}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Export error:", err);
+        alert("Failed to generate report. Please try again.");
+      } finally {
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = '<i class="ph ph-download-simple"></i> Monthly Report';
+      }
+    }
+
+    // ─── ALL-TIME EXPORT ───
+    async function exportAllTimeReport() {
+      if (!masterSalesList || masterSalesList.length === 0) {
+        alert("No transactions to export.");
+        return;
+      }
+
+      exportAllBtn.disabled = true;
+      exportAllBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+
+      try {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "INVIO Finance Dashboard";
+        workbook.created = new Date();
+
+        const sheet = workbook.addWorksheet("All-Time Revenue Report", {
+          properties: { defaultColWidth: 18 }
+        });
+
+        // ── Brand Colors ──
+        const navyFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2A37" } };
+        const ivoryFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF4F4F2" } };
+        const whiteFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
+        const warmFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF8C7A63" } };
+        const headerFont = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        const bodyFont = { name: "Calibri", size: 10, color: { argb: "FF0F0F0F" } };
+        const mutedFont = { name: "Calibri", size: 10, color: { argb: "FF888888" } };
+        const thinBorder = { bottom: { style: "thin", color: { argb: "FFE0E0E0" } } };
+
+        // ── Title ──
+        sheet.mergeCells("A1:F1");
+        const titleCell = sheet.getCell("A1");
+        titleCell.value = "INVIO — Complete Revenue Report (All-Time)";
+        titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
+        titleCell.alignment = { vertical: "middle" };
+        sheet.getRow(1).height = 36;
+
+        // ── Subtitle ──
+        sheet.mergeCells("A2:F2");
+        const subtitleCell = sheet.getCell("A2");
+        const now = new Date();
+        const dateLabel = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+        subtitleCell.value = `Generated on ${dateLabel}  •  ${masterSalesList.length} total transaction(s)`;
+        subtitleCell.font = mutedFont;
+        subtitleCell.alignment = { vertical: "middle" };
+        sheet.getRow(2).height = 22;
+
+        sheet.getRow(3).height = 8;
+
+        // ── Header ──
+        const headers = ["Date", "Customer", "Email", "Template", "Amount (AED)", "Currency"];
+        const headerRow = sheet.getRow(4);
+        headerRow.values = headers;
+        headerRow.height = 30;
+        headerRow.eachCell((cell, colNumber) => {
+          cell.fill = navyFill;
+          cell.font = headerFont;
+          cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+        });
+
+        // ── Data ──
+        masterSalesList.forEach((sale, i) => {
+          const d = new Date(sale.created_at);
+          const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          const row = sheet.addRow([
+            dateStr,
+            sale.username || "Unknown",
+            sale.user_email || "",
+            sale.template_name || sale.template_id || "—",
+            parseFloat(sale.amount || 0),
+            sale.currency || "AED"
+          ]);
+
+          row.height = 26;
+          const isEven = i % 2 === 0;
+          row.eachCell((cell, colNumber) => {
+            cell.fill = isEven ? whiteFill : ivoryFill;
+            cell.font = bodyFont;
+            cell.border = thinBorder;
+            cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+            if (colNumber === 5) cell.numFmt = '#,##0.00';
+          });
+        });
+
+        // ── Footer ──
+        const footerRowNum = sheet.lastRow.number + 2;
+        sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+        const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
+        totalLabelCell.value = "Grand Total";
+        totalLabelCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalLabelCell.fill = warmFill;
+        totalLabelCell.alignment = { vertical: "middle" };
+        ["B", "C", "D"].forEach(col => {
+          const c = sheet.getCell(`${col}${footerRowNum}`);
+          c.fill = warmFill;
+        });
+
+        const totalValueCell = sheet.getCell(`E${footerRowNum}`);
+        const totalAmt = masterSalesList.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        totalValueCell.value = totalAmt;
+        totalValueCell.numFmt = '#,##0.00';
+        totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalValueCell.fill = warmFill;
+        totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
+
+        const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
+        totalCurrCell.value = "AED";
+        totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        totalCurrCell.fill = warmFill;
+        totalCurrCell.alignment = { vertical: "middle" };
+        sheet.getRow(footerRowNum).height = 30;
+
+        // ── Column Widths ──
+        sheet.getColumn(1).width = 18;
+        sheet.getColumn(2).width = 22;
+        sheet.getColumn(3).width = 28;
+        sheet.getColumn(4).width = 24;
+        sheet.getColumn(5).width = 18;
+        sheet.getColumn(6).width = 12;
+
+        // ── Download ──
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `INVIO_AllTime_Revenue_Report.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Export error:", err);
+        alert("Failed to generate report. Please try again.");
+      } finally {
+        exportAllBtn.disabled = false;
+        exportAllBtn.innerHTML = '<i class="ph ph-file-arrow-down"></i> All-Time Report';
+      }
+    }
+
+    // ─── RENDER FUNCTIONS ───
     function renderKPIs(overview) {
-      const growthClass = overview.momGrowth > 0 ? "positive" : overview.momGrowth < 0 ? "negative" : "neutral";
+      const growthClass = overview.momGrowth > 0 ? "positive" : overview.momGrowth < 0 ? "negative" : "";
       const growthPrefix = overview.momGrowth > 0 ? "+" : "";
 
       document.getElementById("kpiGrid").innerHTML = `
-        <div class="kpi-card">
-          <div class="kpi-label">Total Revenue</div>
-          <div class="kpi-value">$${overview.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
-          <div class="kpi-change neutral">${overview.totalSales} total sales</div>
+        <div class="kpi-block">
+          <div class="kpi-label">Gross Volume</div>
+          <div class="kpi-value">AED ${overview.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-context">${overview.totalSales} acquisitions</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">This Month</div>
-          <div class="kpi-value">$${overview.thisMonthRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
-          <div class="kpi-change ${growthClass}">${growthPrefix}${overview.momGrowth}% vs last month</div>
+        <div class="kpi-block">
+          <div class="kpi-label">Revenue (${new Date().toLocaleString("en-US", { month: "short" })})</div>
+          <div class="kpi-value">AED ${overview.thisMonthRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-context kpi-change ${growthClass}">${growthPrefix}${overview.momGrowth}% vs previous</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Order Value</div>
-          <div class="kpi-value">$${overview.avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
-          <div class="kpi-change neutral">Per transaction</div>
+        <div class="kpi-block">
+          <div class="kpi-label">Average Order</div>
+          <div class="kpi-value">AED ${overview.avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-context">Per transaction</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Platform Users</div>
+        <div class="kpi-block">
+          <div class="kpi-label">Total Customers</div>
           <div class="kpi-value">${overview.totalUsers}</div>
-          <div class="kpi-change neutral">${overview.totalInvitations} invitations created</div>
+          <div class="kpi-context">${overview.totalInvitations} creations hosted</div>
         </div>
       `;
     }
 
-    // ─── Revenue Chart ───
     function renderRevenueChart(monthlyRevenue) {
       if (revenueChartInstance) revenueChartInstance.destroy();
-
       const ctx = document.getElementById("revenueChart").getContext("2d");
 
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(0, "rgba(99, 102, 241, 0.25)");
-      gradient.addColorStop(1, "rgba(99, 102, 241, 0.02)");
-
       revenueChartInstance = new Chart(ctx, {
-        type: "line",
+        type: "bar",
         data: {
-          labels: monthlyRevenue.map((m) => m.label),
-          datasets: [
-            {
-              label: "Revenue ($)",
-              data: monthlyRevenue.map((m) => m.revenue),
-              borderColor: "#6366f1",
-              backgroundColor: gradient,
-              fill: true,
-              tension: 0.4,
-              pointRadius: 4,
-              pointBackgroundColor: "#6366f1",
-              pointBorderColor: "#0a0a0f",
-              pointBorderWidth: 2,
-              pointHoverRadius: 6,
-            },
-          ],
+          labels: monthlyRevenue.map(m => m.label),
+          datasets: [{
+            label: "Revenue (AED)",
+            data: monthlyRevenue.map(m => m.revenue),
+            backgroundColor: "#1f2a37",
+            borderRadius: 4,
+            barThickness: 'flex',
+            maxBarThickness: 40
+          }],
         },
         options: {
           responsive: true,
@@ -665,29 +1356,27 @@
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: "#1c1c28",
-              titleColor: "#f0f0f5",
-              bodyColor: "#8888a0",
-              borderColor: "#23233055",
-              borderWidth: 1,
+              backgroundColor: "#0f0f0f",
+              titleFont: { family: "Manrope" },
+              bodyFont: { family: "Manrope" },
               padding: 12,
-              cornerRadius: 8,
               callbacks: {
-                label: (ctx) => `$${ctx.parsed.y.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+                label: (ctx) => `AED ${ctx.parsed.y.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
               },
             },
           },
           scales: {
             x: {
-              grid: { color: "rgba(255,255,255,0.04)" },
-              ticks: { color: "#55556a", font: { size: 11 } },
+              grid: { display: false },
+              ticks: { color: "#888888", font: { family: "Manrope", size: 11 } },
             },
             y: {
-              grid: { color: "rgba(255,255,255,0.04)" },
+              grid: { color: "rgba(15, 15, 15, 0.06)", borderDash: [4, 4] },
+              border: { display: false },
               ticks: {
-                color: "#55556a",
-                font: { size: 11 },
-                callback: (val) => `$${val}`,
+                color: "#888888",
+                font: { family: "Manrope", size: 11 },
+                callback: (val) => `AED ${val}`,
               },
               beginAtZero: true,
             },
@@ -696,67 +1385,52 @@
       });
     }
 
-    // ─── Category Chart ───
     function renderCategoryChart(categories) {
       if (categoryChartInstance) categoryChartInstance.destroy();
-
-      const colors = [
-        "#6366f1", "#a78bfa", "#22c55e", "#f59e0b",
-        "#ef4444", "#06b6d4", "#ec4899", "#14b8a6",
-      ];
-
       const ctx = document.getElementById("categoryChart").getContext("2d");
 
       if (!categories || categories.length === 0) {
-        ctx.font = "14px Inter";
-        ctx.fillStyle = "#55556a";
+        ctx.font = "14px Manrope";
+        ctx.fillStyle = "#888";
         ctx.textAlign = "center";
-        ctx.fillText("No sales data yet", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        ctx.fillText("Awaiting data", ctx.canvas.width / 2, ctx.canvas.height / 2);
         return;
       }
+
+      const colors = ["#1f2a37", "#8c7a63", "#b5a68f", "#d9d2c5", "#0f0f0f"];
 
       categoryChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-          labels: categories.map((c) => c.category.charAt(0).toUpperCase() + c.category.slice(1)),
-          datasets: [
-            {
-              data: categories.map((c) => c.revenue),
-              backgroundColor: colors.slice(0, categories.length),
-              borderColor: "#0a0a0f",
-              borderWidth: 3,
-              hoverOffset: 8,
-            },
-          ],
+          labels: categories.map(c => c.category.charAt(0).toUpperCase() + c.category.slice(1)),
+          datasets: [{
+            data: categories.map(c => c.revenue),
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: "#ffffff",
+          }],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: "65%",
+          cutout: "75%",
           plugins: {
             legend: {
               position: "bottom",
               labels: {
-                color: "#8888a0",
-                font: { size: 11, family: "Inter" },
-                padding: 16,
+                color: "#0f0f0f",
+                font: { family: "Manrope", size: 12 },
                 usePointStyle: true,
-                pointStyleWidth: 10,
+                padding: 20
               },
             },
             tooltip: {
-              backgroundColor: "#1c1c28",
-              titleColor: "#f0f0f5",
-              bodyColor: "#8888a0",
-              borderColor: "#23233055",
-              borderWidth: 1,
+              backgroundColor: "#0f0f0f",
+              titleFont: { family: "Manrope" },
+              bodyFont: { family: "Manrope" },
               padding: 12,
-              cornerRadius: 8,
               callbacks: {
-                label: (ctx) => {
-                  const value = ctx.parsed;
-                  return ` $${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-                },
+                label: (ctx) => ` AED ${ctx.parsed.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
               },
             },
           },
@@ -764,64 +1438,58 @@
       });
     }
 
-    // ─── Insights ───
     function renderInsights(stats) {
       const bestEl = document.getElementById("insightBest");
       const worstEl = document.getElementById("insightWorst");
       const platformEl = document.getElementById("insightPlatform");
 
       if (stats.bestMonth && stats.bestMonth.revenue > 0) {
-        bestEl.querySelector(".insight-value").textContent = `$${stats.bestMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-        bestEl.querySelector(".insight-detail").textContent = `${stats.bestMonth.label} — ${stats.bestMonth.count} sale(s)`;
+        bestEl.querySelector(".kpi-value").textContent = `AED ${stats.bestMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+        bestEl.querySelector(".kpi-context").textContent = `${stats.bestMonth.label} — ${stats.bestMonth.count} acquisition(s)`;
+      } else {
+        bestEl.querySelector(".kpi-value").textContent = "—";
+        bestEl.querySelector(".kpi-context").textContent = "Waiting for data";
       }
 
       if (stats.worstMonth) {
-        worstEl.querySelector(".insight-value").textContent = `$${stats.worstMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-        worstEl.querySelector(".insight-detail").textContent = `${stats.worstMonth.label} — ${stats.worstMonth.count} sale(s)`;
+        worstEl.querySelector(".kpi-value").textContent = `AED ${stats.worstMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+        worstEl.querySelector(".kpi-context").textContent = `${stats.worstMonth.label} — ${stats.worstMonth.count} acquisition(s)`;
+      } else {
+        worstEl.querySelector(".kpi-value").textContent = "—";
+        worstEl.querySelector(".kpi-context").textContent = "Waiting for data";
       }
 
-      platformEl.querySelector(".insight-value").textContent = `${stats.overview.totalUsers} users`;
-      platformEl.querySelector(".insight-detail").textContent = `${stats.overview.totalInvitations} invitations across platform`;
+      platformEl.querySelector(".kpi-value").textContent = `${stats.overview.totalInvitations}`;
+      platformEl.querySelector(".kpi-context").textContent = `Active storylines from ${stats.overview.totalUsers} customers.`;
     }
 
-    // ─── Sales Ledger ───
     function renderLedger(sales) {
       const tbody = document.getElementById("ledgerBody");
 
       if (!sales || sales.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="ledger-empty">No transactions yet. Sales will appear here when users purchase templates.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-ledger">No transactions match your filters.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = sales
-        .map((sale) => {
-          const date = new Date(sale.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
-          const time = new Date(sale.created_at).toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          const displayAmount = parseFloat(sale.amount || 0).toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-          });
+      tbody.innerHTML = sales.map(sale => {
+        const d = new Date(sale.created_at);
+        const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-          return `
-            <tr>
-              <td>${date} <span style="color:var(--text-muted);font-size:0.75rem">${time}</span></td>
-              <td>${escapeHtml(sale.user_email || "Unknown")}</td>
-              <td>${escapeHtml(sale.template_name || sale.template_id || "—")}</td>
-              <td class="amount">$${displayAmount}</td>
-              <td>${escapeHtml(sale.currency || "USD")}</td>
-            </tr>
-          `;
-        })
-        .join("");
+        return `
+          <tr>
+            <td class="td-date">${dateStr}</td>
+            <td>
+              <div style="font-weight: 600;">${escapeHtml(sale.username || "Unknown")}</div>
+              <div style="font-size: 0.75rem; color: var(--muted);">${escapeHtml(sale.user_email || "")}</div>
+            </td>
+            <td>${escapeHtml(sale.template_name || sale.template_id || "—")}</td>
+            <td class="td-amount">AED ${parseFloat(sale.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+            <td>${escapeHtml(sale.currency || "AED")}</td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    // ─── Utilities ───
     function escapeHtml(text) {
       const div = document.createElement("div");
       div.textContent = text;
@@ -829,4 +1497,5 @@
     }
   </script>
 </body>
+
 </html>

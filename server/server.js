@@ -1,12 +1,19 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import authRoutes from "./routes/auth.js";
 import invitationsRoutes from "./routes/invitations.js";
 import uploadRoutes from "./routes/upload.js";
 import adminRoutes from "./routes/admin.js";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -73,6 +80,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/invitations", invitationsRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/admin", adminRoutes);
+
+// Static files (Serve the root directory)
+app.use(express.static(path.join(__dirname, "../")));
+
 
 // 404 handler
 app.use((req, res) => {
