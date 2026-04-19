@@ -10,7 +10,7 @@ const router = express.Router();
 /**
  * Lightweight admin auth middleware.
  * Checks for X-Admin-Token header (the token returned from /api/admin/login).
- * This is a simple gate — the real security is the password on every visit.
+ * This is a simple gate - the real security is the password on every visit.
  */
 function adminAuth(req, res, next) {
   const token = req.headers["x-admin-token"];

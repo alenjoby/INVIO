@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   INVIO — Editorial Luxury Landing
+   INVIO - Editorial Luxury Landing
    Complete redesign: Rhionn / Vogue / High-end editorial magazine
    ═══════════════════════════════════════════════════════════════════════ */
 
@@ -75,7 +75,7 @@ button { font: inherit; cursor: pointer; }
 .page-shell::before, .page-shell::after { display: none; }
 
 /* ─────────────────────────────────────────────────────────────────────
-   SECTION LABEL — Used across all sections
+   SECTION LABEL - Used across all sections
    ───────────────────────────────────────────────────────────────────── */
 .section-label {
   font-family: var(--font-body);
@@ -92,7 +92,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   HEADER — Thin, quiet, editorial
+   HEADER - Thin, quiet, editorial
    ───────────────────────────────────────────────────────────────────── */
 .site-header {
   position: sticky;
@@ -201,7 +201,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   HERO — Full-viewport typographic overture
+   HERO - Full-viewport typographic overture
    ───────────────────────────────────────────────────────────────────── */
 .hero {
   min-height: 100vh;
@@ -259,7 +259,7 @@ button { font: inherit; cursor: pointer; }
   margin-top: 2.5rem;
 }
 
-/* Hero Image — editorial visual */
+/* Hero Image - editorial visual */
 .hero-image {
   position: relative;
   overflow: hidden;
@@ -299,7 +299,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   EDITORIAL IMAGE — Full-bleed cinematic moment
+   EDITORIAL IMAGE - Full-bleed cinematic moment
    ───────────────────────────────────────────────────────────────────── */
 .editorial-image {
   position: relative;
@@ -337,7 +337,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   MANIFESTO — Single editorial statement
+   MANIFESTO - Single editorial statement
    ───────────────────────────────────────────────────────────────────── */
 .manifesto {
   padding: clamp(6rem, 12vw, 14rem) clamp(1.5rem, 4vw, 4rem);
@@ -365,7 +365,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   PROCESS — How It Works
+   PROCESS - How It Works
    ───────────────────────────────────────────────────────────────────── */
 .process {
   padding: clamp(5rem, 8vw, 10rem) clamp(1.5rem, 4vw, 4rem);
@@ -422,7 +422,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   LIVE FEATURES — RSVP + Countdown
+   LIVE FEATURES - RSVP + Countdown
    ───────────────────────────────────────────────────────────────────── */
 .live-features {
   padding: clamp(5rem, 8vw, 10rem) clamp(1.5rem, 4vw, 4rem);
@@ -460,7 +460,7 @@ button { font: inherit; cursor: pointer; }
   gap: 1.5rem;
 }
 
-/* Floating Cards — Editorial style */
+/* Floating Cards - Editorial style */
 .floating-card {
   position: relative;
   padding: 1.8rem;
@@ -593,7 +593,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   SHOWCASE — Magazine-style category spreads
+   SHOWCASE - Magazine-style category spreads
    ───────────────────────────────────────────────────────────────────── */
 .showcase {
   padding: clamp(5rem, 8vw, 10rem) 0;
@@ -680,7 +680,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   FEATURED — Template cards
+   FEATURED - Template cards
    ───────────────────────────────────────────────────────────────────── */
 .featured {
   padding: clamp(5rem, 8vw, 10rem) clamp(1.5rem, 4vw, 4rem);
@@ -764,7 +764,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   SIGNATURE — Dark cinematic section
+   SIGNATURE - Dark cinematic section
    ───────────────────────────────────────────────────────────────────── */
 .signature-band {
   background: var(--accent);
@@ -832,7 +832,7 @@ button { font: inherit; cursor: pointer; }
   margin: 0;
 }
 
-/* Signature Visual — Phone-style image card */
+/* Signature Visual - Phone-style image card */
 .signature-visual {
   display: flex;
   justify-content: center;
@@ -882,7 +882,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   CLOSING — Minimal CTA
+   CLOSING - Minimal CTA
    ───────────────────────────────────────────────────────────────────── */
 .closing {
   padding: clamp(8rem, 14vw, 16rem) clamp(1.5rem, 4vw, 4rem);
@@ -938,7 +938,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   FOOTER — Quiet single-line
+   FOOTER - Quiet single-line
    ───────────────────────────────────────────────────────────────────── */
 .site-footer {
   background: #000;
@@ -1017,13 +1017,13 @@ button { font: inherit; cursor: pointer; }
 .footer-totop:hover { color: #fff; }
 
 /* ─────────────────────────────────────────────────────────────────────
-   LEGACY COMPAT — Classes landing.js may reference
+   LEGACY COMPAT - Classes landing.js may reference
    ───────────────────────────────────────────────────────────────────── */
 .eyebrow { display: none; }
 .container { /* Not used in new layout but kept for JS compat */ }
-.strip { /* Legacy — replaced by .process */ }
+.strip { /* Legacy - replaced by .process */ }
 .strip-grid { /* Legacy */ }
-.showcase-card { /* Legacy — kept for any references */ }
+.showcase-card { /* Legacy - kept for any references */ }
 .showcase-overlay { /* Legacy */ }
 .template-card { /* Legacy */ }
 .template-grid { /* Legacy */ }
@@ -1031,7 +1031,7 @@ button { font: inherit; cursor: pointer; }
 .template-body { /* Legacy */ }
 .template-topline { /* Legacy */ }
 .card-hover { /* Legacy */ }
-.final-cta { /* Legacy — replaced by .closing */ }
+.final-cta { /* Legacy - replaced by .closing */ }
 .final-cta-grid { /* Legacy */ }
 .final-cta-copy { /* Legacy */ }
 .final-cta-actions { /* Legacy */ }
@@ -1066,7 +1066,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   RESPONSIVE — Tablet
+   RESPONSIVE - Tablet
    ───────────────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .site-nav {
@@ -1165,7 +1165,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   RESPONSIVE — Mobile
+   RESPONSIVE - Mobile
    ───────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .site-nav {

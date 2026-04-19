@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   INVIO — Template Marketplace
+   INVIO - Template Marketplace
    Editorial luxury redesign (matches landing.css)
    ═══════════════════════════════════════════════════════════════════════ */
 
@@ -77,7 +77,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   HEADER — Editorial thin bar (consistent with landing)
+   HEADER - Editorial thin bar (consistent with landing)
    ───────────────────────────────────────────────────────────────────── */
 .site-header {
   position: sticky;
@@ -225,7 +225,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   MARKET HERO — Editorial typographic header
+   MARKET HERO - Editorial typographic header
    ───────────────────────────────────────────────────────────────────── */
 .market-main {
   padding: 0 0 4rem;
@@ -287,7 +287,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   CONTROLS — Clean search + filter strip
+   CONTROLS - Clean search + filter strip
    ───────────────────────────────────────────────────────────────────── */
 .controls {
   position: sticky;
@@ -438,7 +438,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   TEMPLATE GRID — Editorial cards
+   TEMPLATE GRID - Editorial cards
    ───────────────────────────────────────────────────────────────────── */
 .gallery { padding-top: 0; }
 
@@ -594,7 +594,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   MODALS — Dark editorial panels
+   MODALS - Dark editorial panels
    ───────────────────────────────────────────────────────────────────── */
 .modal {
   position: fixed;
@@ -802,7 +802,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   RESPONSIVE — Mobile
+   RESPONSIVE - Mobile
    ───────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   body.menu-open { overflow: hidden; }
@@ -1061,7 +1061,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   FOOTER — Redesigned Black Editorial Footer
+   FOOTER - Redesigned Black Editorial Footer
    ───────────────────────────────────────────────────────────────────── */
 .site-footer {
   background: #000;

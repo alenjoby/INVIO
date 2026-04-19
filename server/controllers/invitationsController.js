@@ -276,7 +276,7 @@ export const publishInvitation = async (req, res) => {
 /**
  * Purchase invitation (publishes + records a sale for revenue tracking).
  * The sale recording is wrapped in try-catch so it NEVER blocks the
- * existing publish flow — if the sales insert fails, the user still
+ * existing publish flow - if the sales insert fails, the user still
  * gets their published invitation.
  */
 export const purchaseInvitation = async (req, res) => {
@@ -318,7 +318,7 @@ export const purchaseInvitation = async (req, res) => {
         currency: currency,
       });
 
-      console.log(`[SALES] Recorded sale: ${templateId} — $${amount}`);
+      console.log(`[SALES] Recorded sale: ${templateId} - $${amount}`);
     } catch (saleErr) {
       // Log but never crash the response
       console.error("[SALES] Failed to record sale (non-blocking):", saleErr.message);

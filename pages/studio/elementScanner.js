@@ -25,7 +25,7 @@ class ElementScanner {
       this.scanElements();
       this.attachEventListeners();
     } catch (error) {
-      console.error("âœ— Scanner initialization failed:", error);
+      console.error("âœ- Scanner initialization failed:", error);
     }
   }
 

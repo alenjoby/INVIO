@@ -61,7 +61,7 @@ class StudioEditor {
 
       console.log("âœ“ Studio initialized");
     } catch (error) {
-      console.error("âœ— Studio init failed:", error);
+      console.error("âœ- Studio init failed:", error);
       this.showToast("Failed to initialize editor", "error");
     }
   }
@@ -304,7 +304,7 @@ class StudioEditor {
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
       this.showToast(`${templateName} loaded`, "success");
     } catch (error) {
-      console.error("âœ— Template load failed:", error);
+      console.error("âœ- Template load failed:", error);
       this.showToast("Failed to load template: " + error.message, "error");
     }
   }
@@ -470,7 +470,7 @@ class StudioEditor {
         });
       });
     } catch (error) {
-      console.error("âœ— Element scan failed:", error);
+      console.error("âœ- Element scan failed:", error);
     }
   }
 
@@ -820,7 +820,7 @@ class StudioEditor {
       this.els.saveIndicator.textContent = "All changes saved";
       this.els.saveIcon.classList.add("visible");
     } catch (error) {
-      console.error("âœ— Save failed:", error);
+      console.error("âœ- Save failed:", error);
       this.showToast("Failed to save", "error");
     }
   }
@@ -886,7 +886,7 @@ class StudioEditor {
       this.els.successModal.classList.remove("hidden");
       this.showToast("Invitation published!", "success");
     } catch (error) {
-      console.error("âœ— Publish failed:", error);
+      console.error("âœ- Publish failed:", error);
       this.showToast("Failed to publish", "error");
     }
   }

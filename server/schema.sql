@@ -55,7 +55,7 @@ CREATE TABLE sales (
 -- Enable RLS on sales
 ALTER TABLE sales ENABLE ROW LEVEL SECURITY;
 
--- Only the service role (admin) can read sales — no user-facing policy needed
+-- Only the service role (admin) can read sales - no user-facing policy needed
 CREATE POLICY "Service role full access on sales"
   ON sales FOR ALL
   USING (true)

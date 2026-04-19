@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>INVIO — Finance Dashboard</title>
+  <title>INVIO - Finance Dashboard</title>
   <meta name="robots" content="noindex, nofollow" />
 
   <!-- Favicon -->
@@ -26,7 +26,7 @@
 
   <style>
     /* ─────────────────────────────────────────────────────────────────────
-       DESIGN TOKENS — Editorial Luxury
+       DESIGN TOKENS - Editorial Luxury
        ───────────────────────────────────────────────────────────────────── */
     :root {
       --bg: #f4f4f2;
@@ -1157,7 +1157,7 @@
 
         sheet.mergeCells("A1:F1");
         const titleCell = sheet.getCell("A1");
-        titleCell.value = `INVIO — Monthly Report: ${monthLabel}`;
+        titleCell.value = `INVIO - Monthly Report: ${monthLabel}`;
         titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
         titleCell.alignment = { vertical: "middle" };
         sheet.getRow(1).height = 36;
@@ -1194,7 +1194,7 @@
             dateStr,
             sale.username || "Unknown",
             sale.user_email || "",
-            sale.template_name || sale.template_id || "—",
+            sale.template_name || sale.template_id || "-",
             parseFloat(sale.amount || 0),
             sale.currency || "AED"
           ]);
@@ -1304,7 +1304,7 @@
         // ── Title ──
         sheet.mergeCells("A1:F1");
         const titleCell = sheet.getCell("A1");
-        titleCell.value = "INVIO — Complete Revenue Report (All-Time)";
+        titleCell.value = "INVIO - Complete Revenue Report (All-Time)";
         titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
         titleCell.alignment = { vertical: "middle" };
         sheet.getRow(1).height = 36;
@@ -1340,7 +1340,7 @@
             dateStr,
             sale.username || "Unknown",
             sale.user_email || "",
-            sale.template_name || sale.template_id || "—",
+            sale.template_name || sale.template_id || "-",
             parseFloat(sale.amount || 0),
             sale.currency || "AED"
           ]);
@@ -1551,17 +1551,17 @@
 
       if (stats.bestMonth && stats.bestMonth.revenue > 0) {
         bestEl.querySelector(".kpi-value").textContent = `AED ${stats.bestMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-        bestEl.querySelector(".kpi-context").textContent = `${stats.bestMonth.label} — ${stats.bestMonth.count} acquisition(s)`;
+        bestEl.querySelector(".kpi-context").textContent = `${stats.bestMonth.label} - ${stats.bestMonth.count} acquisition(s)`;
       } else {
-        bestEl.querySelector(".kpi-value").textContent = "—";
+        bestEl.querySelector(".kpi-value").textContent = "-";
         bestEl.querySelector(".kpi-context").textContent = "Waiting for data";
       }
 
       if (stats.worstMonth) {
         worstEl.querySelector(".kpi-value").textContent = `AED ${stats.worstMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-        worstEl.querySelector(".kpi-context").textContent = `${stats.worstMonth.label} — ${stats.worstMonth.count} acquisition(s)`;
+        worstEl.querySelector(".kpi-context").textContent = `${stats.worstMonth.label} - ${stats.worstMonth.count} acquisition(s)`;
       } else {
-        worstEl.querySelector(".kpi-value").textContent = "—";
+        worstEl.querySelector(".kpi-value").textContent = "-";
         worstEl.querySelector(".kpi-context").textContent = "Waiting for data";
       }
 
@@ -1588,7 +1588,7 @@
               <div style="font-weight: 600; color: var(--ink);">${escapeHtml(sale.username || "Customer")}</div>
               <div style="font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em;">${escapeHtml(sale.user_email || "No Email")}</div>
             </td>
-            <td>${escapeHtml(sale.template_name || sale.template_id || "—")}</td>
+            <td>${escapeHtml(sale.template_name || sale.template_id || "-")}</td>
             <td class="td-amount">AED ${parseFloat(sale.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
             <td>${escapeHtml(sale.currency || "AED")}</td>
           </tr>

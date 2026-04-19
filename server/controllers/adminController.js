@@ -19,7 +19,7 @@ export const verifyAdmin = async (req, res) => {
       return res.status(401).json({ error: "Invalid admin password" });
     }
 
-    // Return a simple token derived from the password — this is NOT cryptographic,
+    // Return a simple token derived from the password - this is NOT cryptographic,
     // it just prevents replay from the browser without the password.
     // For a university project this is sufficient.
     const token = Buffer.from(`invio-admin:${Date.now()}`).toString("base64");
