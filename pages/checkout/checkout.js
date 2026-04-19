@@ -146,6 +146,11 @@ async function handleSuccess() {
       `${CONFIG.API_BASE}/invitations/${invitationId}/purchase`,
       {
         method: "POST",
+        body: JSON.stringify({
+          amount: checkoutState.template.price,
+          templateName: checkoutState.template.name,
+          currency: "AED" // Standardized for the new dashboard
+        })
       },
     );
 
