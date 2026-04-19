@@ -114,7 +114,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .brand { display: flex; align-items: center; }
-.brand img { height: 1.6rem; width: auto; }
+.brand img { height: 3.5rem; width: auto; }
 
 .nav-links {
   display: flex;
@@ -953,7 +953,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .footer-brand img {
-  height: 1.4rem;
+  height: 3rem;
   filter: brightness(0) invert(1);
   opacity: 0.8;
   transition: opacity 0.5s var(--ease);
@@ -1174,7 +1174,7 @@ button { font: inherit; cursor: pointer; }
     z-index: 101;
   }
 
-  .brand img { height: 1.3rem; }
+  .brand img { height: 2.8rem; }
 
   .menu-toggle {
     display: flex;

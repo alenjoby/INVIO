@@ -127,7 +127,7 @@ img { display: block; max-width: 100%; }
 }
 
 .brand img {
-  height: 1.6rem;
+  height: 3.5rem;
   width: auto;
   object-fit: contain;
 }
@@ -836,7 +836,7 @@ img { display: block; max-width: 100%; }
     z-index: 2001;
   }
 
-  .brand img { height: 1.3rem; }
+  .brand img { height: 2.8rem; }
 
   body.menu-open .nav-left {
     opacity: 0;
@@ -1077,7 +1077,7 @@ img { display: block; max-width: 100%; }
 }
 
 .footer-brand img {
-  height: 1.4rem;
+  height: 3rem;
   filter: brightness(0) invert(1);
   opacity: 0.8;
   transition: opacity 0.5s var(--ease);
