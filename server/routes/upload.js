@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { supabase } from "../config/supabase.js";
+import { supabase, supabaseAdmin } from "../config/supabase.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -27,8 +27,9 @@ router.post("/", verifyToken, upload.single("file"), async (req, res) => {
       .replace(/[^a-z0-9.]/gi, "_")
       .toLowerCase()}`;
 
-    // Upload directly to Supabase Storage bucket
-    const { data, error } = await supabase.storage
+    // Upload directly to Supabase Storage bucket using Admin role to bypass RLS
+    // (Secure because we verified token above)
+    const { data, error } = await supabaseAdmin.storage
       .from("invitation_media")
       .upload(filename, file.buffer, {
         contentType: file.mimetype,
@@ -40,8 +41,8 @@ router.post("/", verifyToken, upload.single("file"), async (req, res) => {
       return res.status(500).json({ error: "Storage error: " + error.message });
     }
 
-    // Get the live public URL
-    const { data: publicUrlData } = supabase.storage
+    // Get the live public URL (can use admin or standard client)
+    const { data: publicUrlData } = supabaseAdmin.storage
       .from("invitation_media")
       .getPublicUrl(filename);
 
