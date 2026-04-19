@@ -115,6 +115,24 @@
         0%, 100% { opacity: 0.6; }
         50% { opacity: 1; }
       }
+
+      /* Logo Animation */
+      .logo-animate {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+        filter: blur(8px);
+        animation: logoEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.2s;
+        will-change: transform, opacity, filter;
+      }
+
+      @keyframes logoEntrance {
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          filter: blur(0);
+        }
+      }
     </style>
     
     <script src="/js/templates.js" defer></script>
@@ -126,7 +144,7 @@
 
     <div id="loader">
       <div class="brand">
-        <img src="/assets/images/logo.png" alt="INVIO logo" style="height: 24px;" />
+        <img src="/assets/images/logo.svg" alt="INVIO logo" style="height: 24px;" class="logo-animate" />
       </div>
       <div class="spinner"></div>
     </div>

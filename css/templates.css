@@ -22,6 +22,24 @@
   --ease-slow: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Logo Animation */
+.logo-animate {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  filter: blur(8px);
+  animation: logoEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.2s;
+  will-change: transform, opacity, filter;
+}
+
+@keyframes logoEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
 /* ─── Reset ─── */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }

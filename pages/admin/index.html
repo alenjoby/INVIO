@@ -47,6 +47,24 @@
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* Logo Animation */
+    .logo-animate {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      filter: blur(8px);
+      animation: logoEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.2s;
+      will-change: transform, opacity, filter;
+    }
+
+    @keyframes logoEntrance {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
     *,
     *::before,
     *::after {
@@ -737,7 +755,7 @@
   <!-- ─── LOGIN SCREEN ─── -->
   <div class="login-screen" id="loginScreen">
     <div class="login-wrapper" data-aos="fade-up" data-aos-duration="1000">
-      <img src="/assets/images/logo.png" alt="INVIO Logo" class="brand-logo" />
+      <img src="/assets/images/logo.svg" alt="INVIO Logo" class="brand-logo logo-animate" />
       <h1 class="editorial-title">Finance Dashboard</h1>
       <p class="subtitle">Enter your password to access analytics and records.</p>
 
@@ -756,7 +774,7 @@
   <div class="dashboard" id="dashboard">
     <header class="site-header">
       <div class="site-nav">
-        <img src="/assets/images/logo.png" alt="INVIO logo" />
+        <img src="/assets/images/logo.svg" alt="INVIO logo" class="logo-animate" style="height: 1.6rem" />
         <div class="header-actions">
           <div class="status-indicator">
             <span class="status-dot"></span> Live
