@@ -297,6 +297,7 @@ export const purchaseInvitation = async (req, res) => {
     try {
       const amount = parseFloat(req.body.amount || 0);
       const templateId = publishedData.template_id || req.body.templateId || "unknown";
+      const templateName = req.body.templateName || "unknown";
       const customerName = req.body.customerName || "";
       const currency = req.body.currency || "AED";
 

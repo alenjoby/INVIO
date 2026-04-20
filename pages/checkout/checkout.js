@@ -170,7 +170,7 @@ async function handleSuccess() {
 
   // Redirect to Dashboard
   setTimeout(() => {
-    window.location.href = "/dashboard";
+    window.location.href = "/pages/dashboard/index.html";
   }, 2500);
 }
 
