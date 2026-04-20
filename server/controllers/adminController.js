@@ -31,6 +31,19 @@ export const verifyAdmin = async (req, res) => {
   }
 };
 
+const CURRENCY_CONFIG = {
+  AED: { rate: 3.67 },
+  USD: { rate: 1 },
+  INR: { rate: 83.2 },
+  GBP: { rate: 0.79 },
+};
+
+function getUsdValue(amount, currencyCode) {
+  const code = (currencyCode || "USD").toUpperCase();
+  const rate = CURRENCY_CONFIG[code] ? CURRENCY_CONFIG[code].rate : 1;
+  return parseFloat(amount || 0) / rate;
+}
+
 /**
  * Get comprehensive dashboard stats.
  * Returns: overview KPIs, monthly revenue array, category breakdown, recent sales.
@@ -68,9 +81,9 @@ export const getDashboardStats = async (req, res) => {
       console.error("Invitations count error:", invError);
     }
 
-    // 4. Compute overview KPIs
+    // 4. Compute overview KPIs (Normalized to USD)
     const totalRevenue = allSales.reduce(
-      (sum, s) => sum + parseFloat(s.amount || 0),
+      (sum, s) => sum + getUsdValue(s.amount, s.currency),
       0,
     );
     const totalSalesCount = allSales.length;
@@ -89,11 +102,11 @@ export const getDashboardStats = async (req, res) => {
     });
 
     const thisMonthRevenue = thisMonthSales.reduce(
-      (sum, s) => sum + parseFloat(s.amount || 0),
+      (sum, s) => sum + getUsdValue(s.amount, s.currency),
       0,
     );
     const lastMonthRevenue = lastMonthSales.reduce(
-      (sum, s) => sum + parseFloat(s.amount || 0),
+      (sum, s) => sum + getUsdValue(s.amount, s.currency),
       0,
     );
 
@@ -126,7 +139,7 @@ export const getDashboardStats = async (req, res) => {
       });
 
       const revenue = monthSales.reduce(
-        (sum, s) => sum + parseFloat(s.amount || 0),
+        (sum, s) => sum + getUsdValue(s.amount, s.currency),
         0,
       );
       const count = monthSales.length;
@@ -146,7 +159,7 @@ export const getDashboardStats = async (req, res) => {
       if (!categoryMap[cat]) {
         categoryMap[cat] = { revenue: 0, count: 0 };
       }
-      categoryMap[cat].revenue += parseFloat(sale.amount || 0);
+      categoryMap[cat].revenue += getUsdValue(sale.amount, sale.currency);
       categoryMap[cat].count += 1;
     }
 

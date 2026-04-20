@@ -10,6 +10,13 @@ const CONFIG = {
   STORAGE_KEY: "invio_purchased_templates",
 };
 
+const CURRENCY_CONFIG = {
+  AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
+  USD: { rate: 1, locale: "en-US", currency: "USD", prefix: "$" },
+  INR: { rate: 83.2, locale: "en-IN", currency: "INR", prefix: "INR" },
+  GBP: { rate: 0.79, locale: "en-GB", currency: "GBP", prefix: "GBP" },
+};
+
 const checkoutState = {
   template: null,
   isProcessing: false,
@@ -94,10 +101,17 @@ function renderSummary() {
   refs.totalPrice.textContent = priceStr;
 }
 
-function formatCurrency(amount) {
-  return new Intl.NumberFormat("en-US", {
+function getActiveCurrency() {
+  const code = localStorage.getItem("invioCurrency") || "USD";
+  return CURRENCY_CONFIG[code] ? CURRENCY_CONFIG[code] : CURRENCY_CONFIG["USD"];
+}
+
+function formatCurrency(usdAmount) {
+  const conf = getActiveCurrency();
+  const amount = usdAmount * conf.rate;
+  return new Intl.NumberFormat(conf.locale, {
     style: "currency",
-    currency: "USD",
+    currency: conf.currency,
   }).format(amount);
 }
 
@@ -143,15 +157,18 @@ async function handleSuccess() {
 
   // Call backend to mark as purchased/published before showing success
   if (invitationId) {
+    const activeCurrency = getActiveCurrency();
+    const finalAmount = checkoutState.template.price * activeCurrency.rate;
+
     const response = await postWithAuthRetry(
       `${CONFIG.API_BASE}/invitations/${invitationId}/purchase`,
       {
         method: "POST",
         body: JSON.stringify({
-          amount: checkoutState.template.price,
+          amount: finalAmount,
           templateName: checkoutState.template.name,
           customerName: refs.fullName.value || "",
-          currency: "AED" // Standardized for the new dashboard
+          currency: activeCurrency.currency
         })
       },
     );

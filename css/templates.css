@@ -232,39 +232,50 @@ img { display: block; max-width: 100%; }
 }
 
 .market-hero {
-  padding: clamp(4rem, 8vw, 7rem) 0 clamp(2.5rem, 4vw, 4rem);
+  padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(2.5rem, 5vw, 3.5rem);
   border-bottom: 1px solid var(--line-faint);
   margin-bottom: 0;
 }
 
-.market-hero h1 {
-  margin: 0 0 0.6rem;
-  font-family: var(--font-heading);
-  font-size: clamp(2.6rem, 5vw, 4.2rem);
-  font-weight: 400;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-.hero-subtitle {
-  margin: 0 0 2.5rem;
-  color: var(--muted);
-  max-width: 42ch;
-  font-size: 1rem;
-  line-height: 1.7;
+.hero-content h1 {
+  margin: 0 0 1.2rem;
+  font-family: var(--font-heading);
+  font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
 }
 
 .hero-stats {
   display: flex;
-  gap: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--line);
+  padding: 0;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .stat {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  padding: 0.8rem 2.2rem;
+  border-right: 1px solid var(--line);
   opacity: 0;
   animation: stat-rise 520ms var(--ease) both;
+}
+
+.stat:last-child {
+  border-right: none;
 }
 
 .stat:nth-child(1) { animation-delay: 80ms; }
@@ -273,17 +284,67 @@ img { display: block; max-width: 100%; }
 
 .stat-number {
   font-family: var(--font-heading);
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 400;
   letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--ink);
 }
 
 .stat-label {
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.2em;
+  margin-top: 0.2rem;
+}
+
+.hero-subtitle {
+  margin: 0 auto;
+  color: var(--muted);
+  max-width: 46ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Phone Optimization */
+@media (max-width: 640px) {
+  .market-hero {
+    padding: 3rem 0;
+  }
+
+  .hero-stats {
+    flex-direction: column;
+    width: 100%;
+    max-width: 280px;
+    background: transparent;
+    border: none;
+  }
+
+  .stat {
+    width: 100%;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--line-faint);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+  }
+
+  .stat:first-child {
+    border-top: 1px solid var(--line-faint);
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .stat-label {
+    margin-top: 0;
+    font-size: 0.55rem;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -296,7 +357,7 @@ img { display: block; max-width: 100%; }
   margin-bottom: 2.5rem;
   border-bottom: 1px solid var(--line-faint);
   background: var(--bg);
-  padding: 1rem 0;
+  padding: 0.8rem 0;
   display: flex;
   align-items: center;
   gap: 1.2rem;

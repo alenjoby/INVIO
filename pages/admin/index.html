@@ -23,6 +23,7 @@
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     /* ─────────────────────────────────────────────────────────────────────
@@ -761,6 +762,21 @@
         justify-content: center;
       }
     }
+
+    /* Currency Select */
+    .currency-select {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      outline: none;
+    }
   </style>
 </head>
 
@@ -793,6 +809,12 @@
           <div class="status-indicator">
             <span class="status-dot"></span> Live
           </div>
+          <select id="adminCurrency" class="currency-select">
+            <option value="AED">AED</option>
+            <option value="USD">USD</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+          </select>
           <button class="btn-nav-ghost" id="logoutBtn">Logout</button>
         </div>
       </div>
@@ -933,6 +955,15 @@
   <script type="module">
     import { API_URL } from "/js/env.js";
 
+    const CURRENCY_CONFIG = {
+      AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
+      USD: { rate: 1, locale: "en-US", currency: "USD", prefix: "$" },
+      INR: { rate: 83.2, locale: "en-IN", currency: "INR", prefix: "INR" },
+      GBP: { rate: 0.79, locale: "en-GB", currency: "GBP", prefix: "GBP" },
+    };
+
+    let selectedAdminCurrency = localStorage.getItem("invioAdminCurrency") || "AED";
+
     let adminToken = null;
     let revenueChartInstance = null;
     let categoryChartInstance = null;
@@ -959,6 +990,44 @@
     const exportAllBtn = document.getElementById("exportAllBtn");
     const filterCountEl = document.getElementById("filterCount");
 
+    const adminCurrencySelect = document.getElementById("adminCurrency");
+    // Set initial value
+    adminCurrencySelect.value = selectedAdminCurrency;
+
+    // ─── Formatting Helpers ───
+    function formatDisplayAmount(usdAmount) {
+      if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
+      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+      const converted = usdAmount * conf.rate;
+      return new Intl.NumberFormat(conf.locale, {
+        style: 'currency',
+        currency: conf.currency
+      }).format(converted);
+    }
+
+    function formatChartTick(usdAmount) {
+      if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
+      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+      const converted = usdAmount * conf.rate;
+      return converted;
+    }
+
+    function convertSaleAmount(amount, originalCurrency) {
+      const origConf = CURRENCY_CONFIG[originalCurrency] || CURRENCY_CONFIG.USD;
+      const usdAmount = parseFloat(amount || 0) / origConf.rate;
+      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+      return usdAmount * conf.rate;
+    }
+
+    function formatSaleAmount(amount, originalCurrency) {
+      const converted = convertSaleAmount(amount, originalCurrency);
+      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+      return new Intl.NumberFormat(conf.locale, {
+        style: 'currency',
+        currency: conf.currency
+      }).format(converted);
+    }
+
     // ─── Auth Events ───
     loginBtn.addEventListener("click", handleLogin);
     passwordInput.addEventListener("keydown", (e) => {
@@ -970,6 +1039,18 @@
       loginScreen.style.display = "flex";
       passwordInput.value = "";
       loginError.style.display = "none";
+    });
+
+    adminCurrencySelect.addEventListener("change", (e) => {
+      selectedAdminCurrency = e.target.value;
+      localStorage.setItem("invioAdminCurrency", selectedAdminCurrency);
+      if (masterStats && masterSalesList) {
+        renderKPIs(masterStats.overview);
+        renderRevenueChart(masterStats.monthlyRevenue);
+        renderCategoryChart(masterStats.categoryBreakdown);
+        renderInsights(masterStats);
+        renderLedger(filteredSales);
+      }
     });
 
     // ─── Filter Events ───
@@ -1183,7 +1264,7 @@
         sheet.getRow(3).height = 8;
 
         // ── Header Row ──
-        const headers = ["Date", "Customer", "Email", "Template", "Amount (AED)", "Currency"];
+        const headers = ["Date", "Customer", "Email", "Template", `Amount (${selectedAdminCurrency})`, "Original Currency"];
         const headerRow = sheet.getRow(4);
         headerRow.values = headers;
         headerRow.height = 30;
@@ -1202,7 +1283,7 @@
             sale.username || "Unknown",
             sale.user_email || "",
             sale.template_name || sale.template_id || "-",
-            parseFloat(sale.amount || 0),
+            convertSaleAmount(sale.amount, sale.currency),
             sale.currency || "AED"
           ]);
 
@@ -1236,7 +1317,7 @@
         });
 
         const totalValueCell = sheet.getCell(`E${footerRowNum}`);
-        const totalAmt = filteredSales.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        const totalAmt = filteredSales.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
         totalValueCell.value = totalAmt;
         totalValueCell.numFmt = '#,##0.00';
         totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
@@ -1244,7 +1325,7 @@
         totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
 
         const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
-        totalCurrCell.value = "AED";
+        totalCurrCell.value = selectedAdminCurrency;
         totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
         totalCurrCell.fill = warmFill;
         totalCurrCell.alignment = { vertical: "middle" };
@@ -1329,7 +1410,7 @@
         sheet.getRow(3).height = 8;
 
         // ── Header ──
-        const headers = ["Date", "Customer", "Email", "Template", "Amount (AED)", "Currency"];
+        const headers = ["Date", "Customer", "Email", "Template", `Amount (${selectedAdminCurrency})`, "Original Currency"];
         const headerRow = sheet.getRow(4);
         headerRow.values = headers;
         headerRow.height = 30;
@@ -1348,7 +1429,7 @@
             sale.username || "Unknown",
             sale.user_email || "",
             sale.template_name || sale.template_id || "-",
-            parseFloat(sale.amount || 0),
+            convertSaleAmount(sale.amount, sale.currency),
             sale.currency || "AED"
           ]);
 
@@ -1377,7 +1458,7 @@
         });
 
         const totalValueCell = sheet.getCell(`E${footerRowNum}`);
-        const totalAmt = masterSalesList.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
+        const totalAmt = masterSalesList.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
         totalValueCell.value = totalAmt;
         totalValueCell.numFmt = '#,##0.00';
         totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
@@ -1385,7 +1466,7 @@
         totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
 
         const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
-        totalCurrCell.value = "AED";
+        totalCurrCell.value = selectedAdminCurrency;
         totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
         totalCurrCell.fill = warmFill;
         totalCurrCell.alignment = { vertical: "middle" };
@@ -1408,6 +1489,14 @@
         a.download = `INVIO_AllTime_Revenue_Report.xlsx`;
         a.click();
         URL.revokeObjectURL(url);
+
+        // Confetti Celebration
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#1f2a37', '#8c7a63', '#b5a68f', '#eae5dc']
+        });
       } catch (err) {
         console.error("Export error:", err);
         alert("Failed to generate report. Please try again.");
@@ -1425,17 +1514,17 @@
       document.getElementById("kpiGrid").innerHTML = `
         <div class="kpi-block">
           <div class="kpi-label">Gross Volume</div>
-          <div class="kpi-value">AED ${parseFloat(overview.totalRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-value">${formatDisplayAmount(overview.totalRevenue)}</div>
           <div class="kpi-context">${overview.totalSales || 0} acquisitions</div>
         </div>
         <div class="kpi-block">
           <div class="kpi-label">Revenue (${new Date().toLocaleString("en-US", { month: "short" })})</div>
-          <div class="kpi-value">AED ${parseFloat(overview.thisMonthRevenue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-value">${formatDisplayAmount(overview.thisMonthRevenue)}</div>
           <div class="kpi-context kpi-change ${growthClass}">${growthPrefix}${overview.momGrowth || 0}% vs previous</div>
         </div>
         <div class="kpi-block">
           <div class="kpi-label">Average Order</div>
-          <div class="kpi-value">AED ${parseFloat(overview.avgOrderValue || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+          <div class="kpi-value">${formatDisplayAmount(overview.avgOrderValue)}</div>
           <div class="kpi-context">Per transaction</div>
         </div>
         <div class="kpi-block">
@@ -1455,8 +1544,8 @@
         data: {
           labels: monthlyRevenue.map(m => m.label),
           datasets: [{
-            label: "Revenue (AED)",
-            data: monthlyRevenue.map(m => m.revenue),
+            label: "Revenue",
+            data: monthlyRevenue.map(m => formatChartTick(m.revenue)),
             backgroundColor: "#1f2a37",
             borderRadius: 4,
             barThickness: 'flex',
@@ -1474,7 +1563,7 @@
               bodyFont: { family: "Manrope" },
               padding: 12,
               callbacks: {
-                label: (ctx) => `AED ${ctx.parsed.y.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+                label: (ctx) => ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
               },
             },
           },
@@ -1489,7 +1578,7 @@
               ticks: {
                 color: "#888888",
                 font: { family: "Manrope", size: 11 },
-                callback: (val) => `AED ${val}`,
+                callback: (val) => `${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${val}`,
               },
               beginAtZero: true,
             },
@@ -1517,7 +1606,7 @@
         data: {
           labels: categories.map(c => c.category.charAt(0).toUpperCase() + c.category.slice(1)),
           datasets: [{
-            data: categories.map(c => c.revenue),
+            data: categories.map(c => formatChartTick(c.revenue)),
             backgroundColor: colors,
             borderWidth: 2,
             borderColor: "#ffffff",
@@ -1543,7 +1632,7 @@
               bodyFont: { family: "Manrope" },
               padding: 12,
               callbacks: {
-                label: (ctx) => ` AED ${ctx.parsed.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+                label: (ctx) => ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
               },
             },
           },
@@ -1557,7 +1646,7 @@
       const platformEl = document.getElementById("insightPlatform");
 
       if (stats.bestMonth && stats.bestMonth.revenue > 0) {
-        bestEl.querySelector(".kpi-value").textContent = `AED ${stats.bestMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+        bestEl.querySelector(".kpi-value").textContent = formatDisplayAmount(stats.bestMonth.revenue);
         bestEl.querySelector(".kpi-context").textContent = `${stats.bestMonth.label} - ${stats.bestMonth.count} acquisition(s)`;
       } else {
         bestEl.querySelector(".kpi-value").textContent = "-";
@@ -1565,7 +1654,7 @@
       }
 
       if (stats.worstMonth) {
-        worstEl.querySelector(".kpi-value").textContent = `AED ${stats.worstMonth.revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+        worstEl.querySelector(".kpi-value").textContent = formatDisplayAmount(stats.worstMonth.revenue);
         worstEl.querySelector(".kpi-context").textContent = `${stats.worstMonth.label} - ${stats.worstMonth.count} acquisition(s)`;
       } else {
         worstEl.querySelector(".kpi-value").textContent = "-";
@@ -1596,8 +1685,13 @@
               <div style="font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em;">${escapeHtml(sale.user_email || "No Email")}</div>
             </td>
             <td>${escapeHtml(sale.template_name || sale.template_id || "-")}</td>
-            <td class="td-amount">AED ${parseFloat(sale.amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
-            <td>${escapeHtml(sale.currency || "AED")}</td>
+            <td class="td-amount">
+              ${formatSaleAmount(sale.amount, sale.currency)}
+              ${sale.currency && sale.currency.toUpperCase() !== selectedAdminCurrency.toUpperCase() ? 
+                `<span style="font-size: 0.70rem; color: var(--muted); display: block; margin-top:0.2rem;">(Paid: ${sale.amount} ${sale.currency})</span>` 
+                : ""}
+            </td>
+            <td>${selectedAdminCurrency}</td>
           </tr>
         `;
       }).join("");
