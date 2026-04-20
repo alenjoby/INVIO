@@ -71,7 +71,7 @@ const TEMPLATE_CATALOG = [
     id: "valentines-1",
     name: "Sunset Promise",
     category: "valentines",
-    price: 34,
+    price: 0,
     image: "templates/valentines/nathan-dumlao-w5hhoYM_JsU-unsplash.jpg",
     templatePath: "templates/valentines/Template1.html",
     design: "Romantic Minimal",
@@ -160,7 +160,7 @@ const TEMPLATE_CATALOG = [
     id: "funeral-1",
     name: "Cinematic Legacy",
     category: "funeral",
-    price: 0,
+    price: 35,
     image: "assets/images/funeral/hero-portrait.jpg",
     templatePath: "templates/funeral/funeral-template-1.html",
     design: "Minimal Memorial",
@@ -171,7 +171,7 @@ const TEMPLATE_CATALOG = [
     id: "funeral-2",
     name: "The Living Canvas",
     category: "funeral",
-    price: 0,
+    price: 38,
     image: "assets/images/funeral/portrait-oldman.jpg",
     templatePath: "templates/funeral/funeral-template-2.html",
     design: "Warm Tribute",
@@ -182,7 +182,7 @@ const TEMPLATE_CATALOG = [
     id: "funeral-3",
     name: "In Loving Memory",
     category: "funeral",
-    price: 0,
+    price: 42,
     image: "assets/images/funeral/portrait-gp.jpg",
     templatePath: "templates/funeral/funeral-template-3.html",
     design: "Dramatic Slides",
@@ -811,6 +811,9 @@ function setActiveCurrencyButton() {
 }
 
 function formatPrice(price) {
+  if (price === 0) {
+    return "Free";
+  }
   if (!Number.isFinite(Number(price))) {
     return "Price TBD";
   }
