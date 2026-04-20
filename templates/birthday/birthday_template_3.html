@@ -11,6 +11,10 @@
     <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
     <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
     <link rel="stylesheet" href="../../style.css" />
+    <style>
+      /* Quick responsive cursor fix for Studio */
+      [data-edit] { cursor: pointer !important; }
+    </style>
   </head>
   <body>
     <!-- STARS BACKGROUND -->
@@ -24,7 +28,7 @@
 
     <!-- SECTION 1 -->
     <section class="section intro">
-      <h1 id="typing-text" class="typing-cursor"></h1>
+      <h1 id="typing-text" class="typing-cursor" data-edit="text" data-id="intro-typing-text">A special day is coming...</h1>
     </section>
 
     <!-- SECTION 2 (IMAGE FOCUS) -->
@@ -32,8 +36,10 @@
       <img
         src="../../assets/images/birthday/template_3/girl.webp"
         class="hero-img fade"
+        data-edit="image"
+        data-id="hero-main-photo"
       />
-      <p class="fade caption">and it's all about her ✨</p>
+      <p class="fade caption" data-edit="text" data-id="story-caption">and it's all about her ✨</p>
     </section>
 
     <!-- SECTION 3 -->
@@ -41,11 +47,13 @@
       <img
         src="../../assets/images/birthday/template_3/disco.png"
         class="disco fade"
+        data-edit="image"
+        data-id="disco-decoration"
       />
 
       <h1 class="title fade">
-        <span class="cut pink">Happy</span><br />
-        <span class="cut green">Birthday</span><br />
+        <span class="cut pink" data-edit="text" data-id="birthday-title-1">Happy</span><br />
+        <span class="cut green" data-edit="text" data-id="birthday-title-2">Birthday</span><br />
         <span class="cut yellow" data-edit="text" data-id="birthday-person-name"
           >Sophie</span
         >
@@ -54,7 +62,7 @@
 
     <!-- SECTION 4 -->
     <section class="section">
-      <p class="fade">Join me to celebrate one more year!</p>
+      <p class="fade" data-edit="text" data-id="section-intro-text">Join me to celebrate one more year!</p>
 
       <!-- Set your target date and time here (Format: YYYY-MM-DDTHH:MM:SS) -->
       <div
@@ -84,26 +92,24 @@
 
       <div class="fade">
         <div class="map-container">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950147!2d-73.98731968482413!3d40.75889497932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus"
-            width="100%"
-            height="100%"
-            style="border: 0"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
+          <img 
+            src="../../assets/images/birthday/template_3/map_placeholder.png" 
+            data-edit="image" 
+            data-id="venue-map" 
+            alt="Event Map"
+            style="width: 100%; height: 100%; object-fit: cover;"
+          />
         </div>
       </div>
     </section>
 
     <!-- SECTION 5 RSVP -->
     <section class="section rsvp-section">
-      <h2 class="fade">Will you be part of this moment?</h2>
+      <h2 class="fade" data-edit="text" data-id="rsvp-title">Will you be part of this moment?</h2>
 
       <div class="buttons fade">
-        <button class="accept">Accept</button>
-        <button class="decline">Decline</button>
+        <button class="accept" data-edit="text" data-id="rsvp-accept-label">Accept</button>
+        <button class="decline" data-edit="text" data-id="rsvp-decline-label">Decline</button>
       </div>
 
       <p id="rsvp-message" class="rsvp-message"></p>
@@ -131,8 +137,9 @@
 
       /* TITLE STYLE */
       .title {
-        font-size: 50px;
-        line-height: 1.2;
+        font-size: clamp(3.5rem, 10vw, 6rem);
+        line-height: 1;
+        margin-top: 10px;
       }
 
       .cut {
@@ -169,7 +176,7 @@
 
       /* DISCO */
       .disco {
-        width: 150px;
+        width: clamp(200px, 25vw, 300px);
         margin-bottom: 20px;
       }
 
@@ -182,9 +189,9 @@
       }
 
       button {
-        padding: 14px 35px;
+        padding: 16px 45px;
         margin: 0;
-        font-size: 14px;
+        font-size: 1rem;
         text-transform: uppercase;
         letter-spacing: 2px;
         font-family: inherit;
@@ -255,7 +262,7 @@
 
       /* HERO IMAGE */
       .hero-img {
-        width: 220px;
+        width: clamp(300px, 35vw, 450px);
         border-radius: 20px;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
         transform: rotate(-3deg);
@@ -268,9 +275,9 @@
 
       /* CAPTION */
       .caption {
-        margin-top: 15px;
+        margin-top: 25px;
         font-style: italic;
-        font-size: 16px;
+        font-size: 1.2rem;
       }
 
       /* MAKE SECTIONS LESS EMPTY */
@@ -302,11 +309,11 @@
       }
 
       .time-box span:first-child {
-        font-size: 32px;
+        font-size: clamp(2.5rem, 5vw, 4rem);
         font-weight: bold;
         color: #ffb6c1;
         background: #2c2c2c;
-        padding: 15px 10px;
+        padding: 20px 15px;
         border-radius: 8px;
         position: relative;
         box-shadow:
@@ -353,16 +360,18 @@
       }
 
       .location-text {
-        margin-top: 10px;
+        margin-top: 20px;
+        font-size: 1.3rem;
         color: #666;
+        max-width: 600px;
       }
 
       /* MAP CONTAINER */
       .map-container {
-        margin-top: 20px;
+        margin-top: 30px;
         width: 90%;
-        max-width: 350px;
-        height: 150px;
+        max-width: 500px;
+        height: 250px;
         border-radius: 15px;
         overflow: hidden;
 
@@ -491,10 +500,11 @@
       // Typing Animation for Intro
       const typingText = document.getElementById("typing-text");
       if (typingText) {
-        const text = "A special day is coming...";
+        const text = typingText.textContent.trim();
+        typingText.textContent = ""; // Clear for animation
         let charIndex = 0;
 
-        // Wait 2s for the curtain animation to finish (0.5s delay + 1.5s duration)
+        // Wait 2s for the curtain animation to finish
         setTimeout(() => {
           const typeInterval = setInterval(() => {
             if (charIndex < text.length) {
