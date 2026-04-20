@@ -1,4 +1,4 @@
-﻿/**
+/**
  * INVIO Studio Editor - Main Controller
  * Orchestrates template loading, state management, and event handling
  */
@@ -379,7 +379,9 @@ class StudioEditor {
         ":root { --accent: #BFA77A; }",
         "[data-edit] { cursor: pointer !important; transition: outline 0.12s ease; }",
         "/* Disable pointer events on canvas so scratch cards/particles don't block text editing */",
-        "canvas { pointer-events: none !important; }",
+        "canvas:not([data-interactive-canvas='true']) { pointer-events: none !important; }",
+        "/* Force .reveal elements to be visible in editor */",
+        ".reveal, .reveal-up, .fade-in, .fade-up, .hidden-message, .reveal-image, .hidden { opacity: 1 !important; transform: none !important; visibility: visible !important; }",
       ].join("\n");
       frameDoc.head.appendChild(style);
     } catch (err) {
@@ -644,8 +646,18 @@ class StudioEditor {
   }
 
   showImageControls(element, dataId) {
-    const imageUrl = element.src;
-    if (imageUrl && imageUrl !== "undefined") {
+    let imageUrl = element.src;
+
+    if (!imageUrl) {
+      const frameWin = this.els.frame.contentDocument?.defaultView ?? window;
+      const computed = frameWin.getComputedStyle(element);
+      const bg = element.style.backgroundImage || computed.backgroundImage;
+      if (bg && bg !== "none") {
+        const match = bg.match(/url\(['"]?(.*?)['"]?\)/);
+        if (match) imageUrl = match[1];
+      }
+    }
+    if (imageUrl && imageUrl !== "undefined" && !imageUrl.includes("about:blank")) {
       this.els.previewImg.src = imageUrl;
       this.els.imagePreview.classList.remove("hidden");
     }
@@ -770,21 +782,32 @@ class StudioEditor {
   }
 
   applyImage(dataUrl) {
-    if (this.selectedElement && this.selectedElement.tagName === "IMG") {
+    if (this.selectedElement) {
       this.state.takeSnapshot();
-      this.selectedElement.src = dataUrl;
       const dataId = this.selectedElement.getAttribute("data-id");
+      
+      if (this.selectedElement.tagName === "IMG") {
+        this.selectedElement.src = dataUrl;
+        this.els.previewImg.src = dataUrl;
+      } else {
+        this.selectedElement.style.backgroundImage = `url("${dataUrl}")`;
+        this.els.previewImg.src = dataUrl;
+      }
+      
       this.state.updateEdit("images", dataId, dataUrl);
-      this.els.previewImg.src = dataUrl;
       this.markDirty();
       this.showToast("Image updated", "success");
     }
   }
 
   clearImage() {
-    if (this.selectedElement && this.selectedElement.tagName === "IMG") {
-      this.selectedElement.src = "";
+    if (this.selectedElement) {
       const dataId = this.selectedElement.getAttribute("data-id");
+      if (this.selectedElement.tagName === "IMG") {
+        this.selectedElement.src = "";
+      } else {
+        this.selectedElement.style.backgroundImage = "none";
+      }
       this.state.updateEdit("images", dataId, "");
       this.els.imagePreview.classList.add("hidden");
       this.markDirty();
