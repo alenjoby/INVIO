@@ -187,6 +187,11 @@ body {
   text-transform: uppercase;
 }
 
+.brand-logo-placeholder img {
+  height: 5rem;
+  width: auto;
+}
+
 .form-wrapper {
   flex: 1;
   display: flex;
@@ -425,7 +430,7 @@ body {
   }
 
   .brand-logo-placeholder img {
-    height: 2.2rem !important;
+    height: 4rem !important;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   }
 

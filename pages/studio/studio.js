@@ -1,4 +1,4 @@
-/**
+﻿/**
  * INVIO Studio Editor - Main Controller
  * Orchestrates template loading, state management, and event handling
  */
@@ -48,6 +48,7 @@ class StudioEditor {
 
       await this.loadExistingInvitation(inviteId);
       await this.loadTemplate(templateId);
+      this.applyStoredEdits();
 
       this.startAutoSave();
 
@@ -59,9 +60,9 @@ class StudioEditor {
         this.openPublishModal();
       }
 
-      console.log("✓ Studio initialized");
+      console.log("âœ“ Studio initialized");
     } catch (error) {
-      console.error("�- Studio init failed:", error);
+      console.error("âœ- Studio init failed:", error);
       this.showToast("Failed to initialize editor", "error");
     }
   }
@@ -304,7 +305,7 @@ class StudioEditor {
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
       this.showToast(`${templateName} loaded`, "success");
     } catch (error) {
-      console.error("�- Template load failed:", error);
+      console.error("âœ- Template load failed:", error);
       this.showToast("Failed to load template: " + error.message, "error");
     }
   }
@@ -315,6 +316,53 @@ class StudioEditor {
     if (/<head\b[^>]*>/i.test(html))
       return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
     return `${baseTag}${html}`;
+  }
+
+  /**
+   * Applies all edits stored in state to the visible iframe content.
+   * Essential for restoring saved versions when opening existing invitations.
+   */
+  applyStoredEdits() {
+    const frameDoc = this.els.frame.contentDocument;
+    if (!frameDoc || !this.state.data.edits) return;
+
+    const { text, images, colors } = this.state.data.edits;
+
+    // Apply Text Edits
+    if (text) {
+      Object.entries(text).forEach(([selector, val]) => {
+        const el = frameDoc.querySelector(selector);
+        if (el) el.textContent = val;
+      });
+    }
+
+    // Apply Image Edits
+    if (images) {
+      Object.entries(images).forEach(([selector, src]) => {
+        const el = frameDoc.querySelector(selector);
+        if (el) {
+          if (el.tagName === "IMG") el.src = src;
+          else el.style.backgroundImage = `url("${src}")`;
+        }
+      });
+    }
+
+    // Apply Color Edits
+    if (colors) {
+      Object.entries(colors).forEach(([selector, color]) => {
+        const el = frameDoc.querySelector(selector);
+        if (el) el.style.color = color;
+      });
+    }
+
+    // Interactions
+    const interactions = this.state.data.interactions;
+    if (interactions?.rsvp?.enabled) {
+      const rsvp = frameDoc.getElementById("rsvp-section");
+      if (rsvp) rsvp.style.display = "block";
+    }
+
+    console.log("Studio: Applied stored edits to iframe content");
   }
 
   injectEditorStyles() {
@@ -470,7 +518,7 @@ class StudioEditor {
         });
       });
     } catch (error) {
-      console.error("�- Element scan failed:", error);
+      console.error("âœ- Element scan failed:", error);
     }
   }
 
@@ -694,7 +742,7 @@ class StudioEditor {
     if (zoneHint) {
       zoneHint.textContent = isUploading
         ? "Please wait"
-        : zone.dataset.defaultHint || "JPG, PNG, WEBP • Max 5MB";
+        : zone.dataset.defaultHint || "JPG, PNG, WEBP â€¢ Max 5MB";
     }
   }
 
@@ -820,7 +868,7 @@ class StudioEditor {
       this.els.saveIndicator.textContent = "All changes saved";
       this.els.saveIcon.classList.add("visible");
     } catch (error) {
-      console.error("�- Save failed:", error);
+      console.error("âœ- Save failed:", error);
       this.showToast("Failed to save", "error");
     }
   }
@@ -886,7 +934,7 @@ class StudioEditor {
       this.els.successModal.classList.remove("hidden");
       this.showToast("Invitation published!", "success");
     } catch (error) {
-      console.error("�- Publish failed:", error);
+      console.error("âœ- Publish failed:", error);
       this.showToast("Failed to publish", "error");
     }
   }
@@ -1101,7 +1149,7 @@ class StudioEditor {
   }
 
   syncUItoState() {
-    console.log("🔄 Reconciling UI with State...");
+    console.log("ðŸ”„ Reconciling UI with State...");
     const edits = this.state.data.edits;
     const frameDoc = this.els.frame.contentDocument;
     if (!frameDoc || !this.editableElements) return;

@@ -144,4 +144,7 @@ class InvitationsAPI {
 }
 
 export const invitationsApi = new InvitationsAPI();
+if (typeof window !== "undefined") {
+  window.invitationsApi = invitationsApi;
+}
 export default invitationsApi;
