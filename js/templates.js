@@ -46,7 +46,7 @@ const TEMPLATE_CATALOG = [
   },
   {
     id: "birthday-2",
-    name: "Golden Milestone",
+    name: "Joanna's Golden Milestone",
     category: "birthday",
     price: 38,
     image: "assets/images/birthday/template_2/hero.webp",
