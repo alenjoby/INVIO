@@ -24,6 +24,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="/js/templates.js"></script>
 
   <style>
     /* ─────────────────────────────────────────────────────────────────────
@@ -968,7 +969,8 @@
 
   <script type="module">
     import { API_URL } from "/js/env.js";
-    import { TEMPLATE_CATALOG } from "/js/templates.js";
+
+    // TEMPLATE_CATALOG is loaded via global script in <head>
 
     const CURRENCY_CONFIG = {
       AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
