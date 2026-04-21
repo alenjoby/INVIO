@@ -77,43 +77,29 @@ class StudioEditor {
       invitationName: document.getElementById("invitationName"),
       publishBtn: document.getElementById("publishBtn"),
       publishModal: document.getElementById("publishModal"),
-      successModal: document.getElementById("successModal"),
-      editorTitle: document.getElementById("editorTitle"),
-      saveIndicator: document.getElementById("saveIndicator"),
-      saveIcon: document.getElementById("saveIcon"),
-      toastContainer: document.getElementById("toastContainer"),
-      deviceBtns: document.querySelectorAll(".device-btn"),
-      deviceLabel: document.getElementById("deviceLabel"),
-      textControls: document.getElementById("textControls"),
-      imageControls: document.getElementById("imageControls"),
-      colorControls: document.getElementById("colorControls"),
+      deviceBtns: document.querySelectorAll("[data-device]"),
       textInput: document.getElementById("textInput"),
-      textLabel: document.getElementById("textLabel"),
       charCount: document.getElementById("charCount"),
       imageDropZone: document.getElementById("imageDropZone"),
       imageUpload: document.getElementById("imageUpload"),
-      imagePreview: document.getElementById("imagePreview"),
-      previewImg: document.getElementById("previewImg"),
       clearImageBtn: document.getElementById("clearImageBtn"),
       colorInput: document.getElementById("colorInput"),
       colorHex: document.getElementById("colorHex"),
       resetColorBtn: document.getElementById("resetColorBtn"),
-      publishSlug: document.getElementById("publishSlug"),
-      slugPrefix: document.querySelector(".slug-prefix"),
       confirmPublishBtn: document.getElementById("confirmPublishBtn"),
-      shareLink: document.getElementById("shareLink"),
+      publishSlug: document.getElementById("publishSlug"),
+      slugWarning: document.getElementById("slugWarning"),
       copyLinkBtn: document.getElementById("copyLinkBtn"),
       undoBtn: document.getElementById("undoBtn"),
       redoBtn: document.getElementById("redoBtn"),
-      tabBtns: document.querySelectorAll(".tab-btn"),
-      tabContents: document.querySelectorAll(".tab-content"),
-      layersList: document.getElementById("layersList"),
+      tabBtns: document.querySelectorAll("[data-tab]"),
       rsvpToggle: document.getElementById("rsvpToggle"),
+      rsvpSettings: document.getElementById("rsvpSettings"),
       rsvpTitle: document.getElementById("rsvpTitle"),
       mapsToggle: document.getElementById("mapsToggle"),
-      mapsAddress: document.getElementById("mapsAddress"),
-      rsvpSettings: document.getElementById("rsvpSettings"),
       mapsSettings: document.getElementById("mapsSettings"),
+      mapsAddress: document.getElementById("mapsAddress"),
+      editorTitle: document.getElementById("editorTitle"),
     };
   }
 
@@ -170,6 +156,24 @@ class StudioEditor {
     this.els.clearImageBtn.addEventListener("click", () => {
       if (this.isImageUploading) return;
       this.clearImage();
+    });
+
+    // Slug Availability Validation (Real-time)
+    let slugCheckTimeout = null;
+    this.els.publishSlug.addEventListener("input", (e) => {
+      clearTimeout(slugCheckTimeout);
+      const slug = e.target.value.trim().toLowerCase();
+      
+      // Update prefix/preview input color immediately
+      this.els.publishSlug.style.borderColor = "";
+      this.els.slugWarning.classList.add("hidden");
+      this.els.confirmPublishBtn.disabled = false;
+
+      if (!slug || slug.length < 3) return;
+
+      slugCheckTimeout = setTimeout(() => {
+        this.checkSlugAvailability(slug);
+      }, 500);
     });
 
     this.els.colorInput.addEventListener("input", (e) => {
@@ -1077,6 +1081,33 @@ class StudioEditor {
       throw new Error(errorBody.error || "Request failed");
     }
     return response.json();
+  }
+
+  async checkSlugAvailability(slug) {
+    if (!slug) return;
+    try {
+      // Logic: If invitation exists with this slug, show warning
+      // Endpoint convention: /api/invitations?slug=NAME
+      const invitations = await this.apiRequest(`/api/invitations?slug=${encodeURIComponent(slug)}`);
+      
+      // Check if any invitation exists with this slug EXCEPT the current one (if we are editing)
+      const isTaken = invitations.some(inv => 
+        inv.slug === slug && inv.id !== this.state.data.inviteId
+      );
+
+      if (isTaken) {
+        this.els.publishSlug.style.borderColor = "#ff4d4d";
+        this.els.slugWarning.classList.remove("hidden");
+        this.els.confirmPublishBtn.disabled = true;
+      } else {
+        this.els.publishSlug.style.borderColor = "#10b981"; // Success green border
+        this.els.slugWarning.classList.add("hidden");
+        this.els.confirmPublishBtn.disabled = false;
+      }
+    } catch (error) {
+      console.warn("[STUDIO] Slug check failed:", error.message);
+      // Fallback: Don't block user if API fails
+    }
   }
 
   async tryRefreshAuthToken() {

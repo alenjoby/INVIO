@@ -97,7 +97,17 @@ class AuthAPI {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || "API request failed");
+      let errorMessage = "API request failed";
+      
+      if (error && error.error) {
+        if (typeof error.error === "string") {
+          errorMessage = error.error;
+        } else {
+          errorMessage = JSON.stringify(error.error);
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
 
     return response.json();
