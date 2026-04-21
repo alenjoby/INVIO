@@ -939,8 +939,10 @@
                 <th>Date</th>
                 <th>Customer</th>
                 <th>Template</th>
-                <th>Amount</th>
+                <th>Base Price</th>
+                <th>Paid Amount</th>
                 <th>Currency</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="ledgerBody">
@@ -966,6 +968,7 @@
 
   <script type="module">
     import { API_URL } from "/js/env.js";
+    import { TEMPLATE_CATALOG } from "/js/templates.js";
 
     const CURRENCY_CONFIG = {
       AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
@@ -1276,27 +1279,34 @@
         sheet.getRow(3).height = 8;
 
         // ── Header Row ──
-        const headers = ["Date", "Customer", "Email", "Template", `Amount (${selectedAdminCurrency})`, "Original Currency"];
+        const headers = ["Date", "Customer", "Email", "Template", "Base Price (AED)", `Paid Amount (${selectedAdminCurrency})`, "Original Currency", "Invitation URL"];
         const headerRow = sheet.getRow(4);
         headerRow.values = headers;
         headerRow.height = 30;
         headerRow.eachCell((cell, colNumber) => {
           cell.fill = navyFill;
           cell.font = headerFont;
-          cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+          cell.alignment = { vertical: "middle", horizontal: (colNumber === 5 || colNumber === 6) ? "right" : "left" };
         });
 
         // ── Data Rows ──
         filteredSales.forEach((sale, i) => {
           const d = new Date(sale.created_at);
           const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          
+          const template = TEMPLATE_CATALOG.find(t => t.id === sale.template_id);
+          const basePrice = template ? template.price : 0;
+          const inviteUrl = sale.invitation_slug ? `${window.location.origin}/invite?slug=${sale.invitation_slug}` : "";
+
           const row = sheet.addRow([
             dateStr,
             sale.username || "Unknown",
             sale.user_email || "",
             sale.template_name || sale.template_id || "-",
+            basePrice,
             convertSaleAmount(sale.amount, sale.currency),
-            sale.currency || "AED"
+            sale.currency || "AED",
+            inviteUrl
           ]);
 
           row.height = 26;
@@ -1305,11 +1315,17 @@
             cell.fill = isEven ? whiteFill : ivoryFill;
             cell.font = bodyFont;
             cell.border = thinBorder;
-            cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+            cell.alignment = { vertical: "middle", horizontal: (colNumber === 5 || colNumber === 6) ? "right" : "left" };
 
-            // Format amount column
-            if (colNumber === 5) {
+            // Format numeric columns
+            if (colNumber === 5 || colNumber === 6) {
               cell.numFmt = '#,##0.00';
+            }
+
+            // Link for invite URL
+            if (colNumber === 8 && inviteUrl) {
+               cell.value = { text: "Open Invitation", hyperlink: inviteUrl };
+               cell.font = { ...bodyFont, color: { argb: "FF3B82F6" }, underline: true };
             }
           });
         });
@@ -1328,7 +1344,7 @@
           c.fill = warmFill;
         });
 
-        const totalValueCell = sheet.getCell(`E${footerRowNum}`);
+        const totalValueCell = sheet.getCell(`F${footerRowNum}`);
         const totalAmt = filteredSales.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
         totalValueCell.value = totalAmt;
         totalValueCell.numFmt = '#,##0.00';
@@ -1336,7 +1352,7 @@
         totalValueCell.fill = warmFill;
         totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
 
-        const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
+        const totalCurrCell = sheet.getCell(`G${footerRowNum}`);
         totalCurrCell.value = selectedAdminCurrency;
         totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
         totalCurrCell.fill = warmFill;
@@ -1349,8 +1365,10 @@
         sheet.getColumn(2).width = 22;  // Customer
         sheet.getColumn(3).width = 28;  // Email
         sheet.getColumn(4).width = 24;  // Template
-        sheet.getColumn(5).width = 18;  // Amount
-        sheet.getColumn(6).width = 12;  // Currency
+        sheet.getColumn(5).width = 18;  // Base Price
+        sheet.getColumn(6).width = 18;  // Amount
+        sheet.getColumn(7).width = 12;  // Currency
+        sheet.getColumn(8).width = 25;  // Action URL
 
         // ── Download ──
         const buffer = await workbook.xlsx.writeBuffer();
@@ -1422,27 +1440,34 @@
         sheet.getRow(3).height = 8;
 
         // ── Header ──
-        const headers = ["Date", "Customer", "Email", "Template", `Amount (${selectedAdminCurrency})`, "Original Currency"];
+        const headers = ["Date", "Customer", "Email", "Template", "Base Price (AED)", `Paid Amount (${selectedAdminCurrency})`, "Original Currency", "Invitation URL"];
         const headerRow = sheet.getRow(4);
         headerRow.values = headers;
         headerRow.height = 30;
         headerRow.eachCell((cell, colNumber) => {
           cell.fill = navyFill;
           cell.font = headerFont;
-          cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
+          cell.alignment = { vertical: "middle", horizontal: (colNumber === 5 || colNumber === 6) ? "right" : "left" };
         });
 
         // ── Data ──
         masterSalesList.forEach((sale, i) => {
           const d = new Date(sale.created_at);
           const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          
+          const template = TEMPLATE_CATALOG.find(t => t.id === sale.template_id);
+          const basePrice = template ? template.price : 0;
+          const inviteUrl = sale.invitation_slug ? `${window.location.origin}/invite?slug=${sale.invitation_slug}` : "";
+
           const row = sheet.addRow([
             dateStr,
             sale.username || "Unknown",
             sale.user_email || "",
             sale.template_name || sale.template_id || "-",
+            basePrice,
             convertSaleAmount(sale.amount, sale.currency),
-            sale.currency || "AED"
+            sale.currency || "AED",
+            inviteUrl
           ]);
 
           row.height = 26;
@@ -1451,8 +1476,14 @@
             cell.fill = isEven ? whiteFill : ivoryFill;
             cell.font = bodyFont;
             cell.border = thinBorder;
-            cell.alignment = { vertical: "middle", horizontal: colNumber === 5 ? "right" : "left" };
-            if (colNumber === 5) cell.numFmt = '#,##0.00';
+            cell.alignment = { vertical: "middle", horizontal: (colNumber === 5 || colNumber === 6) ? "right" : "left" };
+            if (colNumber === 5 || colNumber === 6) cell.numFmt = '#,##0.00';
+
+            // Link for invite URL
+            if (colNumber === 8 && inviteUrl) {
+               cell.value = { text: "Open Invitation", hyperlink: inviteUrl };
+               cell.font = { ...bodyFont, color: { argb: "FF3B82F6" }, underline: true };
+            }
           });
         });
 
@@ -1469,7 +1500,7 @@
           c.fill = warmFill;
         });
 
-        const totalValueCell = sheet.getCell(`E${footerRowNum}`);
+        const totalValueCell = sheet.getCell(`F${footerRowNum}`);
         const totalAmt = masterSalesList.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
         totalValueCell.value = totalAmt;
         totalValueCell.numFmt = '#,##0.00';
@@ -1477,7 +1508,7 @@
         totalValueCell.fill = warmFill;
         totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
 
-        const totalCurrCell = sheet.getCell(`F${footerRowNum}`);
+        const totalCurrCell = sheet.getCell(`G${footerRowNum}`);
         totalCurrCell.value = selectedAdminCurrency;
         totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
         totalCurrCell.fill = warmFill;
@@ -1681,13 +1712,17 @@
       const tbody = document.getElementById("ledgerBody");
 
       if (!sales || sales.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-ledger">No transactions match your filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-ledger">No transactions match your filters.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = sales.map(sale => {
         const d = new Date(sale.created_at);
         const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        
+        // Find base price from catalog
+        const template = TEMPLATE_CATALOG.find(t => t.id === sale.template_id);
+        const basePrice = template ? `${template.price} AED` : "-";
 
         return `
           <tr>
@@ -1697,13 +1732,19 @@
               <div style="font-size: 0.75rem; color: var(--muted); letter-spacing: 0.02em;">${escapeHtml(sale.user_email || "No Email")}</div>
             </td>
             <td>${escapeHtml(sale.template_name || sale.template_id || "-")}</td>
+            <td style="color: var(--muted); font-size: 0.85rem;">${basePrice}</td>
             <td class="td-amount">
               ${formatSaleAmount(sale.amount, sale.currency)}
               ${sale.currency && sale.currency.toUpperCase() !== selectedAdminCurrency.toUpperCase() ? 
-                `<span style="font-size: 0.70rem; color: var(--muted); display: block; margin-top:0.2rem;">(Paid: ${sale.amount} ${sale.currency})</span>` 
+                `<span style="font-size: 0.70rem; color: var(--muted); display: block; margin-top:0.2rem;">(Orig: ${sale.amount} ${sale.currency})</span>` 
                 : ""}
             </td>
             <td>${selectedAdminCurrency}</td>
+            <td>
+              ${sale.invitation_id ? 
+                `<a href="/invite?slug=${sale.invitation_slug || ''}" target="_blank" class="btn-nav-ghost" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; text-decoration: none;">View Invite</a>`
+                : "-"}
+            </td>
           </tr>
         `;
       }).join("");

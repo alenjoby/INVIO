@@ -116,6 +116,7 @@ class AuthAPI {
       this.setToken(data.session.access_token);
       this.setRefreshToken(data.session.refresh_token || null);
       this.setUser(data.user);
+      await this.syncPurchases();
     }
 
     return data;
@@ -134,6 +135,7 @@ class AuthAPI {
       this.setToken(data.session.access_token);
       this.setRefreshToken(data.session.refresh_token || null);
       this.setUser(data.user);
+      await this.syncPurchases();
     }
 
     return data;
@@ -196,11 +198,39 @@ class AuthAPI {
 
     try {
       const data = await this.getCurrentUser();
+      if (data && data.user) {
+        await this.syncPurchases();
+      }
       return data;
     } catch (err) {
       console.warn("Session sync failed:", err.message);
       this.clearAuth();
       return null;
+    }
+  }
+
+  /**
+   * Sync purchased templates from backend to localStorage
+   */
+  async syncPurchases() {
+    if (!this.token) return;
+
+    try {
+      // We fetch invitations and infer purchased templates from status
+      const invitations = await this.request("/api/invitations");
+      if (Array.isArray(invitations)) {
+        const purchasedIds = invitations
+          .filter((inv) => inv.status === "published" || inv.status === "paid")
+          .map((inv) => inv.template_id)
+          .filter(Boolean);
+        
+        // Remove duplicates
+        const uniquePurchased = [...new Set(purchasedIds)];
+        localStorage.setItem("invio_purchased_templates", JSON.stringify(uniquePurchased));
+        console.log("[AUTH] Synced purchased templates:", uniquePurchased);
+      }
+    } catch (err) {
+      console.warn("[AUTH] Failed to sync purchases:", err.message);
     }
   }
 }

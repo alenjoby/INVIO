@@ -58,7 +58,9 @@ class StudioEditor {
       }
 
       if (params.get("publishIntent") === "1" && this.isAuthenticated()) {
-        this.openPublishModal();
+        console.log("[STUDIO] Processing publishIntent...");
+        // Wait for state to stabilize and then open modal/checkout
+        setTimeout(() => this.openPublishModal(), 800);
       }
 
       console.log("âœ“ Studio initialized");
@@ -1006,6 +1008,15 @@ class StudioEditor {
           ...invitation.interactions,
         };
       if (invitation.title) this.els.invitationName.value = invitation.title;
+      
+      // CRITICAL: Ensure templateId is updated from invitation
+      if (invitation.template_id) {
+        this.state.updateData("templateId", invitation.template_id);
+        // Also reload the frame if it mismatch? 
+        // Actually this.init calls loadExistingInvitation BEFORE any frame load? 
+        // No, loadExistingInvitation is called first. 
+        // Then caller likely needs to load the template.
+      }
     } catch (error) {
       console.warn("Could not load invitation by id:", error.message);
       this.hasPersistentInviteId = false;
@@ -1385,8 +1396,8 @@ class StudioEditor {
         titleFont: "Courier New",
         bodyFont: "Courier New",
         style:
-          "border-radius: 0; border: 15px solid #fff; background: #fff; box-shadow: 20px 20px 80px rgba(0,0,0,0.1); transform: rotate(-1.5deg);",
-        mapFilter: "sepia(20%) Contrast(1.1) brightness(0.95)",
+          "border-radius: 12px; border: 12px solid #fff; background: #fff; box-shadow: 15px 15px 50px rgba(0,0,0,0.15); transform: rotate(-1.5deg); overflow: hidden; padding: 0;",
+        mapFilter: "sepia(30%) contrast(1.2) brightness(0.9) saturate(1.2)",
       },
       "template1.html": {
         accent: "#ff003c",
