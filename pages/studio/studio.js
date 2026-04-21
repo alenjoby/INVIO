@@ -31,7 +31,8 @@ class StudioEditor {
   async init() {
     try {
       const params = new URLSearchParams(window.location.search);
-      const templateId = params.get("template");
+      const rawTemplateId = params.get("template");
+      const templateId = this.getCanonicalTemplateId(rawTemplateId);
       const inviteId = params.get("id");
 
       if (!templateId) {
@@ -381,7 +382,7 @@ class StudioEditor {
         "/* Disable pointer events on canvas so scratch cards/particles don't block text editing */",
         "canvas:not([data-interactive-canvas='true']) { pointer-events: none !important; }",
         "/* Force .reveal elements to be visible in editor */",
-        ".reveal, .reveal-up, .fade-in, .fade-up, .hidden-message, .reveal-image, .hidden { opacity: 1 !important; transform: none !important; visibility: visible !important; }",
+        ".reveal, .reveal-up, .fade-in, .fade-up, .hidden-message, .reveal-image, .hidden, .split-line span { opacity: 1 !important; transform: none !important; visibility: visible !important; }",
       ].join("\n");
       frameDoc.head.appendChild(style);
     } catch (err) {
@@ -389,11 +390,10 @@ class StudioEditor {
     }
   }
 
-  getTemplatePathById(templateId) {
-    if (!templateId) return null;
-    const id = String(templateId).toLowerCase().trim();
+  getCanonicalTemplateId(rawId) {
+    if (!rawId) return "wedding-1";
+    const id = String(rawId).toLowerCase().trim();
 
-    // ALL 17 TEMPLATES ADDED
     const templateMap = {
       "academic-1": "../../templates/academic/academic 1.html",
       "academic-2": "../../templates/academic/academic 2.html",
@@ -414,29 +414,55 @@ class StudioEditor {
       "funeral-3": "../../templates/funeral/funeral-template-3.html",
     };
 
-    if (templateMap[id]) return templateMap[id];
+    // 1. Direct Match
+    if (templateMap[id]) return id;
 
-    // Fuzzy matching to catch URL parameter discrepancies
-    const fuzzyId = id.replace(/[\s_]/g, "-");
-    if (templateMap[fuzzyId]) return templateMap[fuzzyId];
+    // 2. Fuzzy ID Match (birthday_template_3 -> birthday-3)
+    const simplifiedId = id
+      .replace(/_template_/g, "-")
+      .replace(/template/g, "")
+      .replace(/[\s_]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
+    if (templateMap[simplifiedId]) return simplifiedId;
+
+    // 3. Filename Match
     for (const [key, path] of Object.entries(templateMap)) {
-      if (path.toLowerCase().includes(id)) return path;
+      if (path.toLowerCase().includes(id)) return key;
     }
 
-    const category = fuzzyId.split("-")[0];
-    const fallbackMap = {
-      academic: templateMap["academic-1"],
-      birthday: templateMap["birthday-1"],
-      valentines: templateMap["valentines-1"],
-      wedding: templateMap["wedding-1"],
-      funeral: templateMap["funeral-1"],
+    // 4. Category Fallback
+    const category = simplifiedId.split("-")[0];
+    const categories = ["academic", "birthday", "valentines", "wedding", "funeral"];
+    if (categories.includes(category)) return `${category}-1`;
+
+    return "wedding-1";
+  }
+
+  getTemplatePathById(templateId) {
+    const id = this.getCanonicalTemplateId(templateId);
+    const templateMap = {
+      "academic-1": "../../templates/academic/academic 1.html",
+      "academic-2": "../../templates/academic/academic 2.html",
+      "academic-3": "../../templates/academic/academic 3.html",
+      "birthday-1": "../../templates/birthday/birthday_template_1.html",
+      "birthday-2": "../../templates/birthday/birthday_template_2.html",
+      "birthday-3": "../../templates/birthday/birthday_template_3.html",
+      "valentines-1": "../../templates/valentines/Template1.html",
+      "valentines-2": "../../templates/valentines/Template2.html",
+      "valentines-3": "../../templates/valentines/Template3.html",
+      "wedding-1": "../../templates/wedding/wedding_template_1.html",
+      "wedding-2": "../../templates/wedding/wedding_template_2.html",
+      "wedding-3": "../../templates/wedding/wedding_template_3.html",
+      "wedding-4": "../../templates/wedding/wedding_template_4.html",
+      "wedding-5": "../../templates/wedding/wedding_template_5.html",
+      "funeral-1": "../../templates/funeral/funeral-template-1.html",
+      "funeral-2": "../../templates/funeral/funeral-template-2.html",
+      "funeral-3": "../../templates/funeral/funeral-template-3.html",
     };
 
-    console.warn(
-      `[loadTemplate] Falling back from unknown templateId=${id} to ${category}-1`,
-    );
-    return fallbackMap[category] || templateMap["wedding-1"];
+    return templateMap[id] || templateMap["wedding-1"];
   }
 
   getTemplateNameById(templateId) {
@@ -1093,12 +1119,13 @@ class StudioEditor {
     const purchased = JSON.parse(
       localStorage.getItem(PURCHASED_STORAGE_KEY) || "[]",
     );
-    return Array.isArray(purchased) && purchased.includes(templateId);
+    const canonicalId = this.getCanonicalTemplateId(templateId);
+    return Array.isArray(purchased) && purchased.includes(canonicalId);
   }
   redirectToCheckoutForPayment(invitationId) {
     const params = new URLSearchParams({
-      template: this.state.data.templateId,
-      name: this.getTemplateNameById(this.state.data.templateId),
+      template: this.getCanonicalTemplateId(this.state.data.templateId),
+      name: this.getTemplateNameById(this.getCanonicalTemplateId(this.state.data.templateId)),
       invitationId: invitationId,
     });
     window.location.href = `/pages/checkout/index.html?${params.toString()}`;
@@ -1358,8 +1385,8 @@ class StudioEditor {
         titleFont: "Courier New",
         bodyFont: "Courier New",
         style:
-          "border-radius: 0; border: 2px dashed #ffb6c1; background: #fff;",
-        mapFilter: "sepia(40%)",
+          "border-radius: 0; border: 15px solid #fff; background: #fff; box-shadow: 20px 20px 80px rgba(0,0,0,0.1); transform: rotate(-1.5deg);",
+        mapFilter: "sepia(20%) Contrast(1.1) brightness(0.95)",
       },
       "template1.html": {
         accent: "#ff003c",
