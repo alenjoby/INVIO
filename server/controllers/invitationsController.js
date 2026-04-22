@@ -296,33 +296,92 @@ export const purchaseInvitation = async (req, res) => {
   if (publishedData && publishedData.id && res.statusCode < 400) {
     try {
       const amount = parseFloat(req.body.amount || 0);
-      const templateId = publishedData.template_id || req.body.templateId || "unknown";
+      const templateId =
+        publishedData.template_id || req.body.templateId || "unknown";
       const templateName = req.body.templateName || "unknown";
-      const customerName = req.body.customerName || "";
+      const customerName = String(
+        req.body.customerName || req.body.fullName || req.body.name || "",
+      ).trim();
+      const customerEmail = String(
+        req.body.customerEmail || req.body.email || "",
+      ).trim();
       const currency = req.body.currency || "AED";
 
-      // 1. Update User's Profile Name (if provided)
-      if (customerName) {
+      // Persist checkout identity on the invitation itself so admin can resolve
+      // per-purchase name/email even when the sales table schema lacks columns.
+      try {
+        const currentContent =
+          publishedData.content && typeof publishedData.content === "object"
+            ? publishedData.content
+            : {};
+
         await supabaseAdmin
-          .from("profiles")
-          .update({ username: customerName })
-          .eq("id", req.user.id);
+          .from("invitations")
+          .update({
+            content: {
+              ...currentContent,
+              checkoutIdentity: {
+                name: customerName,
+                email: customerEmail,
+                capturedAt: new Date().toISOString(),
+              },
+            },
+          })
+          .eq("id", publishedData.id)
+          .eq("user_id", req.user.id);
+      } catch (identityErr) {
+        console.warn(
+          "[SALES] Could not persist checkout identity on invitation:",
+          identityErr.message,
+        );
       }
 
-      // 2. Record the sale
-      await supabaseAdmin.from("sales").insert({
+      // Record the sale with checkout-specific identity for this purchase only.
+      const baseSalePayload = {
         user_id: req.user.id,
         invitation_id: publishedData.id,
         template_id: templateId,
         template_name: templateName,
         amount: amount,
         currency: currency,
-      });
+      };
+
+      const saleWithIdentity = {
+        ...baseSalePayload,
+        customer_name: customerName,
+        customer_email: customerEmail,
+      };
+
+      const { error: saleError } = await supabaseAdmin
+        .from("sales")
+        .insert(saleWithIdentity);
+
+      if (saleError) {
+        const missingCustomerColumns = /customer_name|customer_email/i.test(
+          String(saleError.message || ""),
+        );
+
+        if (!missingCustomerColumns) {
+          throw saleError;
+        }
+
+        // Fallback for deployed DBs that still use the old sales schema.
+        const { error: fallbackError } = await supabaseAdmin
+          .from("sales")
+          .insert(baseSalePayload);
+
+        if (fallbackError) {
+          throw fallbackError;
+        }
+      }
 
       console.log(`[SALES] Recorded sale: ${templateId} - $${amount}`);
     } catch (saleErr) {
       // Log but never crash the response
-      console.error("[SALES] Failed to record sale (non-blocking):", saleErr.message);
+      console.error(
+        "[SALES] Failed to record sale (non-blocking):",
+        saleErr.message,
+      );
     }
   }
 };

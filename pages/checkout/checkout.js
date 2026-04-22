@@ -39,6 +39,7 @@ const refs = {
   cardNumber: document.getElementById("cardNumber"),
   expiry: document.getElementById("expiry"),
   fullName: document.getElementById("fullName"),
+  email: document.getElementById("email"),
 };
 
 // Entry Point
@@ -167,9 +168,12 @@ async function handleSuccess() {
         body: JSON.stringify({
           amount: finalAmount,
           templateName: checkoutState.template.name,
-          customerName: refs.fullName.value || "",
-          currency: activeCurrency.currency
-        })
+          customerName: (refs.fullName?.value || "").trim(),
+          customerEmail: (refs.email?.value || "").trim(),
+          fullName: (refs.fullName?.value || "").trim(),
+          email: (refs.email?.value || "").trim(),
+          currency: activeCurrency.currency,
+        }),
       },
     );
 

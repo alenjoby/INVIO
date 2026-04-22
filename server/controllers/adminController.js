@@ -112,7 +112,8 @@ export const getDashboardStats = async (req, res) => {
 
     let momGrowth = 0;
     if (lastMonthRevenue > 0) {
-      momGrowth = ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+      momGrowth =
+        ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
     } else if (thisMonthRevenue > 0) {
       momGrowth = 100;
     }
@@ -149,13 +150,21 @@ export const getDashboardStats = async (req, res) => {
         year: "2-digit",
       });
 
-      monthlyRevenue.push({ label, revenue: Math.round(revenue * 100) / 100, count });
+      monthlyRevenue.push({
+        label,
+        revenue: Math.round(revenue * 100) / 100,
+        count,
+      });
     }
 
     // 6. Category breakdown
     const categoryMap = {};
     for (const sale of allSales) {
-      const cat = (sale.template_id || "unknown").split("-")[0]; // e.g. "wedding-1" -> "wedding"
+      const rawCategory = sale.template_id || sale.template_name || "unknown";
+      const cat = String(rawCategory)
+        .toLowerCase()
+        .trim()
+        .split(/[-_\s]+/)[0];
       if (!categoryMap[cat]) {
         categoryMap[cat] = { revenue: 0, count: 0 };
       }
@@ -224,7 +233,9 @@ export const getSalesLedger = async (req, res) => {
     }
 
     // Enrich with user emails from profiles
-    const userIds = [...new Set((sales || []).map((s) => s.user_id).filter(Boolean))];
+    const userIds = [
+      ...new Set((sales || []).map((s) => s.user_id).filter(Boolean)),
+    ];
     let profileMap = {};
 
     if (userIds.length > 0) {
@@ -240,8 +251,79 @@ export const getSalesLedger = async (req, res) => {
       }
     }
 
+    const invitationIds = [
+      ...new Set((sales || []).map((s) => s.invitation_id).filter(Boolean)),
+    ];
+    const invitationMap = {};
+
+    if (invitationIds.length > 0) {
+      const { data: invitations } = await supabaseAdmin
+        .from("invitations")
+        .select("id, content")
+        .in("id", invitationIds);
+
+      if (invitations) {
+        for (const invitation of invitations) {
+          invitationMap[invitation.id] = invitation;
+        }
+      }
+    }
+
+    const extractCheckoutIdentity = (content) => {
+      if (!content || typeof content !== "object") {
+        return { name: "", email: "" };
+      }
+
+      const identity =
+        content.checkoutIdentity ||
+        content.checkout_identity ||
+        content.purchaseIdentity ||
+        content.purchase_identity ||
+        {};
+
+      const name = String(
+        identity.name ||
+          content.checkoutCustomerName ||
+          content.customerName ||
+          content.fullName ||
+          "",
+      ).trim();
+
+      const email = String(
+        identity.email ||
+          content.checkoutCustomerEmail ||
+          content.customerEmail ||
+          content.email ||
+          "",
+      ).trim();
+
+      return { name, email };
+    };
+
     const enrichedSales = (sales || []).map((sale) => ({
       ...sale,
+      ...(() => {
+        const invitationContent = invitationMap[sale.invitation_id]?.content;
+        const fromInvitation = extractCheckoutIdentity(invitationContent);
+
+        const customerName =
+          String(sale.customer_name || "").trim() ||
+          fromInvitation.name ||
+          profileMap[sale.user_id]?.username ||
+          profileMap[sale.user_id]?.email ||
+          "";
+
+        const customerEmail =
+          String(sale.customer_email || "").trim() ||
+          fromInvitation.email ||
+          profileMap[sale.user_id]?.email ||
+          "";
+
+        return {
+          customer_name: customerName,
+          customer_email: customerEmail,
+        };
+      })(),
       user_email: profileMap[sale.user_id]?.email || "Unknown",
       username: profileMap[sale.user_id]?.username || "Unknown",
     }));

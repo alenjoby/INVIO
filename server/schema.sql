@@ -47,6 +47,8 @@ CREATE TABLE sales (
   invitation_id UUID REFERENCES invitations(id) ON DELETE SET NULL,
   template_id TEXT NOT NULL,
   template_name TEXT,
+  customer_name TEXT,
+  customer_email TEXT,
   amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
   currency TEXT NOT NULL DEFAULT 'AED',
   created_at TIMESTAMPTZ DEFAULT NOW()

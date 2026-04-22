@@ -1,1538 +1,1798 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INVIO - Finance Dashboard</title>
+    <meta name="robots" content="noindex, nofollow" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>INVIO - Finance Dashboard</title>
-  <meta name="robots" content="noindex, nofollow" />
+    <!-- Favicon -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/images/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/images/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/images/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
+    <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="/js/templates.js"></script>
 
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png" />
-  <link rel="manifest" href="/assets/images/favicon/site.webmanifest" />
-  <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="/js/templates.js"></script>
-
-  <style>
-    /* ─────────────────────────────────────────────────────────────────────
+    <style>
+      /* ─────────────────────────────────────────────────────────────────────
        DESIGN TOKENS - Editorial Luxury
        ───────────────────────────────────────────────────────────────────── */
-    :root {
-      --bg: #f4f4f2;
-      --bg-warm: #eae5dc;
-      --surface: #ffffff;
-      --ink: #0f0f0f;
-      --muted: #888888;
-      --accent: #1f2a37;
-      /* Midnight Navy */
-      --warm: #8c7a63;
-      --warm-light: #b5a68f;
-      --line: rgba(15, 15, 15, 0.12);
-      --line-faint: rgba(15, 15, 15, 0.06);
+      :root {
+        --bg: #f4f4f2;
+        --bg-warm: #eae5dc;
+        --surface: #ffffff;
+        --ink: #0f0f0f;
+        --muted: #888888;
+        --accent: #1f2a37;
+        /* Midnight Navy */
+        --warm: #8c7a63;
+        --warm-light: #b5a68f;
+        --line: rgba(15, 15, 15, 0.12);
+        --line-faint: rgba(15, 15, 15, 0.06);
 
-      --font-display: "Cormorant Garamond", "Georgia", serif;
-      --font-body: "Manrope", "Helvetica Neue", sans-serif;
+        --font-display: "Cormorant Garamond", "Georgia", serif;
+        --font-body: "Manrope", "Helvetica Neue", sans-serif;
 
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    }
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      }
 
-    /* Logo Animation */
-    .logo-animate {
-      opacity: 0;
-      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-      transform: translateX(-15px);
-      animation: logoTyping 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      will-change: transform, opacity, clip-path;
-    }
-
-    @keyframes logoTyping {
-      0% {
+      /* Logo Animation */
+      .logo-animate {
         opacity: 0;
         clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
         transform: translateX(-15px);
+        animation: logoTyping 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        will-change: transform, opacity, clip-path;
       }
-      20% {
-        opacity: 1;
+
+      @keyframes logoTyping {
+        0% {
+          opacity: 0;
+          clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+          transform: translateX(-15px);
+        }
+        20% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 1;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          transform: translateX(0);
+        }
       }
-      100% {
-        opacity: 1;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        transform: translateX(0);
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-    }
 
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+      body {
+        font-family: var(--font-body);
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.6;
+      }
 
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--ink);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.6;
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
+      /* ─────────────────────────────────────────────────────────────────────
        TYPOGRAPHY & UTILS
        ───────────────────────────────────────────────────────────────────── */
-    .section-label {
-      font-family: var(--font-body);
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--warm);
-    }
+      .section-label {
+        font-family: var(--font-body);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--warm);
+      }
 
-    .editorial-title {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
+      .editorial-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
 
-    /* ─────────────────────────────────────────────────────────────────────
+      /* ─────────────────────────────────────────────────────────────────────
        LOGIN SCREEN
        ───────────────────────────────────────────────────────────────────── */
-    .login-screen {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 24px;
-    }
+      .login-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 24px;
+      }
 
-    .login-wrapper {
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      /* Fallback visibility if AOS fails */
-      opacity: 1 !important;
-    }
+      .login-wrapper {
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        /* Fallback visibility if AOS fails */
+        opacity: 1 !important;
+      }
 
-    [data-aos] {
-      opacity: 0;
-      transition-property: transform, opacity;
-    }
+      [data-aos] {
+        opacity: 0;
+        transition-property: transform, opacity;
+      }
 
-    [data-aos].aos-animate {
-      opacity: 1;
-    }
-
-    .login-wrapper .brand-logo {
-      height: 5rem;
-      width: auto;
-      margin-bottom: 2rem;
-    }
-
-    .login-wrapper .editorial-title {
-      margin-bottom: 1rem;
-      font-size: 2.5rem;
-    }
-
-    .login-wrapper .subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-bottom: 3rem;
-    }
-
-    .login-wrapper input {
-      width: 100%;
-      padding: 1rem 0;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--line);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.3s var(--ease);
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .login-wrapper input:focus {
-      border-bottom-color: var(--accent);
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.8rem 2rem;
-      background: var(--accent);
-      color: #fff;
-      border: 1px solid var(--accent);
-      font-family: var(--font-body);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.4s var(--ease);
-      width: 100%;
-    }
-
-    .btn-primary:hover {
-      background: #111;
-      border-color: #111;
-    }
-
-    .login-error {
-      color: #e63946;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .login-back-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.3s ease, transform 0.3s ease;
-    }
-
-    .login-back-btn:hover {
-      color: var(--accent);
-      transform: translateX(-4px);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── DASHBOARD ANIMATIONS ─── */
-    .kpi-block {
-      animation: fadeIn 0.6s ease forwards;
-      opacity: 0;
-    }
-
-    .kpi-block:nth-child(1) { animation-delay: 0.1s; }
-    .kpi-block:nth-child(2) { animation-delay: 0.2s; }
-    .kpi-block:nth-child(3) { animation-delay: 0.3s; }
-    .kpi-block:nth-child(4) { animation-delay: 0.4s; }
-
-    .chart-container {
-      animation: fadeIn 0.8s ease forwards;
-      opacity: 0;
-      animation-delay: 0.5s;
-    }
-
-    .btn-export, .btn-clear {
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .btn-export:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(31, 42, 55, 0.2);
-    }
-
-    .btn-clear:hover {
-      background: rgba(15, 15, 15, 0.05);
-      transform: translateY(-2px);
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       DASHBOARD SHELL
-       ───────────────────────────────────────────────────────────────────── */
-    .dashboard {
-      display: none;
-    }
-
-    .dashboard.active {
-      display: block;
-    }
-
-    /* Header */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(244, 244, 242, 0.88);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--line-faint);
-    }
-
-    .site-nav {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 clamp(1.5rem, 3vw, 3rem);
-      min-height: 4.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .site-nav img {
-      height: 5rem;
-      width: auto;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      background: #10b981; /* Emerald Green */
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-      animation: pulse 2.5s infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
+      [data-aos].aos-animate {
         opacity: 1;
       }
 
-      50% {
-        opacity: 0.4;
-      }
-    }
-
-    .btn-nav-ghost {
-      background: transparent;
-      border: none;
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink);
-      cursor: pointer;
-      position: relative;
-    }
-
-    .btn-nav-ghost::after {
-      content: "";
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--ink);
-      transition: width 0.4s var(--ease);
-    }
-
-    .btn-nav-ghost:hover::after {
-      width: 100%;
-    }
-
-    /* Main Body */
-    .dash-body {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 3vw, 3rem);
-    }
-
-    .dash-intro {
-      margin-bottom: 4rem;
-      max-width: 600px;
-    }
-
-    .dash-intro .section-label {
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .dash-intro .editorial-title {
-      margin-bottom: 1.5rem;
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       KPI SPREADS (Data Blocks)
-       ───────────────────────────────────────────────────────────────────── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 5rem;
-    }
-
-    .kpi-block {
-      padding: 2.5rem 2rem;
-      border-right: 1px solid var(--line);
-      position: relative;
-    }
-
-    .kpi-block:last-child {
-      border-right: none;
-    }
-
-    .kpi-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 1.5rem;
-    }
-
-    .kpi-value {
-      font-family: var(--font-display);
-      font-size: 2.5rem;
-      font-weight: 400;
-      line-height: 1;
-      margin-bottom: 0.8rem;
-    }
-
-    .kpi-context {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .kpi-change.positive {
-      color: #2e7d32;
-    }
-
-    .kpi-change.negative {
-      color: #c62828;
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       CHARTS
-       ───────────────────────────────────────────────────────────────────── */
-    .charts-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 3rem;
-      margin-bottom: 5rem;
-    }
-
-    .chart-panel {
-      background: var(--surface);
-      padding: 3rem;
-      border: 1px solid var(--line-faint);
-    }
-
-    .chart-panel h3 {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 400;
-      margin-bottom: 2rem;
-      letter-spacing: -0.01em;
-    }
-
-    .chart-wrapper {
-      position: relative;
-      width: 100%;
-    }
-
-    .chart-wrapper.line-format {
-      height: 320px;
-    }
-
-    .chart-wrapper.donut-format {
-      height: 320px;
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       SIGNATURE INSIGHTS (Dark Midnight Navy Block)
-       ───────────────────────────────────────────────────────────────────── */
-    .insights-band {
-      background: var(--accent);
-      color: var(--bg);
-      padding: 4rem 3rem;
-      margin-bottom: 5rem;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3rem;
-    }
-
-    .insight-block .kpi-label {
-      color: rgba(244, 244, 242, 0.4);
-    }
-
-    .insight-block .kpi-value {
-      color: #fff;
-    }
-
-    .insight-block .kpi-context {
-      color: rgba(244, 244, 242, 0.6);
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       LEDGER (Tables)
-       ───────────────────────────────────────────────────────────────────── */
-    .ledger-section h2 {
-      font-family: var(--font-display);
-      font-size: 2.2rem;
-      font-weight: 400;
-      margin-bottom: 2rem;
-    }
-
-    .ledger-table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .ledger-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .ledger-table th {
-      font-family: var(--font-body);
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .ledger-table td {
-      padding: 1.2rem 0;
-      border-bottom: 1px solid var(--line-faint);
-      font-size: 0.95rem;
-    }
-
-    .ledger-table tr:hover td {
-      background: rgba(255, 255, 255, 0.4);
-    }
-
-    .td-date {
-      color: var(--muted);
-      font-size: 0.85rem !important;
-    }
-
-    .td-amount {
-      font-family: var(--font-display);
-      font-size: 1.2rem !important;
-    }
-
-    .empty-ledger {
-      text-align: center;
-      padding: 4rem 0;
-      color: var(--muted);
-      font-style: italic;
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       FILTER BAR
-       ───────────────────────────────────────────────────────────────────── */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1.2rem;
-      margin-bottom: 2rem;
-      padding: 1.5rem 2rem;
-      background: var(--surface);
-      border: 1px solid var(--line-faint);
-    }
-
-    .filter-bar .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .filter-bar .filter-group label {
-      font-size: 0.6rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-    }
-
-    .filter-bar input[type="text"],
-    .filter-bar input[type="month"],
-    .filter-bar select {
-      padding: 0.75rem 1rem;
-      background: #fdfdfd;
-      border: 1px solid var(--line);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      outline: none;
-      transition: all 0.3s var(--ease);
-      min-width: 200px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-    }
-
-    @media (max-width: 768px) {
-      .ledger-section h2 {
-        font-size: 1.6rem;
-      }
-      .ledger-table th {
-        font-size: 0.55rem;
-        padding: 0.8rem 0.4rem;
-      }
-      .ledger-table td {
-        font-size: 0.75rem;
-        padding: 0.8rem 0.4rem;
-      }
-      .td-amount {
-        font-size: 0.9rem !important;
-      }
-      .filter-bar {
-        padding: 1rem;
-        gap: 0.8rem;
-      }
-      .filter-bar input[type="text"],
-      .filter-bar input[type="month"],
-      .filter-bar select {
-        min-width: 100%;
-      }
-    }
-
-    .filter-bar input:focus,
-    .filter-bar select:focus {
-      border-color: var(--accent);
-    }
-
-    .filter-bar .filter-actions {
-      margin-left: auto;
-      display: flex;
-      align-items: flex-end;
-      gap: 0.8rem;
-    }
-
-    .btn-export {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 1.6rem;
-      background: var(--accent);
-      color: #fff;
-      border: 1px solid var(--accent);
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.4s var(--ease);
-      white-space: nowrap;
-    }
-
-    .btn-export:hover {
-      background: #111;
-      border-color: #111;
-    }
-
-    .btn-export:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-clear {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.65rem 1.2rem;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--line);
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.3s var(--ease);
-    }
-
-    .btn-clear:hover {
-      color: var(--ink);
-      border-color: var(--ink);
-    }
-
-    .filter-count {
-      font-size: 0.8rem;
-      color: var(--muted);
-      padding: 0.5rem 0;
-      margin-bottom: 1rem;
-    }
-
-    .filter-count strong {
-      color: var(--ink);
-    }
-
-    /* ─────────────────────────────────────────────────────────────────────
-       RESPONSIVE
-       ───────────────────────────────────────────────────────────────────── */
-    @media (max-width: 1024px) {
-      .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .login-wrapper .brand-logo {
+        height: 5rem;
+        width: auto;
+        margin-bottom: 2rem;
       }
 
-      .kpi-block:nth-child(2) {
-        border-right: none;
+      .login-wrapper .editorial-title {
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
       }
 
-      .kpi-block:nth-child(1),
-      .kpi-block:nth-child(2) {
+      .login-wrapper .subtitle {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 3rem;
+      }
+
+      .login-wrapper input {
+        width: 100%;
+        padding: 1rem 0;
+        background: transparent;
+        border: none;
         border-bottom: 1px solid var(--line);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s var(--ease);
+        text-align: center;
+        margin-bottom: 2rem;
       }
 
-      .charts-row {
-        grid-template-columns: 1fr;
+      .login-wrapper input:focus {
+        border-bottom-color: var(--accent);
       }
 
-      .insights-band {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.8rem 2rem;
+        background: var(--accent);
+        color: #fff;
+        border: 1px solid var(--accent);
+        font-family: var(--font-body);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.4s var(--ease);
+        width: 100%;
       }
-    }
 
-    @media (max-width: 640px) {
+      .btn-primary:hover {
+        background: #111;
+        border-color: #111;
+      }
+
+      .login-error {
+        color: #e63946;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .login-back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition:
+          color 0.3s ease,
+          transform 0.3s ease;
+      }
+
+      .login-back-btn:hover {
+        color: var(--accent);
+        transform: translateX(-4px);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── DASHBOARD ANIMATIONS ─── */
+      .kpi-block {
+        animation: fadeIn 0.6s ease forwards;
+        opacity: 0;
+      }
+
+      .kpi-block:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .kpi-block:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .kpi-block:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .kpi-block:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+
+      .chart-container {
+        animation: fadeIn 0.8s ease forwards;
+        opacity: 0;
+        animation-delay: 0.5s;
+      }
+
+      .btn-export,
+      .btn-clear {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-export:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(31, 42, 55, 0.2);
+      }
+
+      .btn-clear:hover {
+        background: rgba(15, 15, 15, 0.05);
+        transform: translateY(-2px);
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       DASHBOARD SHELL
+       ───────────────────────────────────────────────────────────────────── */
+      .dashboard {
+        display: none;
+      }
+
+      .dashboard.active {
+        display: block;
+      }
+
+      /* Header */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(244, 244, 242, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--line-faint);
+      }
+
       .site-nav {
-        padding: 1rem 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 clamp(1.5rem, 3vw, 3rem);
+        min-height: 4.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
-      .login-wrapper .brand-logo,
       .site-nav img {
-        height: 4rem !important;
+        height: 5rem;
+        width: auto;
       }
 
       .header-actions {
-        gap: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
       }
 
       .status-indicator {
-        font-size: 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
       }
 
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        background: #10b981; /* Emerald Green */
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        animation: pulse 2.5s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .btn-nav-ghost {
+        background: transparent;
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink);
+        cursor: pointer;
+        position: relative;
+      }
+
+      .btn-nav-ghost::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--ink);
+        transition: width 0.4s var(--ease);
+      }
+
+      .btn-nav-ghost:hover::after {
+        width: 100%;
+      }
+
+      /* Main Body */
+      .dash-body {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 3vw, 3rem);
+      }
+
+      .dash-intro {
+        margin-bottom: 4rem;
+        max-width: 600px;
+      }
+
+      .dash-intro .section-label {
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      .dash-intro .editorial-title {
+        margin-bottom: 1.5rem;
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       KPI SPREADS (Data Blocks)
+       ───────────────────────────────────────────────────────────────────── */
       .kpi-grid {
-        grid-template-columns: 1fr;
-        border-right: none;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 5rem;
       }
 
       .kpi-block {
-        border-right: none !important;
-        border-bottom: 1px solid var(--line);
+        padding: 2.5rem 2rem;
+        border-right: 1px solid var(--line);
+        position: relative;
       }
 
       .kpi-block:last-child {
-        border-bottom: none;
+        border-right: none;
+      }
+
+      .kpi-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 1.5rem;
+      }
+
+      .kpi-value {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 400;
+        line-height: 1;
+        margin-bottom: 0.8rem;
+      }
+
+      .kpi-context {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .kpi-change.positive {
+        color: #2e7d32;
+      }
+
+      .kpi-change.negative {
+        color: #c62828;
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       CHARTS
+       ───────────────────────────────────────────────────────────────────── */
+      .charts-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+        margin-bottom: 5rem;
       }
 
       .chart-panel {
-        padding: 1.5rem;
+        background: var(--surface);
+        padding: 3rem;
+        border: 1px solid var(--line-faint);
       }
 
+      .chart-panel h3 {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+        letter-spacing: -0.01em;
+      }
+
+      .chart-wrapper {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .chart-wrapper.line-format {
+        height: clamp(260px, 30vw, 340px);
+      }
+
+      .chart-wrapper.donut-format {
+        height: clamp(280px, 38vw, 420px);
+      }
+
+      .chart-wrapper canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       SIGNATURE INSIGHTS (Dark Midnight Navy Block)
+       ───────────────────────────────────────────────────────────────────── */
       .insights-band {
-        padding: 2.5rem 1.5rem;
+        background: var(--accent);
+        color: var(--bg);
+        padding: 4rem 3rem;
+        margin-bottom: 5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem;
       }
 
+      .insight-block .kpi-label {
+        color: rgba(244, 244, 242, 0.4);
+      }
+
+      .insight-block .kpi-value {
+        color: #fff;
+      }
+
+      .insight-block .kpi-context {
+        color: rgba(244, 244, 242, 0.6);
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       LEDGER (Tables)
+       ───────────────────────────────────────────────────────────────────── */
+      .ledger-section h2 {
+        font-family: var(--font-display);
+        font-size: 2.2rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+      }
+
+      .ledger-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .ledger-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      .ledger-table th {
+        font-family: var(--font-body);
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .ledger-table td {
+        padding: 1.2rem 0;
+        border-bottom: 1px solid var(--line-faint);
+        font-size: 0.95rem;
+      }
+
+      .ledger-table tr:hover td {
+        background: rgba(255, 255, 255, 0.4);
+      }
+
+      .td-date {
+        color: var(--muted);
+        font-size: 0.85rem !important;
+      }
+
+      .td-amount {
+        font-family: var(--font-display);
+        font-size: 1.2rem !important;
+      }
+
+      .customer-name {
+        font-size: 0.95rem;
+        color: var(--ink);
+        line-height: 1.2;
+      }
+
+      .customer-email {
+        margin-top: 0.2rem;
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.2;
+      }
+
+      .empty-ledger {
+        text-align: center;
+        padding: 4rem 0;
+        color: var(--muted);
+        font-style: italic;
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+      }
+
+      /* ─────────────────────────────────────────────────────────────────────
+       FILTER BAR
+       ───────────────────────────────────────────────────────────────────── */
       .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem 2rem;
+        background: var(--surface);
+        border: 1px solid var(--line-faint);
+      }
+
+      .filter-bar .filter-group {
+        display: flex;
         flex-direction: column;
-        align-items: stretch;
+        gap: 0.6rem;
+      }
+
+      .filter-bar .filter-group label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--muted);
       }
 
       .filter-bar input[type="text"],
       .filter-bar input[type="month"],
       .filter-bar select {
-        width: 100%;
-        min-width: 100%;
+        padding: 0.75rem 1rem;
+        background: #fdfdfd;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        outline: none;
+        transition: all 0.3s var(--ease);
+        min-width: 200px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+
+      @media (max-width: 768px) {
+        .ledger-section h2 {
+          font-size: 1.6rem;
+        }
+        .ledger-table th {
+          font-size: 0.55rem;
+          padding: 0.8rem 0.4rem;
+        }
+        .ledger-table td {
+          font-size: 0.75rem;
+          padding: 0.8rem 0.4rem;
+        }
+        .td-amount {
+          font-size: 0.9rem !important;
+        }
+        .filter-bar {
+          padding: 1rem;
+          gap: 0.8rem;
+        }
+        .filter-bar input[type="text"],
+        .filter-bar input[type="month"],
+        .filter-bar select {
+          min-width: 100%;
+        }
+      }
+
+      .filter-bar input:focus,
+      .filter-bar select:focus {
+        border-color: var(--accent);
       }
 
       .filter-bar .filter-actions {
-        margin-left: 0;
-        flex-direction: column;
-        width: 100%;
+        margin-left: auto;
+        display: flex;
+        align-items: flex-end;
+        gap: 0.8rem;
+      }
+
+      .btn-export {
+        display: inline-flex;
+        align-items: center;
         gap: 0.5rem;
+        padding: 0.65rem 1.6rem;
+        background: var(--accent);
+        color: #fff;
+        border: 1px solid var(--accent);
+        font-family: var(--font-body);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.4s var(--ease);
+        white-space: nowrap;
       }
 
-      .btn-export, .btn-clear {
-        width: 100%;
-        justify-content: center;
+      .btn-export:hover {
+        background: #111;
+        border-color: #111;
       }
-    }
 
-    /* Currency Select */
-    .currency-select {
-      appearance: none;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.4rem 1.8rem 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      text-transform: uppercase;
-      outline: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230f0f0f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.6rem center;
-      transition: all 0.2s var(--ease);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-      margin: 0 0.75rem;
-    }
+      .btn-export:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-    .currency-select:hover {
-      border-color: var(--ink);
-      background-color: var(--bg-warm);
-    }
-  </style>
-</head>
+      .btn-clear {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.65rem 1.2rem;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        font-family: var(--font-body);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s var(--ease);
+      }
 
-<body>
+      .btn-clear:hover {
+        color: var(--ink);
+        border-color: var(--ink);
+      }
 
-  <!-- ─── LOGIN SCREEN ─── -->
-  <div class="login-screen" id="loginScreen">
-    <div class="login-wrapper" data-aos="fade-up" data-aos-duration="1000">
-      <img src="/assets/images/logo.svg" alt="INVIO Logo" class="brand-logo logo-animate" />
-      <h1 class="editorial-title">Finance Dashboard</h1>
-      <p class="subtitle">Enter your password to access analytics and records.</p>
+      .filter-count {
+        font-size: 0.8rem;
+        color: var(--muted);
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+      }
 
-      <p class="login-error" id="loginError">Invalid password. Please try again.</p>
+      .filter-count strong {
+        color: var(--ink);
+      }
 
-      <input type="password" id="adminPassword" placeholder="Password" autocomplete="off" autofocus />
-      <button type="button" class="btn-primary" id="loginBtn">Login</button>
-      
-      <a href="/" class="login-back-btn">
-        <i class="ph ph-arrow-left"></i> Back to Website
-      </a>
-    </div>
-  </div>
+      /* ─────────────────────────────────────────────────────────────────────
+       RESPONSIVE
+       ───────────────────────────────────────────────────────────────────── */
+      @media (max-width: 1024px) {
+        .kpi-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
 
-  <!-- ─── DASHBOARD ─── -->
-  <div class="dashboard" id="dashboard">
-    <header class="site-header">
-      <div class="site-nav">
-        <img src="/assets/images/logo.svg" alt="INVIO logo" class="logo-animate" />
-        <div class="header-actions">
-          <div class="status-indicator">
-            <span class="status-dot"></span> Live
-          </div>
-          <select id="adminCurrency" class="currency-select">
-            <option value="AED">AED</option>
-            <option value="USD">USD</option>
-            <option value="INR">INR</option>
-            <option value="GBP">GBP</option>
-          </select>
-          <button class="btn-nav-ghost" id="logoutBtn">Logout</button>
-        </div>
+        .kpi-block:nth-child(2) {
+          border-right: none;
+        }
+
+        .kpi-block:nth-child(1),
+        .kpi-block:nth-child(2) {
+          border-bottom: 1px solid var(--line);
+        }
+
+        .charts-row {
+          grid-template-columns: 1fr;
+        }
+
+        .insights-band {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-nav {
+          padding: 1rem 1.5rem;
+        }
+
+        .login-wrapper .brand-logo,
+        .site-nav img {
+          height: 4rem !important;
+        }
+
+        .header-actions {
+          gap: 1rem;
+        }
+
+        .status-indicator {
+          font-size: 0.65rem;
+        }
+
+        .kpi-grid {
+          grid-template-columns: 1fr;
+          border-right: none;
+        }
+
+        .kpi-block {
+          border-right: none !important;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .kpi-block:last-child {
+          border-bottom: none;
+        }
+
+        .chart-panel {
+          padding: 1.5rem;
+        }
+
+        .chart-wrapper.line-format,
+        .chart-wrapper.donut-format {
+          height: 260px;
+        }
+
+        .insights-band {
+          padding: 2.5rem 1.5rem;
+        }
+
+        .filter-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .filter-bar input[type="text"],
+        .filter-bar input[type="month"],
+        .filter-bar select {
+          width: 100%;
+          min-width: 100%;
+        }
+
+        .filter-bar .filter-actions {
+          margin-left: 0;
+          flex-direction: column;
+          width: 100%;
+          gap: 0.5rem;
+        }
+
+        .btn-export,
+        .btn-clear {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Currency Select */
+      .currency-select {
+        appearance: none;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.4rem 1.8rem 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        text-transform: uppercase;
+        outline: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230f0f0f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.6rem center;
+        transition: all 0.2s var(--ease);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        margin: 0 0.75rem;
+      }
+
+      .currency-select:hover {
+        border-color: var(--ink);
+        background-color: var(--bg-warm);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ─── LOGIN SCREEN ─── -->
+    <div class="login-screen" id="loginScreen">
+      <div class="login-wrapper" data-aos="fade-up" data-aos-duration="1000">
+        <img
+          src="/assets/images/logo.svg"
+          alt="INVIO Logo"
+          class="brand-logo logo-animate"
+        />
+        <h1 class="editorial-title">Finance Dashboard</h1>
+        <p class="subtitle">
+          Enter your password to access analytics and records.
+        </p>
+
+        <p class="login-error" id="loginError">
+          Invalid password. Please try again.
+        </p>
+
+        <input
+          type="password"
+          id="adminPassword"
+          placeholder="Password"
+          autocomplete="off"
+          autofocus
+        />
+        <button type="button" class="btn-primary" id="loginBtn">Login</button>
+
+        <a href="/" class="login-back-btn">
+          <i class="ph ph-arrow-left"></i> Back to Website
+        </a>
       </div>
-    </header>
+    </div>
 
-    <main class="dash-body">
-
-      <!-- Intro -->
-      <section class="dash-intro" data-aos="fade-up" data-aos-duration="800">
-        <span class="section-label">Performance Overview</span>
-        <h1 class="editorial-title">Financial Performance & Analytics</h1>
-      </section>
-
-      <!-- KPI Spreads -->
-      <section class="kpi-grid" id="kpiGrid" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
-        <div class="kpi-block">
-          <div class="kpi-label">Gross Volume</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">Loading data</div>
-        </div>
-        <div class="kpi-block">
-          <div class="kpi-label">Monthly Revenue</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">Loading data</div>
-        </div>
-        <div class="kpi-block">
-          <div class="kpi-label">Average Order</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">Loading data</div>
-        </div>
-        <div class="kpi-block">
-          <div class="kpi-label">Total Users</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">Loading data</div>
-        </div>
-      </section>
-
-      <!-- Charts Data -->
-      <section class="charts-row" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-        <div class="chart-panel">
-          <h3>Revenue Overview</h3>
-          <div class="chart-wrapper line-format">
-            <canvas id="revenueChart"></canvas>
-          </div>
-        </div>
-        <div class="chart-panel">
-          <h3>Category Analysis</h3>
-          <div class="chart-wrapper donut-format">
-            <canvas id="categoryChart"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <!-- Insights (Midnight Navy) -->
-      <section class="insights-band" id="insightsRow" data-aos="fade-up" data-aos-duration="1000">
-        <div class="insight-block" id="insightBest">
-          <div class="kpi-label">Highest Performing</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">...</div>
-        </div>
-        <div class="insight-block" id="insightWorst">
-          <div class="kpi-label">Areas for Growth</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">...</div>
-        </div>
-        <div class="insight-block" id="insightPlatform">
-          <div class="kpi-label">Global Imprint</div>
-          <div class="kpi-value">...</div>
-          <div class="kpi-context">...</div>
-        </div>
-      </section>
-
-      <!-- Ledger -->
-      <section class="ledger-section" data-aos="fade-up" data-aos-duration="1000">
-        <h2>Transaction History</h2>
-
-        <!-- Filter Bar -->
-        <div class="filter-bar" id="filterBar">
-          <div class="filter-group">
-            <label for="filterMonth">Month</label>
-            <input type="month" id="filterMonth" />
-          </div>
-          <div class="filter-group">
-            <label for="filterSearch">Search</label>
-            <input type="text" id="filterSearch" placeholder="Name, email, template..." />
-          </div>
-          <div class="filter-group">
-            <label for="filterCategory">Category</label>
-            <select id="filterCategory">
-              <option value="">All Categories</option>
+    <!-- ─── DASHBOARD ─── -->
+    <div class="dashboard" id="dashboard">
+      <header class="site-header">
+        <div class="site-nav">
+          <img
+            src="/assets/images/logo.svg"
+            alt="INVIO logo"
+            class="logo-animate"
+          />
+          <div class="header-actions">
+            <div class="status-indicator">
+              <span class="status-dot"></span> Live
+            </div>
+            <select id="adminCurrency" class="currency-select">
+              <option value="AED">AED</option>
+              <option value="USD">USD</option>
+              <option value="INR">INR</option>
+              <option value="GBP">GBP</option>
             </select>
-          </div>
-          <div class="filter-actions">
-            <button class="btn-clear" id="clearFiltersBtn" type="button">Clear</button>
-            <button class="btn-export" id="exportBtn" type="button">
-              <i class="ph ph-download-simple"></i> Monthly Report
-            </button>
-            <button class="btn-export" id="exportAllBtn" type="button" style="background: #8c7a63; border-color: #8c7a63;">
-              <i class="ph ph-file-arrow-down"></i> All-Time Report
-            </button>
+            <button class="btn-nav-ghost" id="logoutBtn">Logout</button>
           </div>
         </div>
+      </header>
 
-        <div class="filter-count" id="filterCount"></div>
+      <main class="dash-body">
+        <!-- Intro -->
+        <section class="dash-intro" data-aos="fade-up" data-aos-duration="800">
+          <span class="section-label">Performance Overview</span>
+          <h1 class="editorial-title">Financial Performance & Analytics</h1>
+        </section>
 
-        <div class="ledger-table-wrap">
-          <table class="ledger-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>ID</th>
-                <th>Customer</th>
-                <th>Template</th>
-                <th>Base Price</th>
-                <th>Paid Amount</th>
-              </tr>
-            </thead>
-            <tbody id="ledgerBody">
-              <tr>
-                <td colspan="5" class="empty-ledger">Retrieving archives...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+        <!-- KPI Spreads -->
+        <section
+          class="kpi-grid"
+          id="kpiGrid"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+          data-aos-delay="100"
+        >
+          <div class="kpi-block">
+            <div class="kpi-label">Gross Volume</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">Loading data</div>
+          </div>
+          <div class="kpi-block">
+            <div class="kpi-label">Monthly Revenue</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">Loading data</div>
+          </div>
+          <div class="kpi-block">
+            <div class="kpi-label">Average Order</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">Loading data</div>
+          </div>
+          <div class="kpi-block">
+            <div class="kpi-label">Total Users</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">Loading data</div>
+          </div>
+        </section>
 
-    </main>
-  </div>
+        <!-- Charts Data -->
+        <section
+          class="charts-row"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+          data-aos-delay="200"
+        >
+          <div class="chart-panel">
+            <h3>Revenue Overview</h3>
+            <div class="chart-wrapper line-format">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <h3>Category Analysis</h3>
+            <div class="chart-wrapper donut-format">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </section>
 
-  <script>
-    // Initialize AOS immediately as a fallback
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof AOS !== 'undefined') {
-        AOS.init({ once: true, offset: 50 });
+        <!-- Insights (Midnight Navy) -->
+        <section
+          class="insights-band"
+          id="insightsRow"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          <div class="insight-block" id="insightBest">
+            <div class="kpi-label">Highest Performing</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">...</div>
+          </div>
+          <div class="insight-block" id="insightWorst">
+            <div class="kpi-label">Areas for Growth</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">...</div>
+          </div>
+          <div class="insight-block" id="insightPlatform">
+            <div class="kpi-label">Global Imprint</div>
+            <div class="kpi-value">...</div>
+            <div class="kpi-context">...</div>
+          </div>
+        </section>
+
+        <!-- Ledger -->
+        <section
+          class="ledger-section"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          <h2>Transaction History</h2>
+
+          <!-- Filter Bar -->
+          <div class="filter-bar" id="filterBar">
+            <div class="filter-group">
+              <label for="filterMonth">Month</label>
+              <input type="month" id="filterMonth" />
+            </div>
+            <div class="filter-group">
+              <label for="filterSearch">Search</label>
+              <input
+                type="text"
+                id="filterSearch"
+                placeholder="Name, email, template..."
+              />
+            </div>
+            <div class="filter-group">
+              <label for="filterCategory">Category</label>
+              <select id="filterCategory">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="btn-clear" id="clearFiltersBtn" type="button">
+                Clear
+              </button>
+              <button class="btn-export" id="exportBtn" type="button">
+                <i class="ph ph-download-simple"></i> Monthly Report
+              </button>
+              <button
+                class="btn-export"
+                id="exportAllBtn"
+                type="button"
+                style="background: #8c7a63; border-color: #8c7a63"
+              >
+                <i class="ph ph-file-arrow-down"></i> All-Time Report
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-count" id="filterCount"></div>
+
+          <div class="ledger-table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>ID</th>
+                  <th>Customer</th>
+                  <th>Template</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerBody">
+                <tr>
+                  <td colspan="5" class="empty-ledger">
+                    Retrieving archives...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Initialize AOS immediately as a fallback
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof AOS !== "undefined") {
+          AOS.init({ once: true, offset: 50 });
+        }
+      });
+    </script>
+
+    <script type="module">
+      import { API_URL } from "/js/env.js";
+
+      // TEMPLATE_CATALOG is loaded via global script in <head>
+
+      const CURRENCY_CONFIG = {
+        AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
+        USD: { rate: 1, locale: "en-US", currency: "USD", prefix: "$" },
+        INR: { rate: 83.2, locale: "en-IN", currency: "INR", prefix: "INR" },
+        GBP: { rate: 0.79, locale: "en-GB", currency: "GBP", prefix: "GBP" },
+      };
+
+      let selectedAdminCurrency =
+        localStorage.getItem("invioAdminCurrency") || "AED";
+
+      let adminToken = null;
+      let revenueChartInstance = null;
+      let categoryChartInstance = null;
+
+      // Master data stores
+      let masterSalesList = [];
+      let filteredSales = [];
+      let masterStats = null;
+
+      // DOM refs
+      const loginScreen = document.getElementById("loginScreen");
+      const dashboard = document.getElementById("dashboard");
+      const loginBtn = document.getElementById("loginBtn");
+      const loginError = document.getElementById("loginError");
+      const passwordInput = document.getElementById("adminPassword");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      // Filter refs
+      const filterMonth = document.getElementById("filterMonth");
+      const filterSearch = document.getElementById("filterSearch");
+      const filterCategory = document.getElementById("filterCategory");
+      const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const exportAllBtn = document.getElementById("exportAllBtn");
+      const filterCountEl = document.getElementById("filterCount");
+
+      const adminCurrencySelect = document.getElementById("adminCurrency");
+      // Set initial value
+      adminCurrencySelect.value = selectedAdminCurrency;
+
+      // ─── Formatting Helpers ───
+      function formatDisplayAmount(usdAmount) {
+        if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
+        const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+        const converted = usdAmount * conf.rate;
+        return new Intl.NumberFormat(conf.locale, {
+          style: "currency",
+          currency: conf.currency,
+        }).format(converted);
       }
-    });
-  </script>
 
-  <script type="module">
-    import { API_URL } from "/js/env.js";
-
-    // TEMPLATE_CATALOG is loaded via global script in <head>
-
-    const CURRENCY_CONFIG = {
-      AED: { rate: 3.67, locale: "en-AE", currency: "AED", prefix: "AED" },
-      USD: { rate: 1, locale: "en-US", currency: "USD", prefix: "$" },
-      INR: { rate: 83.2, locale: "en-IN", currency: "INR", prefix: "INR" },
-      GBP: { rate: 0.79, locale: "en-GB", currency: "GBP", prefix: "GBP" },
-    };
-
-    let selectedAdminCurrency = localStorage.getItem("invioAdminCurrency") || "AED";
-
-    let adminToken = null;
-    let revenueChartInstance = null;
-    let categoryChartInstance = null;
-
-    // Master data stores
-    let masterSalesList = [];
-    let filteredSales = [];
-    let masterStats = null;
-
-    // DOM refs
-    const loginScreen = document.getElementById("loginScreen");
-    const dashboard = document.getElementById("dashboard");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginError = document.getElementById("loginError");
-    const passwordInput = document.getElementById("adminPassword");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    // Filter refs
-    const filterMonth = document.getElementById("filterMonth");
-    const filterSearch = document.getElementById("filterSearch");
-    const filterCategory = document.getElementById("filterCategory");
-    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-    const exportBtn = document.getElementById("exportBtn");
-    const exportAllBtn = document.getElementById("exportAllBtn");
-    const filterCountEl = document.getElementById("filterCount");
-
-    const adminCurrencySelect = document.getElementById("adminCurrency");
-    // Set initial value
-    adminCurrencySelect.value = selectedAdminCurrency;
-
-    // ─── Formatting Helpers ───
-    function formatDisplayAmount(usdAmount) {
-      if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
-      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
-      const converted = usdAmount * conf.rate;
-      return new Intl.NumberFormat(conf.locale, {
-        style: 'currency',
-        currency: conf.currency
-      }).format(converted);
-    }
-
-    function formatChartTick(usdAmount) {
-      if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
-      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
-      const converted = usdAmount * conf.rate;
-      return converted;
-    }
-
-    function convertSaleAmount(amount, originalCurrency) {
-      const origConf = CURRENCY_CONFIG[originalCurrency] || CURRENCY_CONFIG.USD;
-      const usdAmount = parseFloat(amount || 0) / origConf.rate;
-      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
-      return usdAmount * conf.rate;
-    }
-
-    function formatSaleAmount(amount, originalCurrency) {
-      const converted = convertSaleAmount(amount, originalCurrency);
-      const conf = CURRENCY_CONFIG[selectedAdminCurrency];
-      return new Intl.NumberFormat(conf.locale, {
-        style: 'currency',
-        currency: conf.currency
-      }).format(converted);
-    }
-
-    // ─── Auth Events ───
-    loginBtn.addEventListener("click", handleLogin);
-    passwordInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleLogin();
-    });
-    logoutBtn.addEventListener("click", () => {
-      adminToken = null;
-      dashboard.classList.remove("active");
-      loginScreen.style.display = "flex";
-      passwordInput.value = "";
-      loginError.style.display = "none";
-    });
-
-    adminCurrencySelect.addEventListener("change", (e) => {
-      selectedAdminCurrency = e.target.value;
-      localStorage.setItem("invioAdminCurrency", selectedAdminCurrency);
-      if (masterStats && masterSalesList) {
-        renderKPIs(masterStats.overview);
-        renderRevenueChart(masterStats.monthlyRevenue);
-        renderCategoryChart(masterStats.categoryBreakdown);
-        renderInsights(masterStats);
-        renderLedger(filteredSales);
+      function formatChartTick(usdAmount) {
+        if (usdAmount === undefined || usdAmount === null) usdAmount = 0;
+        const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+        const converted = usdAmount * conf.rate;
+        return converted;
       }
-    });
 
-    // ─── Filter Events ───
-    filterMonth.addEventListener("change", applyFilters);
-    filterSearch.addEventListener("input", applyFilters);
-    filterCategory.addEventListener("change", applyFilters);
-    clearFiltersBtn.addEventListener("click", clearFilters);
-    exportBtn.addEventListener("click", exportToExcel);
-    exportAllBtn.addEventListener("click", exportAllTimeReport);
-
-    async function handleLogin() {
-      const password = passwordInput.value.trim();
-      if (!password) return;
-
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Verifying...";
-      loginError.style.display = "none";
-
-      try {
-        const res = await fetch(`${API_URL}/api/admin/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password }),
-        });
-
-        if (!res.ok) throw new Error("Invalid password");
-
-        const data = await res.json();
-        adminToken = data.token;
-
-        loginScreen.style.display = "none";
-        dashboard.classList.add("active");
-
-        setTimeout(() => AOS.refresh(), 100);
-        loadDashboard();
-      } catch (err) {
-        loginError.textContent = err.message || "Invalid password. Try again.";
-        loginError.style.display = "block";
-        passwordInput.select();
-      } finally {
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
+      function convertSaleAmount(amount, originalCurrency) {
+        const origConf =
+          CURRENCY_CONFIG[originalCurrency] || CURRENCY_CONFIG.USD;
+        const usdAmount = parseFloat(amount || 0) / origConf.rate;
+        const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+        return usdAmount * conf.rate;
       }
-    }
 
-    async function loadDashboard() {
-      try {
-        const [statsRes, salesRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/stats`, { headers: { "X-Admin-Token": adminToken } }),
-          fetch(`${API_URL}/api/admin/sales`, { headers: { "X-Admin-Token": adminToken } })
-        ]);
-
-        if (!statsRes.ok || !salesRes.ok) throw new Error("Failed to fetch data");
-
-        masterStats = await statsRes.json();
-        masterSalesList = await salesRes.json();
-
-        // Populate the category dropdown from actual data
-        populateCategoryFilter(masterSalesList);
-
-        // Render everything with full data
-        renderKPIs(masterStats.overview);
-        renderRevenueChart(masterStats.monthlyRevenue);
-        renderCategoryChart(masterStats.categoryBreakdown);
-        renderInsights(masterStats);
-        filteredSales = [...masterSalesList];
-
-        // Default month picker to current month
-        const now = new Date();
-        filterMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-        // Apply the default month filter
-        applyFilters();
-      } catch (err) {
-        console.error("Dashboard error:", err);
+      function formatSaleAmount(amount, originalCurrency) {
+        const converted = convertSaleAmount(amount, originalCurrency);
+        const conf = CURRENCY_CONFIG[selectedAdminCurrency];
+        return new Intl.NumberFormat(conf.locale, {
+          style: "currency",
+          currency: conf.currency,
+        }).format(converted);
       }
-    }
 
-    // ─── FILTER LOGIC ───
-    function populateCategoryFilter(sales) {
-      const categories = new Set();
-      sales.forEach(s => {
-        const name = s.template_name || s.template_id || "";
-        // Extract category from template name (e.g., "Wedding Template 1" → "Wedding")
-        const cat = name.split(/\s+/)[0];
-        if (cat) categories.add(cat);
+      // ─── Auth Events ───
+      loginBtn.addEventListener("click", handleLogin);
+      passwordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") handleLogin();
+      });
+      logoutBtn.addEventListener("click", () => {
+        adminToken = null;
+        dashboard.classList.remove("active");
+        loginScreen.style.display = "flex";
+        passwordInput.value = "";
+        loginError.style.display = "none";
       });
 
-      filterCategory.innerHTML = '<option value="">All Categories</option>';
-      [...categories].sort().forEach(cat => {
-        filterCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
-      });
-    }
-
-    function applyFilters() {
-      const searchTerm = filterSearch.value.toLowerCase().trim();
-      const selectedMonth = filterMonth.value; // e.g. "2026-04"
-      const category = filterCategory.value.toLowerCase();
-
-      filteredSales = masterSalesList.filter(sale => {
-        // Search filter
-        if (searchTerm) {
-          const hay = [
-            sale.username || "",
-            sale.user_email || "",
-            sale.template_name || sale.template_id || ""
-          ].join(" ").toLowerCase();
-          if (!hay.includes(searchTerm)) return false;
+      adminCurrencySelect.addEventListener("change", (e) => {
+        selectedAdminCurrency = e.target.value;
+        localStorage.setItem("invioAdminCurrency", selectedAdminCurrency);
+        if (masterStats && masterSalesList) {
+          renderKPIs(masterStats.overview);
+          renderRevenueChart(masterStats.monthlyRevenue);
+          renderCategoryChart(masterStats.categoryBreakdown);
+          renderInsights(masterStats);
+          renderLedger(filteredSales);
         }
-
-        // Month filter
-        if (selectedMonth) {
-          const saleDate = new Date(sale.created_at);
-          const saleMonth = `${saleDate.getFullYear()}-${String(saleDate.getMonth() + 1).padStart(2, '0')}`;
-          if (saleMonth !== selectedMonth) return false;
-        }
-
-        // Category
-        if (category) {
-          const name = (sale.template_name || sale.template_id || "").toLowerCase();
-          if (!name.startsWith(category)) return false;
-        }
-
-        return true;
       });
 
-      renderLedger(filteredSales);
-      updateFilterCount();
-    }
+      // ─── Filter Events ───
+      filterMonth.addEventListener("change", applyFilters);
+      filterSearch.addEventListener("input", applyFilters);
+      filterCategory.addEventListener("change", applyFilters);
+      clearFiltersBtn.addEventListener("click", clearFilters);
+      exportBtn.addEventListener("click", exportToExcel);
+      exportAllBtn.addEventListener("click", exportAllTimeReport);
 
-    function clearFilters() {
-      filterSearch.value = "";
-      filterMonth.value = "";
-      filterCategory.value = "";
-      filteredSales = [...masterSalesList];
-      renderLedger(filteredSales);
-      updateFilterCount();
-    }
+      async function handleLogin() {
+        const password = passwordInput.value.trim();
+        if (!password) return;
 
-    function updateFilterCount() {
-      const total = masterSalesList.length;
-      const shown = filteredSales.length;
-      if (total === 0) {
-        filterCountEl.textContent = "";
-      } else if (shown === total) {
-        filterCountEl.innerHTML = `Showing all <strong>${total}</strong> transactions`;
-      } else {
-        filterCountEl.innerHTML = `Showing <strong>${shown}</strong> of <strong>${total}</strong> transactions`;
-      }
-    }
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Verifying...";
+        loginError.style.display = "none";
 
-    // ─── STYLED EXCEL EXPORT ───
-    async function exportToExcel() {
-      if (!filteredSales || filteredSales.length === 0) {
-        alert("No transactions to export.");
-        return;
-      }
+        try {
+          const res = await fetch(`${API_URL}/api/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password }),
+          });
 
-      exportBtn.disabled = true;
-      exportBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+          if (!res.ok) throw new Error("Invalid password");
 
-      try {
-        const workbook = new ExcelJS.Workbook();
-        workbook.creator = "INVIO Finance Dashboard";
-        workbook.created = new Date();
+          const data = await res.json();
+          adminToken = data.token;
 
-        const sheet = workbook.addWorksheet("Transaction Report", {
-          properties: { defaultColWidth: 18 }
-        });
+          loginScreen.style.display = "none";
+          dashboard.classList.add("active");
 
-        // ── Brand Colors ──
-        const navyFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2A37" } };
-        const ivoryFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF4F4F2" } };
-        const whiteFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
-        const warmFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF8C7A63" } };
-        const headerFont = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        const bodyFont = { name: "Calibri", size: 10, color: { argb: "FF0F0F0F" } };
-        const mutedFont = { name: "Calibri", size: 10, color: { argb: "FF888888" } };
-        const thinBorder = {
-          bottom: { style: "thin", color: { argb: "FFE0E0E0" } }
-        };
-
-        // ── Title Row ──
-        // Determine report month label
-        const selectedMonth = filterMonth.value;
-        let monthLabel = "All Time";
-        if (selectedMonth) {
-          const [y, m] = selectedMonth.split("-");
-          const d = new Date(parseInt(y), parseInt(m) - 1);
-          monthLabel = d.toLocaleDateString("en-US", { year: "numeric", month: "long" });
+          setTimeout(() => AOS.refresh(), 100);
+          loadDashboard();
+        } catch (err) {
+          loginError.textContent =
+            err.message || "Invalid password. Try again.";
+          loginError.style.display = "block";
+          passwordInput.select();
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
         }
+      }
 
-        sheet.mergeCells("A1:F1");
-        const titleCell = sheet.getCell("A1");
-        titleCell.value = `INVIO - Monthly Report: ${monthLabel}`;
-        titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
-        titleCell.alignment = { vertical: "middle" };
-        sheet.getRow(1).height = 36;
-
-        // ── Subtitle Row ──
-        sheet.mergeCells("A2:F2");
-        const subtitleCell = sheet.getCell("A2");
-        const now = new Date();
-        const dateLabel = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-        subtitleCell.value = `Generated on ${dateLabel}  •  ${filteredSales.length} transaction(s)`;
-        subtitleCell.font = mutedFont;
-        subtitleCell.alignment = { vertical: "middle" };
-        sheet.getRow(2).height = 22;
-
-        // ── Spacer ──
-        sheet.getRow(3).height = 8;
-
-        // ── Header Row ──
-        const headers = ["Date", "ID", "Customer", "Email", "Template", "Base Price (AED)", `Paid Amount (${selectedAdminCurrency})`, "Original Currency"];
-        const headerRow = sheet.getRow(4);
-        headerRow.values = headers;
-        headerRow.height = 30;
-        headerRow.eachCell((cell, colNumber) => {
-          cell.fill = navyFill;
-          cell.font = headerFont;
-          cell.alignment = { vertical: "middle", horizontal: (colNumber === 6 || colNumber === 7) ? "right" : "left" };
-        });
-
-        // ── Data Rows ──
-        filteredSales.forEach((sale, i) => {
-          const d = new Date(sale.created_at);
-          const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-          
-          const template = TEMPLATE_CATALOG.find(t => t.id === sale.template_id);
-          const basePrice = template ? template.price : 0;
-          const shortId = (sale.id || "").substring(0, 8).toUpperCase();
-
-          const row = sheet.addRow([
-            dateStr,
-            shortId,
-            sale.username || "Unknown",
-            sale.user_email || "",
-            sale.template_name || sale.template_id || "-",
-            basePrice,
-            convertSaleAmount(sale.amount, sale.currency),
-            sale.currency || "AED"
+      async function loadDashboard() {
+        try {
+          const [statsRes, salesRes] = await Promise.all([
+            fetch(`${API_URL}/api/admin/stats`, {
+              headers: { "X-Admin-Token": adminToken },
+            }),
+            fetch(`${API_URL}/api/admin/sales`, {
+              headers: { "X-Admin-Token": adminToken },
+            }),
           ]);
 
-          row.height = 26;
-          const isEven = i % 2 === 0;
-          row.eachCell((cell, colNumber) => {
-            cell.fill = isEven ? whiteFill : ivoryFill;
-            cell.font = bodyFont;
-            cell.border = thinBorder;
-            cell.alignment = { vertical: "middle", horizontal: (colNumber === 6 || colNumber === 7) ? "right" : "left" };
+          if (!statsRes.ok || !salesRes.ok)
+            throw new Error("Failed to fetch data");
 
-            // Format numeric columns
-            if (colNumber === 6 || colNumber === 7) {
-              cell.numFmt = '#,##0.00';
-            }
+          masterStats = await statsRes.json();
+          masterSalesList = await salesRes.json();
+
+          // Populate the category dropdown from actual data
+          populateCategoryFilter(masterSalesList);
+
+          // Render everything with full data
+          renderKPIs(masterStats.overview);
+          renderRevenueChart(masterStats.monthlyRevenue);
+          renderCategoryChart(masterStats.categoryBreakdown);
+          renderInsights(masterStats);
+          filteredSales = [...masterSalesList];
+
+          // Default month picker to current month
+          const now = new Date();
+          filterMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+          // Apply the default month filter
+          applyFilters();
+        } catch (err) {
+          console.error("Dashboard error:", err);
+        }
+      }
+
+      // ─── FILTER LOGIC ───
+      function populateCategoryFilter(sales) {
+        const categories = new Set();
+        sales.forEach((s) => {
+          const name = s.template_name || s.template_id || "";
+          // Extract category from template name (e.g., "Wedding Template 1" → "Wedding")
+          const cat = name.split(/\s+/)[0];
+          if (cat) categories.add(cat);
+        });
+
+        filterCategory.innerHTML = '<option value="">All Categories</option>';
+        [...categories].sort().forEach((cat) => {
+          filterCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+      }
+
+      function applyFilters() {
+        const searchTerm = filterSearch.value.toLowerCase().trim();
+        const selectedMonth = filterMonth.value; // e.g. "2026-04"
+        const category = filterCategory.value.toLowerCase();
+
+        filteredSales = masterSalesList.filter((sale) => {
+          // Search filter
+          if (searchTerm) {
+            const hay = [
+              sale.customer_name || "",
+              sale.customer_email || "",
+              sale.template_name || sale.template_id || "",
+            ]
+              .join(" ")
+              .toLowerCase();
+            if (!hay.includes(searchTerm)) return false;
+          }
+
+          // Month filter
+          if (selectedMonth) {
+            const saleDate = new Date(sale.created_at);
+            const saleMonth = `${saleDate.getFullYear()}-${String(saleDate.getMonth() + 1).padStart(2, "0")}`;
+            if (saleMonth !== selectedMonth) return false;
+          }
+
+          // Category
+          if (category) {
+            const name = (
+              sale.template_name ||
+              sale.template_id ||
+              ""
+            ).toLowerCase();
+            if (!name.startsWith(category)) return false;
+          }
+
+          return true;
+        });
+
+        renderLedger(filteredSales);
+        updateFilterCount();
+      }
+
+      function clearFilters() {
+        filterSearch.value = "";
+        filterMonth.value = "";
+        filterCategory.value = "";
+        filteredSales = [...masterSalesList];
+        renderLedger(filteredSales);
+        updateFilterCount();
+      }
+
+      function updateFilterCount() {
+        const total = masterSalesList.length;
+        const shown = filteredSales.length;
+        if (total === 0) {
+          filterCountEl.textContent = "";
+        } else if (shown === total) {
+          filterCountEl.innerHTML = `Showing all <strong>${total}</strong> transactions`;
+        } else {
+          filterCountEl.innerHTML = `Showing <strong>${shown}</strong> of <strong>${total}</strong> transactions`;
+        }
+      }
+
+      // ─── STYLED EXCEL EXPORT ───
+      async function exportToExcel() {
+        if (!filteredSales || filteredSales.length === 0) {
+          alert("No transactions to export.");
+          return;
+        }
+
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+
+        try {
+          const workbook = new ExcelJS.Workbook();
+          workbook.creator = "INVIO Finance Dashboard";
+          workbook.created = new Date();
+
+          const sheet = workbook.addWorksheet("Transaction Report", {
+            properties: { defaultColWidth: 18 },
           });
-        });
 
-        // ── Summary Footer ──
-        const footerRowNum = sheet.lastRow.number + 2;
-        sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
-        const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
-        totalLabelCell.value = "Total";
-        totalLabelCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalLabelCell.fill = warmFill;
-        totalLabelCell.alignment = { vertical: "middle" };
-        // Total cells D fill
-        ["B", "C", "D"].forEach(col => {
-          const c = sheet.getCell(`${col}${footerRowNum}`);
-          c.fill = warmFill;
-        });
+          // ── Brand Colors ──
+          const navyFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF1F2A37" },
+          };
+          const ivoryFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFF4F4F2" },
+          };
+          const whiteFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFFFF" },
+          };
+          const warmFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF8C7A63" },
+          };
+          const headerFont = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          const bodyFont = {
+            name: "Calibri",
+            size: 10,
+            color: { argb: "FF0F0F0F" },
+          };
+          const mutedFont = {
+            name: "Calibri",
+            size: 10,
+            color: { argb: "FF888888" },
+          };
+          const thinBorder = {
+            bottom: { style: "thin", color: { argb: "FFE0E0E0" } },
+          };
 
-        const totalValueCell = sheet.getCell(`G${footerRowNum}`);
-        const totalAmt = filteredSales.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
-        totalValueCell.value = totalAmt;
-        totalValueCell.numFmt = '#,##0.00';
-        totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalValueCell.fill = warmFill;
-        totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
+          // ── Title Row ──
+          // Determine report month label
+          const selectedMonth = filterMonth.value;
+          let monthLabel = "All Time";
+          if (selectedMonth) {
+            const [y, m] = selectedMonth.split("-");
+            const d = new Date(parseInt(y), parseInt(m) - 1);
+            monthLabel = d.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+            });
+          }
 
-        const totalCurrCell = sheet.getCell(`H${footerRowNum}`);
-        totalCurrCell.value = selectedAdminCurrency;
-        totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalCurrCell.fill = warmFill;
-        totalCurrCell.alignment = { vertical: "middle" };
+          sheet.mergeCells("A1:F1");
+          const titleCell = sheet.getCell("A1");
+          titleCell.value = `INVIO - Monthly Report: ${monthLabel}`;
+          titleCell.font = {
+            name: "Calibri",
+            size: 16,
+            bold: true,
+            color: { argb: "FF1F2A37" },
+          };
+          titleCell.alignment = { vertical: "middle" };
+          sheet.getRow(1).height = 36;
 
-        sheet.getRow(footerRowNum).height = 30;
+          // ── Subtitle Row ──
+          sheet.mergeCells("A2:F2");
+          const subtitleCell = sheet.getCell("A2");
+          const now = new Date();
+          const dateLabel = now.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+          subtitleCell.value = `Generated on ${dateLabel}  •  ${filteredSales.length} transaction(s)`;
+          subtitleCell.font = mutedFont;
+          subtitleCell.alignment = { vertical: "middle" };
+          sheet.getRow(2).height = 22;
 
-        // ── Column Widths ──
-        sheet.getColumn(1).width = 18;
-        sheet.getColumn(2).width = 15;
-        sheet.getColumn(3).width = 25;
-        sheet.getColumn(4).width = 28;
-        sheet.getColumn(5).width = 22;
-        sheet.getColumn(6).width = 15;
-        sheet.getColumn(7).width = 15;
-        sheet.getColumn(8).width = 15;
+          // ── Spacer ──
+          sheet.getRow(3).height = 8;
 
-        // ── Download ──
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        // Use selected month in filename, or date if no month selected
-        const fileLabel = selectedMonth ? selectedMonth : new Date().toISOString().slice(0, 10);
-        a.download = `INVIO_Monthly_Report_${fileLabel}.xlsx`;
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error("Export error:", err);
-        alert("Failed to generate report. Please try again.");
-      } finally {
-        exportBtn.disabled = false;
-        exportBtn.innerHTML = '<i class="ph ph-download-simple"></i> Monthly Report';
+          // ── Header Row ──
+          const headers = [
+            "Date",
+            "ID",
+            "Customer",
+            "Email",
+            "Template",
+            "Price (AED)",
+          ];
+          const headerRow = sheet.getRow(4);
+          headerRow.values = headers;
+          headerRow.height = 30;
+          headerRow.eachCell((cell, colNumber) => {
+            cell.fill = navyFill;
+            cell.font = headerFont;
+            cell.alignment = {
+              vertical: "middle",
+              horizontal: colNumber === 6 ? "right" : "left",
+            };
+          });
+
+          // ── Data Rows ──
+          filteredSales.forEach((sale, i) => {
+            const d = new Date(sale.created_at);
+            const dateStr = d.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            const shortId = (sale.id || "").substring(0, 8).toUpperCase();
+
+            const row = sheet.addRow([
+              dateStr,
+              shortId,
+              sale.customer_name || "",
+              sale.customer_email || "",
+              sale.template_name || sale.template_id || "-",
+              convertSaleAmount(sale.amount, sale.currency),
+            ]);
+
+            row.height = 26;
+            const isEven = i % 2 === 0;
+            row.eachCell((cell, colNumber) => {
+              cell.fill = isEven ? whiteFill : ivoryFill;
+              cell.font = bodyFont;
+              cell.border = thinBorder;
+              cell.alignment = {
+                vertical: "middle",
+                horizontal: colNumber === 6 ? "right" : "left",
+              };
+
+              // Format numeric column
+              if (colNumber === 6) {
+                cell.numFmt = "#,##0.00";
+              }
+            });
+          });
+
+          // ── Summary Footer ──
+          const footerRowNum = sheet.lastRow.number + 2;
+          sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+          const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
+          totalLabelCell.value = "Total";
+          totalLabelCell.font = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          totalLabelCell.fill = warmFill;
+          totalLabelCell.alignment = { vertical: "middle" };
+          // Total cells D fill
+          ["B", "C", "D"].forEach((col) => {
+            const c = sheet.getCell(`${col}${footerRowNum}`);
+            c.fill = warmFill;
+          });
+
+          const totalValueCell = sheet.getCell(`G${footerRowNum}`);
+          const totalAmt = filteredSales.reduce(
+            (sum, s) => sum + convertSaleAmount(s.amount, s.currency),
+            0,
+          );
+          totalValueCell.value = totalAmt;
+          totalValueCell.numFmt = "#,##0.00";
+          totalValueCell.font = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          totalValueCell.fill = warmFill;
+          totalValueCell.alignment = {
+            vertical: "middle",
+            horizontal: "right",
+          };
+
+          const totalCurrCell = sheet.getCell(`H${footerRowNum}`);
+          totalCurrCell.value = selectedAdminCurrency;
+          totalCurrCell.font = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          totalCurrCell.fill = warmFill;
+          totalCurrCell.alignment = { vertical: "middle" };
+
+          sheet.getRow(footerRowNum).height = 30;
+
+          // ── Column Widths ──
+          sheet.getColumn(1).width = 18;
+          sheet.getColumn(2).width = 15;
+          sheet.getColumn(3).width = 25;
+          sheet.getColumn(4).width = 28;
+          sheet.getColumn(5).width = 22;
+          sheet.getColumn(6).width = 15;
+          sheet.getColumn(7).width = 15;
+          sheet.getColumn(8).width = 15;
+
+          // ── Download ──
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          // Use selected month in filename, or date if no month selected
+          const fileLabel = selectedMonth
+            ? selectedMonth
+            : new Date().toISOString().slice(0, 10);
+          a.download = `INVIO_Monthly_Report_${fileLabel}.xlsx`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error("Export error:", err);
+          alert("Failed to generate report. Please try again.");
+        } finally {
+          exportBtn.disabled = false;
+          exportBtn.innerHTML =
+            '<i class="ph ph-download-simple"></i> Monthly Report';
+        }
       }
-    }
 
-    // ─── ALL-TIME EXPORT ───
-    async function exportAllTimeReport() {
-      if (!masterSalesList || masterSalesList.length === 0) {
-        alert("No transactions to export.");
-        return;
+      // ─── ALL-TIME EXPORT ───
+      async function exportAllTimeReport() {
+        if (!masterSalesList || masterSalesList.length === 0) {
+          alert("No transactions to export.");
+          return;
+        }
+
+        exportAllBtn.disabled = true;
+        exportAllBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+
+        try {
+          const workbook = new ExcelJS.Workbook();
+          workbook.creator = "INVIO Finance Dashboard";
+          workbook.created = new Date();
+
+          const sheet = workbook.addWorksheet("All-Time Revenue Report", {
+            properties: { defaultColWidth: 18 },
+          });
+
+          // ── Brand Colors ──
+          const navyFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF1F2A37" },
+          };
+          const ivoryFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFF4F4F2" },
+          };
+          const whiteFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFFFF" },
+          };
+          const warmFill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF8C7A63" },
+          };
+          const headerFont = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          const bodyFont = {
+            name: "Calibri",
+            size: 10,
+            color: { argb: "FF0F0F0F" },
+          };
+          const mutedFont = {
+            name: "Calibri",
+            size: 10,
+            color: { argb: "FF888888" },
+          };
+          const thinBorder = {
+            bottom: { style: "thin", color: { argb: "FFE0E0E0" } },
+          };
+
+          // ── Title ──
+          sheet.mergeCells("A1:F1");
+          const titleCell = sheet.getCell("A1");
+          titleCell.value = "INVIO - Complete Revenue Report (All-Time)";
+          titleCell.font = {
+            name: "Calibri",
+            size: 16,
+            bold: true,
+            color: { argb: "FF1F2A37" },
+          };
+          titleCell.alignment = { vertical: "middle" };
+          sheet.getRow(1).height = 36;
+
+          // ── Subtitle ──
+          sheet.mergeCells("A2:F2");
+          const subtitleCell = sheet.getCell("A2");
+          const now = new Date();
+          const dateLabel = now.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+          subtitleCell.value = `Generated on ${dateLabel}  •  ${masterSalesList.length} total transaction(s)`;
+          subtitleCell.font = mutedFont;
+          subtitleCell.alignment = { vertical: "middle" };
+          sheet.getRow(2).height = 22;
+
+          sheet.getRow(3).height = 8;
+
+          // ── Header ──
+          const headers = [
+            "Date",
+            "ID",
+            "Customer",
+            "Email",
+            "Template",
+            "Price (AED)",
+          ];
+
+          // ── Footer ──
+          const footerRowNum = sheet.lastRow.number + 2;
+          sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+          const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
+          totalLabelCell.value = "Grand Total";
+          totalLabelCell.font = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          totalLabelCell.fill = warmFill;
+          totalLabelCell.alignment = { vertical: "middle" };
+          ["B", "C", "D"].forEach((col) => {
+            const c = sheet.getCell(`${col}${footerRowNum}`);
+            c.fill = warmFill;
+          });
+
+          const totalValueCell = sheet.getCell(`F${footerRowNum}`);
+          const totalAmt = masterSalesList.reduce(
+            (sum, s) => sum + convertSaleAmount(s.amount, s.currency),
+            0,
+          );
+          totalValueCell.value = totalAmt;
+          totalValueCell.numFmt = "#,##0.00";
+          totalValueCell.font = {
+            name: "Calibri",
+            size: 11,
+            bold: true,
+            color: { argb: "FFFFFFFF" },
+          };
+          totalValueCell.fill = warmFill;
+          totalValueCell.alignment = {
+            vertical: "middle",
+            horizontal: "right",
+          };
+          sheet.getRow(footerRowNum).height = 30;
+
+          // ── Column Widths ──
+          sheet.getColumn(1).width = 18; // Date
+          sheet.getColumn(2).width = 15; // ID
+          sheet.getColumn(3).width = 25; // Customer
+          sheet.getColumn(4).width = 28; // Email
+          sheet.getColumn(5).width = 22; // Template
+          sheet.getColumn(6).width = 15; // Price
+
+          // ── Download ──
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `INVIO_AllTime_Revenue_Report.xlsx`;
+          a.click();
+          URL.revokeObjectURL(url);
+
+          // Confetti Celebration
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ["#1f2a37", "#8c7a63", "#b5a68f", "#eae5dc"],
+          });
+        } catch (err) {
+          console.error("Export error:", err);
+          alert("Failed to generate report. Please try again.");
+        } finally {
+          exportAllBtn.disabled = false;
+          exportAllBtn.innerHTML =
+            '<i class="ph ph-file-arrow-down"></i> All-Time Report';
+        }
       }
 
-      exportAllBtn.disabled = true;
-      exportAllBtn.innerHTML = '<i class="ph ph-spinner"></i> Generating...';
+      // ─── RENDER FUNCTIONS ───
+      function renderKPIs(overview) {
+        const growthClass =
+          overview.momGrowth > 0
+            ? "positive"
+            : overview.momGrowth < 0
+              ? "negative"
+              : "";
+        const growthPrefix = overview.momGrowth > 0 ? "+" : "";
 
-      try {
-        const workbook = new ExcelJS.Workbook();
-        workbook.creator = "INVIO Finance Dashboard";
-        workbook.created = new Date();
-
-        const sheet = workbook.addWorksheet("All-Time Revenue Report", {
-          properties: { defaultColWidth: 18 }
-        });
-
-        // ── Brand Colors ──
-        const navyFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F2A37" } };
-        const ivoryFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF4F4F2" } };
-        const whiteFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFFFFF" } };
-        const warmFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF8C7A63" } };
-        const headerFont = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        const bodyFont = { name: "Calibri", size: 10, color: { argb: "FF0F0F0F" } };
-        const mutedFont = { name: "Calibri", size: 10, color: { argb: "FF888888" } };
-        const thinBorder = { bottom: { style: "thin", color: { argb: "FFE0E0E0" } } };
-
-        // ── Title ──
-        sheet.mergeCells("A1:F1");
-        const titleCell = sheet.getCell("A1");
-        titleCell.value = "INVIO - Complete Revenue Report (All-Time)";
-        titleCell.font = { name: "Calibri", size: 16, bold: true, color: { argb: "FF1F2A37" } };
-        titleCell.alignment = { vertical: "middle" };
-        sheet.getRow(1).height = 36;
-
-        // ── Subtitle ──
-        sheet.mergeCells("A2:F2");
-        const subtitleCell = sheet.getCell("A2");
-        const now = new Date();
-        const dateLabel = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-        subtitleCell.value = `Generated on ${dateLabel}  •  ${masterSalesList.length} total transaction(s)`;
-        subtitleCell.font = mutedFont;
-        subtitleCell.alignment = { vertical: "middle" };
-        sheet.getRow(2).height = 22;
-
-        sheet.getRow(3).height = 8;
-
-        // ── Header ──
-        const headers = ["Date", "ID", "Customer", "Email", "Template", "Base Price (AED)", `Paid Amount (${selectedAdminCurrency})`, "Original Currency"];
-
-        // ── Footer ──
-        const footerRowNum = sheet.lastRow.number + 2;
-        sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
-        const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
-        totalLabelCell.value = "Grand Total";
-        totalLabelCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalLabelCell.fill = warmFill;
-        totalLabelCell.alignment = { vertical: "middle" };
-        ["B", "C", "D"].forEach(col => {
-          const c = sheet.getCell(`${col}${footerRowNum}`);
-          c.fill = warmFill;
-        });
-
-        const totalValueCell = sheet.getCell(`G${footerRowNum}`);
-        const totalAmt = masterSalesList.reduce((sum, s) => sum + convertSaleAmount(s.amount, s.currency), 0);
-        totalValueCell.value = totalAmt;
-        totalValueCell.numFmt = '#,##0.00';
-        totalValueCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalValueCell.fill = warmFill;
-        totalValueCell.alignment = { vertical: "middle", horizontal: "right" };
-
-        const totalCurrCell = sheet.getCell(`H${footerRowNum}`);
-        totalCurrCell.value = selectedAdminCurrency;
-        totalCurrCell.font = { name: "Calibri", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
-        totalCurrCell.fill = warmFill;
-        totalCurrCell.alignment = { vertical: "middle" };
-        sheet.getRow(footerRowNum).height = 30;
-
-        // ── Column Widths ──
-        sheet.getColumn(1).width = 18; // Date
-        sheet.getColumn(2).width = 15; // ID
-        sheet.getColumn(3).width = 25; // Customer
-        sheet.getColumn(4).width = 28; // Email
-        sheet.getColumn(5).width = 22; // Template
-        sheet.getColumn(6).width = 15; // Base Price
-        sheet.getColumn(7).width = 15; // Paid Amount
-        sheet.getColumn(8).width = 15; // Currency
-
-        // ── Download ──
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `INVIO_AllTime_Revenue_Report.xlsx`;
-        a.click();
-        URL.revokeObjectURL(url);
-
-        // Confetti Celebration
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#1f2a37', '#8c7a63', '#b5a68f', '#eae5dc']
-        });
-      } catch (err) {
-        console.error("Export error:", err);
-        alert("Failed to generate report. Please try again.");
-      } finally {
-        exportAllBtn.disabled = false;
-        exportAllBtn.innerHTML = '<i class="ph ph-file-arrow-down"></i> All-Time Report';
-      }
-    }
-
-    // ─── RENDER FUNCTIONS ───
-    function renderKPIs(overview) {
-      const growthClass = overview.momGrowth > 0 ? "positive" : overview.momGrowth < 0 ? "negative" : "";
-      const growthPrefix = overview.momGrowth > 0 ? "+" : "";
-
-      document.getElementById("kpiGrid").innerHTML = `
+        document.getElementById("kpiGrid").innerHTML = `
         <div class="kpi-block">
           <div class="kpi-label">Gross Volume</div>
           <div class="kpi-value">${formatDisplayAmount(overview.totalRevenue)}</div>
@@ -1554,179 +1814,218 @@
           <div class="kpi-context">${overview.totalInvitations || 0} creations hosted</div>
         </div>
       `;
-    }
+      }
 
-    function renderRevenueChart(monthlyRevenue) {
-      if (revenueChartInstance) revenueChartInstance.destroy();
-      const ctx = document.getElementById("revenueChart").getContext("2d");
+      function renderRevenueChart(monthlyRevenue) {
+        if (revenueChartInstance) revenueChartInstance.destroy();
+        const ctx = document.getElementById("revenueChart").getContext("2d");
 
-      revenueChartInstance = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: monthlyRevenue.map(m => m.label),
-          datasets: [{
-            label: "Revenue",
-            data: monthlyRevenue.map(m => formatChartTick(m.revenue)),
-            backgroundColor: "#1f2a37",
-            borderRadius: 4,
-            barThickness: 'flex',
-            maxBarThickness: 40
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: "#0f0f0f",
-              titleFont: { family: "Manrope" },
-              bodyFont: { family: "Manrope" },
-              padding: 12,
-              callbacks: {
-                label: (ctx) => ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        revenueChartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: monthlyRevenue.map((m) => m.label),
+            datasets: [
+              {
+                label: "Revenue",
+                data: monthlyRevenue.map((m) => formatChartTick(m.revenue)),
+                backgroundColor: "#1f2a37",
+                borderRadius: 4,
+                barThickness: "flex",
+                maxBarThickness: 40,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "#0f0f0f",
+                titleFont: { family: "Manrope" },
+                bodyFont: { family: "Manrope" },
+                padding: 12,
+                callbacks: {
+                  label: (ctx) =>
+                    ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: "#888888",
+                  font: { family: "Manrope", size: 11 },
+                },
+              },
+              y: {
+                grid: { color: "rgba(15, 15, 15, 0.06)", borderDash: [4, 4] },
+                border: { display: false },
+                ticks: {
+                  color: "#888888",
+                  font: { family: "Manrope", size: 11 },
+                  callback: (val) =>
+                    `${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${val}`,
+                },
+                beginAtZero: true,
               },
             },
           },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { color: "#888888", font: { family: "Manrope", size: 11 } },
-            },
-            y: {
-              grid: { color: "rgba(15, 15, 15, 0.06)", borderDash: [4, 4] },
-              border: { display: false },
-              ticks: {
-                color: "#888888",
-                font: { family: "Manrope", size: 11 },
-                callback: (val) => `${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${val}`,
-              },
-              beginAtZero: true,
-            },
-          },
-        },
-      });
-    }
-
-    function renderCategoryChart(categories) {
-      if (categoryChartInstance) categoryChartInstance.destroy();
-      const ctx = document.getElementById("categoryChart").getContext("2d");
-
-      if (!categories || categories.length === 0) {
-        ctx.font = "14px Manrope";
-        ctx.fillStyle = "#888";
-        ctx.textAlign = "center";
-        ctx.fillText("Awaiting data", ctx.canvas.width / 2, ctx.canvas.height / 2);
-        return;
+        });
       }
 
-      const colors = ["#1f2a37", "#8c7a63", "#b5a68f", "#d9d2c5", "#0f0f0f"];
+      function renderCategoryChart(categories) {
+        if (categoryChartInstance) categoryChartInstance.destroy();
+        const ctx = document.getElementById("categoryChart").getContext("2d");
 
-      categoryChartInstance = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: categories.map(c => c.category.charAt(0).toUpperCase() + c.category.slice(1)),
-          datasets: [{
-            data: categories.map(c => formatChartTick(c.revenue)),
-            backgroundColor: colors,
-            borderWidth: 2,
-            borderColor: "#ffffff",
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: "75%",
-          plugins: {
-            legend: {
-              position: "bottom",
-              labels: {
-                color: "#0f0f0f",
-                font: { family: "Manrope", size: 12 },
-                usePointStyle: true,
-                padding: 20
-              },
-            },
-            tooltip: {
-              backgroundColor: "#0f0f0f",
-              titleFont: { family: "Manrope" },
-              bodyFont: { family: "Manrope" },
-              padding: 12,
-              callbacks: {
-                label: (ctx) => ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-              },
-            },
-          },
-        },
-      });
-    }
+        if (!categories || categories.length === 0) {
+          ctx.font = "14px Manrope";
+          ctx.fillStyle = "#888";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "Awaiting data",
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2,
+          );
+          return;
+        }
 
-    function renderInsights(stats) {
-      const bestEl = document.getElementById("insightBest");
-      const worstEl = document.getElementById("insightWorst");
-      const platformEl = document.getElementById("insightPlatform");
-
-      if (stats.bestMonth && stats.bestMonth.revenue > 0) {
-        bestEl.querySelector(".kpi-value").textContent = formatDisplayAmount(stats.bestMonth.revenue);
-        bestEl.querySelector(".kpi-context").textContent = `${stats.bestMonth.label} - ${stats.bestMonth.count} acquisition(s)`;
-      } else {
-        bestEl.querySelector(".kpi-value").textContent = "-";
-        bestEl.querySelector(".kpi-context").textContent = "Waiting for data";
-      }
-
-      if (stats.worstMonth) {
-        worstEl.querySelector(".kpi-value").textContent = formatDisplayAmount(stats.worstMonth.revenue);
-        worstEl.querySelector(".kpi-context").textContent = `${stats.worstMonth.label} - ${stats.worstMonth.count} acquisition(s)`;
-      } else {
-        worstEl.querySelector(".kpi-value").textContent = "-";
-        worstEl.querySelector(".kpi-context").textContent = "Waiting for data";
-      }
-
-      platformEl.querySelector(".kpi-value").textContent = `${stats.overview.totalInvitations}`;
-      platformEl.querySelector(".kpi-context").textContent = `Active storylines from ${stats.overview.totalUsers} customers.`;
-    }
-
-    function renderLedger(sales) {
-      const tbody = document.getElementById("ledgerBody");
-
-      if (!sales || sales.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="empty-ledger">No transactions match your filters.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = sales.map(sale => {
-        const date = new Date(sale.created_at).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
+        const colors = ["#1f2a37", "#8c7a63", "#b5a68f", "#d9d2c5", "#0f0f0f"];
+        const chartValues = categories.map((c) => {
+          const revenue = Number(c.revenue) || 0;
+          if (revenue > 0) return formatChartTick(revenue);
+          const countFallback = Number(c.count) || 0;
+          return countFallback > 0 ? countFallback : 0.01;
         });
 
-        // Shorten the UUID for visual cleaner look
-        const shortId = (sale.id || "---").substring(0, 8).toUpperCase();
-        const customer = sale.user_email || "Anonymous";
-        const template = sale.template_name || sale.template_id || "Standard";
+        categoryChartInstance = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: categories.map(
+              (c) => c.category.charAt(0).toUpperCase() + c.category.slice(1),
+            ),
+            datasets: [
+              {
+                data: chartValues,
+                backgroundColor: colors,
+                borderWidth: 2,
+                borderColor: "#ffffff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: 8,
+            },
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: {
+                  color: "#0f0f0f",
+                  font: { family: "Manrope", size: 11 },
+                  usePointStyle: true,
+                  padding: 14,
+                  boxWidth: 10,
+                  boxHeight: 10,
+                },
+              },
+              tooltip: {
+                backgroundColor: "#0f0f0f",
+                titleFont: { family: "Manrope" },
+                bodyFont: { family: "Manrope" },
+                padding: 12,
+                callbacks: {
+                  label: (ctx) =>
+                    ` ${CURRENCY_CONFIG[selectedAdminCurrency].prefix} ${ctx.raw.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+                },
+              },
+            },
+          },
+        });
+      }
 
-        return `
+      function renderInsights(stats) {
+        const bestEl = document.getElementById("insightBest");
+        const worstEl = document.getElementById("insightWorst");
+        const platformEl = document.getElementById("insightPlatform");
+
+        if (stats.bestMonth && stats.bestMonth.revenue > 0) {
+          bestEl.querySelector(".kpi-value").textContent = formatDisplayAmount(
+            stats.bestMonth.revenue,
+          );
+          bestEl.querySelector(".kpi-context").textContent =
+            `${stats.bestMonth.label} - ${stats.bestMonth.count} acquisition(s)`;
+        } else {
+          bestEl.querySelector(".kpi-value").textContent = "-";
+          bestEl.querySelector(".kpi-context").textContent = "Waiting for data";
+        }
+
+        if (stats.worstMonth) {
+          worstEl.querySelector(".kpi-value").textContent = formatDisplayAmount(
+            stats.worstMonth.revenue,
+          );
+          worstEl.querySelector(".kpi-context").textContent =
+            `${stats.worstMonth.label} - ${stats.worstMonth.count} acquisition(s)`;
+        } else {
+          worstEl.querySelector(".kpi-value").textContent = "-";
+          worstEl.querySelector(".kpi-context").textContent =
+            "Waiting for data";
+        }
+
+        platformEl.querySelector(".kpi-value").textContent =
+          `${stats.overview.totalInvitations}`;
+        platformEl.querySelector(".kpi-context").textContent =
+          `Active storylines from ${stats.overview.totalUsers} customers.`;
+      }
+
+      function renderLedger(sales) {
+        const tbody = document.getElementById("ledgerBody");
+
+        if (!sales || sales.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-ledger">No transactions match your filters.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = sales
+          .map((sale) => {
+            const date = new Date(sale.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            // Shorten the UUID for visual cleaner look
+            const shortId = (sale.id || "---").substring(0, 8).toUpperCase();
+            const customerName = sale.customer_name || "Unknown";
+            const customerEmail = sale.customer_email || "";
+            const template =
+              sale.template_name || sale.template_id || "Standard";
+            const price = formatSaleAmount(sale.amount, sale.currency);
+
+            return `
           <tr>
             <td class="date-cell">${date}</td>
             <td class="id-cell">#${shortId}</td>
             <td class="user-cell">
-              <div class="user-email">${customer}</div>
+              <div class="customer-name">${escapeHtml(customerName)}</div>
+              <div class="customer-email">${escapeHtml(customerEmail)}</div>
             </td>
             <td class="template-cell">${template}</td>
-            <td class="amount-cell">${formatSaleAmount(sale.amount, sale.currency)}</td>
-            <td class="amount-cell highlighted">${formatSaleAmount(sale.amount, sale.currency)}</td>
+            <td class="amount-cell highlighted">${price}</td>
           </tr>
         `;
-      }).join("");
-    }
+          })
+          .join("");
+      }
 
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.textContent = text;
-      return div.innerHTML;
-    }
-  </script>
-</body>
-
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    </script>
+  </body>
 </html>

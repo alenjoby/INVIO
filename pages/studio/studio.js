@@ -178,7 +178,7 @@ class StudioEditor {
     this.els.publishSlug.addEventListener("input", (e) => {
       clearTimeout(slugCheckTimeout);
       const slug = e.target.value.trim().toLowerCase();
-      
+
       // Update prefix/preview input color immediately
       this.els.publishSlug.style.borderColor = "";
       this.els.slugWarning.classList.add("hidden");
@@ -278,13 +278,20 @@ class StudioEditor {
 
       const response = await fetch(templateUrl, { cache: "no-store" });
       if (!response.ok)
-        throw new Error(`Failed to load template: ${templateUrl} (Status: ${response.status})`);
+        throw new Error(
+          `Failed to load template: ${templateUrl} (Status: ${response.status})`,
+        );
 
       const templateHtml = await response.text();
-      console.log(`[STUDIO] Template HTML fetched (${templateHtml.length} bytes)`);
+      console.log(
+        `[STUDIO] Template HTML fetched (${templateHtml.length} bytes)`,
+      );
 
       // Fix <base> tag to use directory, not file URL, to correctly resolve relative assets (../../)
-      const baseDirUrl = templateUrl.substring(0, templateUrl.lastIndexOf("/") + 1);
+      const baseDirUrl = templateUrl.substring(
+        0,
+        templateUrl.lastIndexOf("/") + 1,
+      );
       const framedHtml = this.injectBaseHref(templateHtml, baseDirUrl);
 
       // Reset state
@@ -300,11 +307,20 @@ class StudioEditor {
           attempts++;
           const doc = this.els.frame.contentDocument;
           // Check if body is available and has content (to ensure srcdoc is applied)
-          if (doc && doc.body && (doc.readyState === "complete" || doc.readyState === "interactive")) {
-            console.log(`[STUDIO] Frame document reached ${doc.readyState} state`);
+          if (
+            doc &&
+            doc.body &&
+            (doc.readyState === "complete" || doc.readyState === "interactive")
+          ) {
+            console.log(
+              `[STUDIO] Frame document reached ${doc.readyState} state`,
+            );
             resolve();
-          } else if (attempts > 40) { // 2 seconds
-            console.warn("[STUDIO] Frame load wait timed out, proceeding anyway");
+          } else if (attempts > 40) {
+            // 2 seconds
+            console.warn(
+              "[STUDIO] Frame load wait timed out, proceeding anyway",
+            );
             resolve();
           } else {
             setTimeout(checkReady, 50);
@@ -322,8 +338,10 @@ class StudioEditor {
         }, 300);
       });
 
-      console.log("[STUDIO] Iframe document ready, initializing editor layers...");
-      
+      console.log(
+        "[STUDIO] Iframe document ready, initializing editor layers...",
+      );
+
       this.injectSecurityGuard();
       this.injectEditorStyles();
       this.scanFrameElements();
@@ -343,7 +361,7 @@ class StudioEditor {
 
   injectBaseHref(html, templateUrl) {
     const baseTag = `<base href="${templateUrl}">`;
-    
+
     // Strip any existing base tags to prevent conflicts
     let processedHtml = html.replace(/<base\b[^>]*>/gi, "");
 
@@ -351,7 +369,7 @@ class StudioEditor {
     if (/<head\b[^>]*>/i.test(processedHtml)) {
       return processedHtml.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
     }
-    
+
     // If no head, try to inject after html tag or at start
     if (/<html\b[^>]*>/i.test(processedHtml)) {
       return processedHtml.replace(/<html\b([^>]*)>/i, `<html$1>${baseTag}`);
@@ -475,7 +493,13 @@ class StudioEditor {
 
     // 4. Category Fallback
     const category = simplifiedId.split("-")[0];
-    const categories = ["academic", "birthday", "valentines", "wedding", "funeral"];
+    const categories = [
+      "academic",
+      "birthday",
+      "valentines",
+      "wedding",
+      "funeral",
+    ];
     if (categories.includes(category)) return `${category}-1`;
 
     return "wedding-1";
@@ -561,7 +585,18 @@ class StudioEditor {
         const id = el.getAttribute("data-id");
         const type = el.getAttribute("data-edit");
         if (type === "text") this.originalValues.text[id] = el.textContent;
-        if (type === "image") this.originalValues.images[id] = el.src;
+        if (type === "image") {
+          if (el.tagName === "IMG") {
+            this.originalValues.images[id] = el.src;
+          } else {
+            const frameWin = frameDoc.defaultView ?? window;
+            const computed = frameWin.getComputedStyle(el);
+            const bg = el.style.backgroundImage || computed.backgroundImage;
+            const match =
+              bg && bg !== "none" ? bg.match(/url\(['"]?(.*?)['"]?\)/) : null;
+            this.originalValues.images[id] = match ? match[1] : "";
+          }
+        }
         if (type === "color") {
           this.originalValues.colors[id] =
             el.style.color || getComputedStyle(el).color;
@@ -610,11 +645,34 @@ class StudioEditor {
       autoImageCount += 1;
     });
 
+    frameDoc.querySelectorAll("section,div,figure,article").forEach((el) => {
+      if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
+      const frameWin = frameDoc.defaultView ?? window;
+      const computed = frameWin.getComputedStyle(el);
+      const bg = el.style.backgroundImage || computed.backgroundImage;
+      if (!bg || bg === "none") return;
+
+      const seed =
+        el.className || el.id || el.tagName.toLowerCase() || "image-bg";
+      const dataId = this.generateUniqueDataId(seed, usedIds, "image-bg");
+      el.setAttribute("data-edit", "image");
+      el.setAttribute("data-id", dataId);
+      autoImageCount += 1;
+    });
+
     const textSelectors =
       "h1,h2,h3,h4,h5,h6,p,span,small,strong,em,a,li,label,button,figcaption,blockquote,td,th,div";
 
     frameDoc.querySelectorAll(textSelectors).forEach((el) => {
-      if (el.hasAttribute("data-edit") || el.closest("[data-edit]")) return;
+      if (el.hasAttribute("data-edit")) return;
+      const parentEditable = el.closest("[data-edit]");
+      if (
+        parentEditable &&
+        parentEditable !== el &&
+        parentEditable.getAttribute("data-edit") !== "image"
+      ) {
+        return;
+      }
       if (!this.isEditableTextCandidate(el)) return;
 
       const seed = el.className || el.tagName.toLowerCase() || "text";
@@ -724,7 +782,11 @@ class StudioEditor {
         if (match) imageUrl = match[1];
       }
     }
-    if (imageUrl && imageUrl !== "undefined" && !imageUrl.includes("about:blank")) {
+    if (
+      imageUrl &&
+      imageUrl !== "undefined" &&
+      !imageUrl.includes("about:blank")
+    ) {
       this.els.previewImg.src = imageUrl;
       this.els.imagePreview.classList.remove("hidden");
     }
@@ -852,7 +914,7 @@ class StudioEditor {
     if (this.selectedElement) {
       this.state.takeSnapshot();
       const dataId = this.selectedElement.getAttribute("data-id");
-      
+
       if (this.selectedElement.tagName === "IMG") {
         this.selectedElement.src = dataUrl;
         this.els.previewImg.src = dataUrl;
@@ -860,7 +922,7 @@ class StudioEditor {
         this.selectedElement.style.backgroundImage = `url("${dataUrl}")`;
         this.els.previewImg.src = dataUrl;
       }
-      
+
       this.state.updateEdit("images", dataId, dataUrl);
       this.markDirty();
       this.showToast("Image updated", "success");
@@ -1048,13 +1110,13 @@ class StudioEditor {
           ...invitation.interactions,
         };
       if (invitation.title) this.els.invitationName.value = invitation.title;
-      
+
       // CRITICAL: Ensure templateId is updated from invitation
       if (invitation.template_id) {
         this.state.updateData("templateId", invitation.template_id);
-        // Also reload the frame if it mismatch? 
-        // Actually this.init calls loadExistingInvitation BEFORE any frame load? 
-        // No, loadExistingInvitation is called first. 
+        // Also reload the frame if it mismatch?
+        // Actually this.init calls loadExistingInvitation BEFORE any frame load?
+        // No, loadExistingInvitation is called first.
         // Then caller likely needs to load the template.
       }
     } catch (error) {
@@ -1124,11 +1186,13 @@ class StudioEditor {
     try {
       // Logic: If invitation exists with this slug, show warning
       // Endpoint convention: /api/invitations?slug=NAME
-      const invitations = await this.apiRequest(`/api/invitations?slug=${encodeURIComponent(slug)}`);
-      
+      const invitations = await this.apiRequest(
+        `/api/invitations?slug=${encodeURIComponent(slug)}`,
+      );
+
       // Check if any invitation exists with this slug EXCEPT the current one (if we are editing)
-      const isTaken = invitations.some(inv => 
-        inv.slug === slug && inv.id !== this.state.data.inviteId
+      const isTaken = invitations.some(
+        (inv) => inv.slug === slug && inv.id !== this.state.data.inviteId,
       );
 
       if (isTaken) {
@@ -1195,7 +1259,10 @@ class StudioEditor {
   }
   isTemplatePurchased(templateId) {
     // 1. If this specific invitation is already published/paid, skip checkout
-    if (this.state?.data?.status === 'published' || this.state?.data?.status === 'paid') {
+    if (
+      this.state?.data?.status === "published" ||
+      this.state?.data?.status === "paid"
+    ) {
       return true;
     }
 
@@ -1212,7 +1279,11 @@ class StudioEditor {
     const purchased = JSON.parse(
       localStorage.getItem(PURCHASED_STORAGE_KEY) || "[]",
     );
-    if (this.state?.data?.inviteId && Array.isArray(purchased) && purchased.includes(this.state.data.inviteId)) {
+    if (
+      this.state?.data?.inviteId &&
+      Array.isArray(purchased) &&
+      purchased.includes(this.state.data.inviteId)
+    ) {
       return true;
     }
 
@@ -1222,7 +1293,9 @@ class StudioEditor {
   redirectToCheckoutForPayment(invitationId) {
     const params = new URLSearchParams({
       template: this.getCanonicalTemplateId(this.state.data.templateId),
-      name: this.getTemplateNameById(this.getCanonicalTemplateId(this.state.data.templateId)),
+      name: this.getTemplateNameById(
+        this.getCanonicalTemplateId(this.state.data.templateId),
+      ),
       invitationId: invitationId,
     });
     window.location.href = `/pages/checkout/index.html?${params.toString()}`;

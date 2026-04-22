@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initDashboard() {
   const session = await authApi.syncSession();
-  
+
   if (!session) {
     window.location.href = "/pages/auth/index.html";
     return;
@@ -90,8 +90,7 @@ function renderUser(user) {
   const userNameEl = document.getElementById("user-name");
   const userAvatarEl = document.getElementById("user-avatar");
 
-  const displayName =
-    user?.user_metadata?.username || user?.email?.split("@")[0] || "INVIO User";
+  const displayName = user?.email || "INVIO User";
 
   if (userNameEl) userNameEl.textContent = displayName;
   if (userAvatarEl) {
