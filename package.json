@@ -1,0 +1,8 @@
+{
+  "name": "invio-root",
+  "version": "1.0.0",
+  "scripts": {
+    "snapshot": "node scripts/vault.js --action=snapshot",
+    "restore": "node scripts/vault.js --action=restore"
+  }
+}

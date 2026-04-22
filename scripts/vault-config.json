@@ -1,0 +1,13 @@
+{
+  "criticalFiles": [
+    "pages/studio/studio.js",
+    "pages/studio/index.html",
+    "pages/checkout/checkout.js",
+    "pages/checkout/checkout.css",
+    "pages/checkout/index.html",
+    "js/templates.js"
+  ],
+  "criticalDirs": [
+    "templates"
+  ]
+}
