@@ -265,28 +265,21 @@ class StudioEditor {
 
       const templateHtml = await response.text();
 
-      // CRITICAL FIX: No longer stripping scripts! This allows the template
-      // to render exactly as it does in Live Preview (animations and interactions work natively).
-      const framedHtml = this.injectBaseHref(templateHtml, templateUrl);
+      // Fix <base> tag to use directory, not file URL, to correctly resolve relative assets (../../)
+      const baseDirUrl = templateUrl.substring(0, templateUrl.lastIndexOf("/") + 1);
+      const framedHtml = this.injectBaseHref(templateHtml, baseDirUrl);
 
-      this.els.frame.removeAttribute("src");
+      // Reset frame for a clean state
       this.els.frame.removeAttribute("srcdoc");
-      this.els.frame.onload = null;
-      this.els.frame.onerror = null;
-
       this.els.frame.src = "about:blank";
 
+      // Wait for frame to be ready for manipulation
       await new Promise((resolve) => {
-        const checkReady = () => {
-          try {
-            const frameDoc = this.els.frame.contentDocument;
-            if (frameDoc && frameDoc.readyState === "complete") resolve();
-            else setTimeout(checkReady, 50);
-          } catch (e) {
-            setTimeout(checkReady, 50);
-          }
+        const check = () => {
+          if (this.els.frame.contentDocument) resolve();
+          else setTimeout(check, 10);
         };
-        checkReady();
+        check();
       });
 
       const frameDoc = this.els.frame.contentDocument;
@@ -294,12 +287,9 @@ class StudioEditor {
       frameDoc.write(framedHtml);
       frameDoc.close();
 
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          this.injectSecurityGuard();
-          resolve();
-        }, 300); // Given extra time for scripts to build the template naturally
-      });
+      // Brief delay for the browser to parse the new document and run initial scripts
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      this.injectSecurityGuard();
 
       this.injectEditorStyles();
 

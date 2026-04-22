@@ -496,11 +496,24 @@ h3 {
   .checkout-container {
     flex-direction: column;
   }
-  .order-summary {
+  .order-summary, .payment-portal {
     width: 100%;
-    padding: 40px;
+    padding: 30px;
   }
-  .payment-portal {
-    padding: 40px;
+}
+
+@media (max-width: 480px) {
+  .order-summary, .payment-portal {
+    padding: 20px;
+  }
+  .form-row {
+    gap: 12px;
+  }
+  .pay-btn {
+    height: 54px;
+    font-size: 1rem;
+  }
+  .form-group input {
+    padding: 10px 12px;
   }
 }
