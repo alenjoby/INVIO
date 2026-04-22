@@ -231,13 +231,13 @@ class AuthAPI {
       if (Array.isArray(invitations)) {
         const purchasedIds = invitations
           .filter((inv) => inv.status === "published" || inv.status === "paid")
-          .map((inv) => inv.template_id)
+          .map((inv) => inv.id)
           .filter(Boolean);
         
         // Remove duplicates
         const uniquePurchased = [...new Set(purchasedIds)];
         localStorage.setItem("invio_purchased_templates", JSON.stringify(uniquePurchased));
-        console.log("[AUTH] Synced purchased templates:", uniquePurchased);
+        console.log("[AUTH] Synced purchased invitations:", uniquePurchased);
       }
     } catch (err) {
       console.warn("[AUTH] Failed to sync purchases:", err.message);

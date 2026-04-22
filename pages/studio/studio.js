@@ -77,22 +77,34 @@ class StudioEditor {
       invitationName: document.getElementById("invitationName"),
       publishBtn: document.getElementById("publishBtn"),
       publishModal: document.getElementById("publishModal"),
+      successModal: document.getElementById("successModal"),
       deviceBtns: document.querySelectorAll("[data-device]"),
+      deviceLabel: document.getElementById("deviceLabel"),
+      textControls: document.getElementById("textControls"),
+      textLabel: document.getElementById("textLabel"),
       textInput: document.getElementById("textInput"),
       charCount: document.getElementById("charCount"),
+      imageControls: document.getElementById("imageControls"),
       imageDropZone: document.getElementById("imageDropZone"),
       imageUpload: document.getElementById("imageUpload"),
+      imagePreview: document.getElementById("imagePreview"),
+      previewImg: document.getElementById("previewImg"),
       clearImageBtn: document.getElementById("clearImageBtn"),
+      colorControls: document.getElementById("colorControls"),
       colorInput: document.getElementById("colorInput"),
       colorHex: document.getElementById("colorHex"),
       resetColorBtn: document.getElementById("resetColorBtn"),
       confirmPublishBtn: document.getElementById("confirmPublishBtn"),
       publishSlug: document.getElementById("publishSlug"),
+      slugPrefix: document.getElementById("slugPrefix"),
       slugWarning: document.getElementById("slugWarning"),
+      shareLink: document.getElementById("shareLink"),
       copyLinkBtn: document.getElementById("copyLinkBtn"),
       undoBtn: document.getElementById("undoBtn"),
       redoBtn: document.getElementById("redoBtn"),
       tabBtns: document.querySelectorAll("[data-tab]"),
+      tabContents: document.querySelectorAll(".tab-content"),
+      layersList: document.getElementById("layersList"),
       rsvpToggle: document.getElementById("rsvpToggle"),
       rsvpSettings: document.getElementById("rsvpSettings"),
       rsvpTitle: document.getElementById("rsvpTitle"),
@@ -100,6 +112,9 @@ class StudioEditor {
       mapsSettings: document.getElementById("mapsSettings"),
       mapsAddress: document.getElementById("mapsAddress"),
       editorTitle: document.getElementById("editorTitle"),
+      saveIndicator: document.getElementById("saveIndicator"),
+      saveIcon: document.getElementById("saveIcon"),
+      toastContainer: document.getElementById("toastContainer"),
     };
   }
 
@@ -296,6 +311,15 @@ class StudioEditor {
           }
         };
         checkReady();
+      });
+
+      // RESTORATION: Give extra time for scripts (RSVP, Maps, Animations) to build the template naturally
+      // This matches the "perfect" state of commit 0968714c
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          console.log("[STUDIO] 300ms bake time completed");
+          resolve();
+        }, 300);
       });
 
       console.log("[STUDIO] Iframe document ready, initializing editor layers...");
@@ -1015,6 +1039,7 @@ class StudioEditor {
       const invitation = await this.apiRequest(`/api/invitations/${inviteId}`);
       this.state.updateData("inviteId", invitation.id);
       this.state.updateData("slug", invitation.title || "");
+      this.state.updateData("status", invitation.status || "draft");
       if (invitation.content?.edits)
         this.state.data.edits = invitation.content.edits;
       if (invitation.interactions)
@@ -1169,11 +1194,30 @@ class StudioEditor {
     window.location.href = `/pages/auth/index.html?${authParams.toString()}`;
   }
   isTemplatePurchased(templateId) {
+    // 1. If this specific invitation is already published/paid, skip checkout
+    if (this.state?.data?.status === 'published' || this.state?.data?.status === 'paid') {
+      return true;
+    }
+
+    const canonicalId = this.getCanonicalTemplateId(templateId);
+
+    // 2. If it's a free template, skip checkout
+    if (window.TEMPLATE_CATALOG) {
+      const tmpl = window.TEMPLATE_CATALOG.find((t) => t.id === canonicalId);
+      if (tmpl && tmpl.price === 0) return true;
+    }
+
+    // 3. Fallback check for testing environments or legacy purchases
+    // We check if THIS SPECIFIC inviteId was cached as purchased recently
     const purchased = JSON.parse(
       localStorage.getItem(PURCHASED_STORAGE_KEY) || "[]",
     );
-    const canonicalId = this.getCanonicalTemplateId(templateId);
-    return Array.isArray(purchased) && purchased.includes(canonicalId);
+    if (this.state?.data?.inviteId && Array.isArray(purchased) && purchased.includes(this.state.data.inviteId)) {
+      return true;
+    }
+
+    // Otherwise, force checkout
+    return false;
   }
   redirectToCheckoutForPayment(invitationId) {
     const params = new URLSearchParams({

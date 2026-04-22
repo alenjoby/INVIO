@@ -143,17 +143,17 @@ async function handleCheckout(e) {
 }
 
 async function handleSuccess() {
-  // Save purchase to simulate ownership
+  const query = new URLSearchParams(window.location.search);
+  const invitationId = query.get("invitationId");
+
+  // Save purchase to simulate ownership of this specific invitation
   const purchased = JSON.parse(
     localStorage.getItem(CONFIG.STORAGE_KEY) || "[]",
   );
-  if (!purchased.includes(checkoutState.template.id)) {
-    purchased.push(checkoutState.template.id);
+  if (invitationId && !purchased.includes(invitationId)) {
+    purchased.push(invitationId);
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(purchased));
   }
-
-  const query = new URLSearchParams(window.location.search);
-  const invitationId = query.get("invitationId");
 
   // Call backend to mark as purchased/published before showing success
   if (invitationId) {
