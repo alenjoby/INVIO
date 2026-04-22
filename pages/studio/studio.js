@@ -254,45 +254,54 @@ class StudioEditor {
 
   async loadTemplate(templateId) {
     try {
+      console.log(`[STUDIO] Starting load for template: ${templateId}`);
       const templatePath = this.getTemplatePathById(templateId);
       if (!templatePath) throw new Error(`Unknown template: ${templateId}`);
 
       const templateUrl = new URL(templatePath, window.location.href).href;
-      const response = await fetch(templateUrl, { cache: "no-store" });
+      console.log(`[STUDIO] Resolved template URL: ${templateUrl}`);
 
+      const response = await fetch(templateUrl, { cache: "no-store" });
       if (!response.ok)
-        throw new Error(`Failed to load template: ${templateUrl}`);
+        throw new Error(`Failed to load template: ${templateUrl} (Status: ${response.status})`);
 
       const templateHtml = await response.text();
+      console.log(`[STUDIO] Template HTML fetched (${templateHtml.length} bytes)`);
 
       // Fix <base> tag to use directory, not file URL, to correctly resolve relative assets (../../)
       const baseDirUrl = templateUrl.substring(0, templateUrl.lastIndexOf("/") + 1);
       const framedHtml = this.injectBaseHref(templateHtml, baseDirUrl);
 
-      // Reset frame for a clean state
-      this.els.frame.removeAttribute("srcdoc");
-      this.els.frame.src = "about:blank";
+      // Reset state
+      this.selectedElement = null;
 
-      // Wait for frame to be ready for manipulation
+      // Use srcdoc for atomic content update - avoids race conditions with document.write
+      this.els.frame.srcdoc = framedHtml;
+
+      // Wait for content to be parsed and body to be available
       await new Promise((resolve) => {
-        const check = () => {
-          if (this.els.frame.contentDocument) resolve();
-          else setTimeout(check, 10);
+        let attempts = 0;
+        const checkReady = () => {
+          attempts++;
+          const doc = this.els.frame.contentDocument;
+          // Check if body is available and has content (to ensure srcdoc is applied)
+          if (doc && doc.body && (doc.readyState === "complete" || doc.readyState === "interactive")) {
+            console.log(`[STUDIO] Frame document reached ${doc.readyState} state`);
+            resolve();
+          } else if (attempts > 40) { // 2 seconds
+            console.warn("[STUDIO] Frame load wait timed out, proceeding anyway");
+            resolve();
+          } else {
+            setTimeout(checkReady, 50);
+          }
         };
-        check();
+        checkReady();
       });
 
-      const frameDoc = this.els.frame.contentDocument;
-      frameDoc.open();
-      frameDoc.write(framedHtml);
-      frameDoc.close();
-
-      // Brief delay for the browser to parse the new document and run initial scripts
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      console.log("[STUDIO] Iframe document ready, initializing editor layers...");
+      
       this.injectSecurityGuard();
-
       this.injectEditorStyles();
-
       this.scanFrameElements();
       this.updateLayersPanel();
       this.attachFrameEvents();
@@ -301,18 +310,30 @@ class StudioEditor {
       const templateName = this.getTemplateNameById(templateId);
       this.els.editorTitle.textContent = `Customize: ${templateName}`;
       this.showToast(`${templateName} loaded`, "success");
+      console.log("[STUDIO] Template load sequence completed successfully");
     } catch (error) {
-      console.error("âœ- Template load failed:", error);
+      console.error("[STUDIO] ❌ Template load failed:", error);
       this.showToast("Failed to load template: " + error.message, "error");
     }
   }
 
   injectBaseHref(html, templateUrl) {
     const baseTag = `<base href="${templateUrl}">`;
-    if (/<base\s/i.test(html)) return html.replace(/<base\s[^>]*>/i, baseTag);
-    if (/<head\b[^>]*>/i.test(html))
-      return html.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
-    return `${baseTag}${html}`;
+    
+    // Strip any existing base tags to prevent conflicts
+    let processedHtml = html.replace(/<base\b[^>]*>/gi, "");
+
+    // Inject at start of head
+    if (/<head\b[^>]*>/i.test(processedHtml)) {
+      return processedHtml.replace(/<head\b([^>]*)>/i, `<head$1>${baseTag}`);
+    }
+    
+    // If no head, try to inject after html tag or at start
+    if (/<html\b[^>]*>/i.test(processedHtml)) {
+      return processedHtml.replace(/<html\b([^>]*)>/i, `<html$1>${baseTag}`);
+    }
+
+    return `${baseTag}${processedHtml}`;
   }
 
   /**
