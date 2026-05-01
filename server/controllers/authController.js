@@ -15,6 +15,7 @@ export const signup = async (req, res) => {
       email,
       password,
       options: {
+        emailRedirectTo: `${process.env.FRONTEND_URL}/pages/auth/index.html?verified=true`,
         data: {
           username: username || email,
         },

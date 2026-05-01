@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       showMessage(
-        "Account created. Please verify your email, then sign in.",
+        "Almost there! Please check your inbox and click the confirmation link to activate your account.",
         "success",
       );
       switchState(signupBox, loginBox);
@@ -161,6 +161,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       setSubmitting(signupForm, false, "Create Account");
     }
   });
+
+  // Check for verified parameter (from Supabase email redirect)
+  if (query.get("verified") === "true") {
+    showMessage("Email verified successfully! You can now sign in.", "success");
+  }
 
   // --- 2. Showcase Gallery Rotation ---
   const galleryImages = document.querySelectorAll(".gallery-img");
