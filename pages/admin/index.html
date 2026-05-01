@@ -1524,9 +1524,9 @@
 
           // ── Summary Footer ──
           const footerRowNum = sheet.lastRow.number + 2;
-          sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+          sheet.mergeCells(`A${footerRowNum}:E${footerRowNum}`);
           const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
-          totalLabelCell.value = "Total";
+          totalLabelCell.value = `Total  (${selectedAdminCurrency})`;
           totalLabelCell.font = {
             name: "Calibri",
             size: 11,
@@ -1535,13 +1535,12 @@
           };
           totalLabelCell.fill = warmFill;
           totalLabelCell.alignment = { vertical: "middle" };
-          // Total cells D fill
-          ["B", "C", "D"].forEach((col) => {
+          ["B", "C", "D", "E"].forEach((col) => {
             const c = sheet.getCell(`${col}${footerRowNum}`);
             c.fill = warmFill;
           });
 
-          const totalValueCell = sheet.getCell(`G${footerRowNum}`);
+          const totalValueCell = sheet.getCell(`F${footerRowNum}`);
           const totalAmt = filteredSales.reduce(
             (sum, s) => sum + convertSaleAmount(s.amount, s.currency),
             0,
@@ -1560,17 +1559,6 @@
             horizontal: "right",
           };
 
-          const totalCurrCell = sheet.getCell(`H${footerRowNum}`);
-          totalCurrCell.value = selectedAdminCurrency;
-          totalCurrCell.font = {
-            name: "Calibri",
-            size: 11,
-            bold: true,
-            color: { argb: "FFFFFFFF" },
-          };
-          totalCurrCell.fill = warmFill;
-          totalCurrCell.alignment = { vertical: "middle" };
-
           sheet.getRow(footerRowNum).height = 30;
 
           // ── Column Widths ──
@@ -1580,8 +1568,6 @@
           sheet.getColumn(4).width = 28;
           sheet.getColumn(5).width = 22;
           sheet.getColumn(6).width = 15;
-          sheet.getColumn(7).width = 15;
-          sheet.getColumn(8).width = 15;
 
           // ── Download ──
           const buffer = await workbook.xlsx.writeBuffer();
@@ -1697,21 +1683,63 @@
 
           sheet.getRow(3).height = 8;
 
-          // ── Header ──
+          // ── Header Row ──
           const headers = [
             "Date",
             "ID",
             "Customer",
             "Email",
             "Template",
-            "Price (AED)",
+            `Price (${selectedAdminCurrency})`,
           ];
+          const headerRow = sheet.getRow(4);
+          headerRow.values = headers;
+          headerRow.height = 30;
+          headerRow.eachCell((cell, colNumber) => {
+            cell.fill = navyFill;
+            cell.font = headerFont;
+            cell.alignment = {
+              vertical: "middle",
+              horizontal: colNumber === 6 ? "right" : "left",
+            };
+          });
 
-          // ── Footer ──
+          // ── Data Rows ──
+          masterSalesList.forEach((sale, i) => {
+            const d = new Date(sale.created_at);
+            const dateStr = d.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+            const shortId = (sale.id || "").substring(0, 8).toUpperCase();
+            const row = sheet.addRow([
+              dateStr,
+              shortId,
+              sale.customer_name || "",
+              sale.customer_email || "",
+              sale.template_name || sale.template_id || "-",
+              convertSaleAmount(sale.amount, sale.currency),
+            ]);
+            row.height = 26;
+            const isEven = i % 2 === 0;
+            row.eachCell((cell, colNumber) => {
+              cell.fill = isEven ? whiteFill : ivoryFill;
+              cell.font = bodyFont;
+              cell.border = thinBorder;
+              cell.alignment = {
+                vertical: "middle",
+                horizontal: colNumber === 6 ? "right" : "left",
+              };
+              if (colNumber === 6) cell.numFmt = "#,##0.00";
+            });
+          });
+
+          // ── Summary Footer ──
           const footerRowNum = sheet.lastRow.number + 2;
-          sheet.mergeCells(`A${footerRowNum}:D${footerRowNum}`);
+          sheet.mergeCells(`A${footerRowNum}:E${footerRowNum}`);
           const totalLabelCell = sheet.getCell(`A${footerRowNum}`);
-          totalLabelCell.value = "Grand Total";
+          totalLabelCell.value = `Grand Total  (${selectedAdminCurrency})`;
           totalLabelCell.font = {
             name: "Calibri",
             size: 11,
@@ -1720,7 +1748,7 @@
           };
           totalLabelCell.fill = warmFill;
           totalLabelCell.alignment = { vertical: "middle" };
-          ["B", "C", "D"].forEach((col) => {
+          ["B", "C", "D", "E"].forEach((col) => {
             const c = sheet.getCell(`${col}${footerRowNum}`);
             c.fill = warmFill;
           });
