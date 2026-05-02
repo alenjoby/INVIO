@@ -202,6 +202,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       delay: 0.3,
     });
   }
+  // --- 4. Password Visibility Toggle ---
+  const passwordWrappers = document.querySelectorAll(".password-wrapper");
+  passwordWrappers.forEach((wrapper) => {
+    const input = wrapper.querySelector("input");
+    const toggle = wrapper.querySelector(".password-toggle");
+    const icon = toggle.querySelector("i");
+
+    toggle.addEventListener("click", () => {
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+
+      // Toggle icon classes
+      icon.classList.toggle("ph-eye", !isPassword);
+      icon.classList.toggle("ph-eye-slash", isPassword);
+
+      // Maintain focus on input after toggle
+      input.focus();
+    });
+  });
 });
 
 function getSafeRedirect(value) {

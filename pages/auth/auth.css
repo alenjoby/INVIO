@@ -286,6 +286,41 @@ body {
   background: var(--auth-surface);
 }
 
+/* Password Toggle Styles */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 3.5rem !important; /* Space for the eye icon */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--auth-text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s var(--ease);
+  z-index: 5;
+}
+
+.password-toggle:hover {
+  color: var(--auth-accent);
+}
+
+.password-toggle i {
+  font-size: 1.25rem;
+}
+
 .form-options {
   display: flex;
   justify-content: space-between;
