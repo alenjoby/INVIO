@@ -64,6 +64,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     signupBox.classList.remove("is-hidden");
   }
 
+  // --- 0. Check for "Just Signed Up" state ---
+  const justSignedUp = localStorage.getItem("invio_just_signed_up");
+  if (justSignedUp === "true" && !query.get("verified")) {
+    showMessage("✦ Almost there! Please go to your Gmail and confirm the verification link to activate your account.", "success");
+  }
+
   const loginForm = document.getElementById("login-form");
   const signupForm = document.getElementById("signup-form");
 
@@ -74,14 +80,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const msg = document.createElement("div");
     msg.className = `auth-runtime-message auth-runtime-message--${type}`;
     msg.textContent = message;
-    msg.style.margin = "0 0 1rem";
-    msg.style.padding = "0.7rem 0.9rem";
-    msg.style.borderRadius = "10px";
-    msg.style.fontSize = "0.9rem";
-    msg.style.fontWeight = "600";
-    msg.style.background =
-      type === "error" ? "rgba(220,53,69,0.12)" : "rgba(25,135,84,0.12)";
-    msg.style.color = type === "error" ? "#b3261e" : "#0f5132";
+    msg.style.margin = "0 0 1.5rem";
+    msg.style.padding = "1rem";
+    msg.style.borderRadius = "12px";
+    msg.style.fontSize = "0.95rem";
+    msg.style.fontWeight = "500";
+    msg.style.lineHeight = "1.4";
+    msg.style.border = "1px solid";
+    
+    if (type === "error") {
+      msg.style.background = "rgba(220,53,69,0.08)";
+      msg.style.color = "#b3261e";
+      msg.style.borderColor = "rgba(220,53,69,0.2)";
+    } else {
+      msg.style.background = "rgba(25,135,84,0.08)";
+      msg.style.color = "#0f5132";
+      msg.style.borderColor = "rgba(25,135,84,0.2)";
+    }
 
     const target = !signupBox.classList.contains("is-hidden")
       ? signupBox.querySelector(".auth-header")
@@ -114,10 +129,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       setSubmitting(loginForm, true, "Signing in...");
       await authApi.login(email, password);
-      // FIX 2: Point to the exact HTML file
+      
+      // Success! Clear the new user flag
+      localStorage.removeItem("invio_just_signed_up");
+      
       window.location.href = safeRedirect || "/pages/dashboard/index.html";
     } catch (err) {
-      showMessage(err.message || "Login failed.", "error");
+      const errMsg = err.message || "";
+      if (errMsg.toLowerCase().includes("confirm") || errMsg.toLowerCase().includes("verify")) {
+        showMessage("✦ Your account is ready! Just check your Gmail and confirm the mail to start designing.", "success");
+      } else {
+        showMessage(errMsg || "Login failed.", "error");
+      }
     } finally {
       setSubmitting(loginForm, false, "Sign In");
     }
@@ -144,13 +167,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       const result = await authApi.signup(email, password, username);
 
       if (result.session?.access_token) {
-        // FIX 3: Point to the exact HTML file
         window.location.href = safeRedirect || "/pages/dashboard/index.html";
         return;
       }
 
+      // Mark as just signed up
+      localStorage.setItem("invio_just_signed_up", "true");
+
       showMessage(
-        "Almost there! Please check your inbox and click the confirmation link to activate your account.",
+        "✦ Account created! Please go to your Gmail and confirm this mail to activate your INVIO studio.",
         "success",
       );
       switchState(signupBox, loginBox);
@@ -164,6 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Check for verified parameter (from Supabase email redirect)
   if (query.get("verified") === "true") {
+    localStorage.removeItem("invio_just_signed_up");
     showMessage("Email verified successfully! You can now sign in.", "success");
   }
 

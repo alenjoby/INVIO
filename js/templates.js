@@ -258,28 +258,41 @@ if (refs.templateGrid && refs.templateSearch && refs.categoryFilter) {
 }
 
 async function initialize() {
-  // Sync session with server if authApi is available
-  if (window.authApi) {
-    await window.authApi.syncSession();
-  }
-
+  // 1. Reset and Prep UI (Immediate)
   forceResetModals();
   initializeAOS();
 
+  // Load state and settings
   const persistedCurrency = localStorage.getItem("invioCurrency");
   if (persistedCurrency && CURRENCY_CONFIG[persistedCurrency]) {
     state.currency = persistedCurrency;
   }
-
   setActiveCurrencyButton();
 
-  bindEvents();
+  // 2. Render Marketplace Content (Immediate - No waiting for server)
   state.templates = TEMPLATE_CATALOG.map(normalizeTemplate).filter(
     (item) => item.id,
   );
+  
   updateSummaryMetrics();
   renderCategoryButtons();
-  applyFilters();
+  applyFilters(); // This fills the grid and ensures users see content instantly
+
+  // 3. Bind interactions
+  bindEvents();
+
+  // 4. Background Auth Sync (Non-blocking)
+  // We sync in the background so the UI doesn't stay blank if the server is slow
+  if (window.authApi) {
+    try {
+      await window.authApi.syncSession();
+    } catch (err) {
+      console.warn("Auth sync failed in background:", err);
+    }
+  }
+
+  // 5. Post-Sync UI Updates
+  // Now that we've tried to sync, we can safely check for auth prompts
   maybeShowAuthPrompt();
 }
 

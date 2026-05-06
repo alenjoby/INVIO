@@ -171,11 +171,9 @@ body {
 }
 
 .auth-brand {
-  position: absolute;
-  top: 2rem;
-  left: 3rem;
+  display: block;
+  padding: 3.5rem 3rem 2rem;
   text-decoration: none;
-  z-index: 20;
 }
 
 .brand-logo-placeholder {
@@ -188,35 +186,34 @@ body {
 }
 
 .brand-logo-placeholder img {
-  height: 5rem;
+  height: 3.5rem;
   width: auto;
 }
 
 .form-wrapper {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Start from top to keep layout stable */
   justify-content: center;
-  padding: 2rem 3rem;
+  padding: 0 3rem 4rem;
   position: relative;
-  overflow: hidden; /* For smooth box sliding */
+  min-height: 450px; /* Prevent jumping during transitions */
 }
 
 .auth-box {
   width: 100%;
   max-width: 420px;
-  position: absolute;
+  position: relative; /* Changed from absolute to respect flow */
   opacity: 1;
   visibility: visible;
-  transition:
-    opacity 0.4s var(--ease),
-    visibility 0.4s var(--ease);
 }
 
 .auth-box.is-hidden {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  position: absolute; /* Take out of flow when hidden */
+  top: 0;
 }
 
 .auth-header {
